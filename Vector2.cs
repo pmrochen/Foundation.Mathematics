@@ -6,15 +6,60 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace Foundation.Mathematics
 {
+#if SIMD && !SIMD_VECTOR4
+	[StructLayout(LayoutKind.Sequential, Size = 16)]
+#endif
 	[Serializable]
 	[TypeConverter(typeof(Vector2Converter))]
 	public struct Vector2 : ISerializable, IFormattable, IEquatable<Vector2>
 	{
 #if SIMD
+#if SIMD_VECTOR4
+		public static readonly Vector2 Zero = new Vector2(System.Numerics.Vector4.Zero);
+		public static readonly Vector2 UnitX = new Vector2(System.Numerics.Vector4.UnitX);
+		public static readonly Vector2 UnitY = new Vector2(0f, 1f);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2(float scalar)
+		{
+			xy_ = new System.Numerics.Vector4(scalar);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2(float x, float y)
+		{
+			xy_ = new System.Numerics.Vector4(x, y, y, y);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2(float[] v)
+		{
+			xy_ = new System.Numerics.Vector4(v[0], v[1], v[1], v[1]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private Vector2(System.Numerics.Vector2 v)
+		{
+			xy_ = new System.Numerics.Vector4(v.X, v.Y, v.Y, v.Y);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private Vector2(System.Numerics.Vector4 v)
+		{
+			xy_ = v;
+		}
+
+		private Vector2(SerializationInfo info, StreamingContext context)
+		{
+			float y = info.GetSingle("Y");
+			xy_ = new System.Numerics.Vector4(info.GetSingle("X"), y, y, y);
+		}
+#else
 		public static readonly Vector2 Zero = new Vector2(System.Numerics.Vector2.Zero);
 		public static readonly Vector2 UnitX = new Vector2(System.Numerics.Vector2.UnitX);
 		public static readonly Vector2 UnitY = new Vector2(System.Numerics.Vector2.UnitY);
@@ -23,53 +68,102 @@ namespace Foundation.Mathematics
 		public Vector2(float scalar)
 		{
 			xy_ = new System.Numerics.Vector2(scalar);
-			reserved_ = new System.Numerics.Vector2(scalar);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Vector2(float x, float y)
 		{
 			xy_ = new System.Numerics.Vector2(x, y);
-			reserved_ = new System.Numerics.Vector2(y);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Vector2(float[] v)
 		{
 			xy_ = new System.Numerics.Vector2(v[0], v[1]);
-			reserved_ = new System.Numerics.Vector2(v[1]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private Vector2(System.Numerics.Vector2 v)
 		{
 			xy_ = v;
-			reserved_ = new System.Numerics.Vector2(v.Y);
 		}
 
 		private Vector2(SerializationInfo info, StreamingContext context)
 		{
-			float y = info.GetSingle("Y");
-			xy_ = new System.Numerics.Vector2(info.GetSingle("X"), y);
-			reserved_ = new System.Numerics.Vector2(y);
+			xy_ = new System.Numerics.Vector2(info.GetSingle("X"), info.GetSingle("Y"));
+		}
+#endif
+
+		public float X
+		{
+			readonly get => xy_.X;
+			set => xy_.X = value;
 		}
 
-		public float X 
-		{ 
-			readonly get { return xy_.X; } 
-			set { xy_.X = value; } 
-		}
-		
-		public float Y 
-		{ 
-			readonly get { return xy_.Y; } 
-			set { xy_.Y = value; }
+		public float Y
+		{
+			readonly get => xy_.Y;
+			set => xy_.Y = value;
 		}
 
+#if SIMD_VECTOR4
 		[Browsable(false)]
 		public float Magnitude
 		{
-			readonly get { return xy_.Length(); }
+			readonly get => AsVector2.Length();
+			set
+			{
+				float m = AsVector2.Length();
+				if (m > 0f)
+					this *= value/m;
+			}
+		}
+
+		[Browsable(false)]
+		public readonly float MagnitudeSquared => AsVector2.LengthSquared();
+
+		[Browsable(false)]
+		public float Length
+		{
+			readonly get => AsVector2.Length();
+			set
+			{
+				float m = AsVector2.Length();
+				if (m > 0f)
+					this *= value/m;
+			}
+		}
+
+		[Browsable(false)]
+		public readonly float LengthSquared => AsVector2.LengthSquared();
+
+		public readonly override bool Equals(object other)
+		{
+			return (other is Vector2 rhs) && (AsVector2 == rhs.AsVector2);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool Equals(Vector2 other)
+		{
+			return (AsVector2 == other.AsVector2);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool operator ==(Vector2 lhs, Vector2 rhs)
+		{
+			return (lhs.AsVector2 == rhs.AsVector2);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool operator !=(Vector2 lhs, Vector2 rhs)
+		{
+			return (lhs.AsVector2 != rhs.AsVector2);
+		}
+#else
+		[Browsable(false)]
+		public float Magnitude
+		{
+			readonly get => xy_.Length();
 			set
 			{
 				float m = xy_.Length();
@@ -79,28 +173,22 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float MagnitudeSquared
-		{
-			get { return xy_.LengthSquared(); }
-		}
+		public readonly float MagnitudeSquared => xy_.LengthSquared();
 
 		[Browsable(false)]
 		public float Length
 		{
-			readonly get { return xy_.Length(); }
+			readonly get => xy_.Length();
 			set
 			{
 				float m = xy_.Length();
 				if (m > 0f)
-					this *= value / m;
+					this *= value/m;
 			}
 		}
 
 		[Browsable(false)]
-		public readonly float LengthSquared
-		{
-			get { return xy_.LengthSquared(); }
-		}
+		public readonly float LengthSquared => xy_.LengthSquared();
 
 		public readonly override bool Equals(object other)
 		{
@@ -124,6 +212,7 @@ namespace Foundation.Mathematics
 		{
 			return (lhs.xy_ != rhs.xy_);
 		}
+#endif
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 operator +(Vector2 v)
@@ -178,6 +267,80 @@ namespace Foundation.Mathematics
 			//return new Vector2(vx*m.row0_ + vy*m.row1_);
 		}
 
+#if SIMD_VECTOR4
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 operator /(Vector2 c, Vector2 d)
+		{
+			return new Vector2(c.AsVector2/d.AsVector2);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 operator /(Vector2 c, float f)
+		{
+			return new Vector2(c.AsVector2/f);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 operator /(float f, Vector2 c)
+		{
+			return new Vector2(new System.Numerics.Vector2(f)/c.AsVector2);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Abs(Vector2 v)
+		{
+			return new Vector2(System.Numerics.Vector4.Abs(v.xy_));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float Dot(Vector2 u, Vector2 v)
+		{
+			return System.Numerics.Vector2.Dot(u.AsVector2, v.AsVector2);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float Distance(Vector2 u, Vector2 v)
+		{
+			return System.Numerics.Vector2.Distance(u.AsVector2, v.AsVector2);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float DistanceSquared(Vector2 u, Vector2 v)
+		{
+			return System.Numerics.Vector2.DistanceSquared(u.AsVector2, v.AsVector2);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Min(Vector2 c, Vector2 d)
+		{
+			return new Vector2(System.Numerics.Vector4.Min(c.xy_, d.xy_));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Max(Vector2 c, Vector2 d)
+		{
+			return new Vector2(System.Numerics.Vector4.Max(c.xy_, d.xy_));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Clamp(Vector2 c, Vector2 low, Vector2 high)
+		{
+			return new Vector2(System.Numerics.Vector4.Clamp(c.xy_, low.xy_, high.xy_));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Lerp(Vector2 c, Vector2 d, float t)
+		{
+			return new Vector2(System.Numerics.Vector4.Lerp(c.xy_, d.xy_, t));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Normalize(Vector2 v)
+		{
+			float m = v.AsVector2.Length();
+			return (m > 0f) ? new Vector2(v.xy_/m) : v;
+		}
+#else
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 operator /(Vector2 c, Vector2 d)
 		{
@@ -250,6 +413,7 @@ namespace Foundation.Mathematics
 			float m = v.xy_.Length();
 			return (m > 0f) ? new Vector2(v.xy_/m) : v;
 		}
+#endif
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 Scale(Vector2 v, Vector2 s)
@@ -293,20 +457,16 @@ namespace Foundation.Mathematics
 			//xy_ = vx*m.row0_ + vy*m.row1_;
 		}
 
-		internal readonly float x_ 
-		{ 
-			get { return xy_.X; } 
-			/*set { xy_.X = value; }*/ 
-		}
-		
-		internal readonly float y_ 
-		{ 
-			get { return xy_.Y; } 
-			/*set { xy_.Y = value; }*/ 
-		}
+		internal readonly float x_ => xy_.X;
+		internal readonly float y_ => xy_.Y;
 
+#if SIMD_VECTOR4
+		internal readonly System.Numerics.Vector2 AsVector2 => new System.Numerics.Vector2(xy_.X, xy_.Y);
+
+		internal System.Numerics.Vector4 xy_;
+#else
 		internal System.Numerics.Vector2 xy_;
-		private System.Numerics.Vector2 reserved_;
+#endif
 #else
 		public static readonly Vector2 Zero = new Vector2(0f, 0f);
 		public static readonly Vector2 UnitX = new Vector2(1f, 0f);

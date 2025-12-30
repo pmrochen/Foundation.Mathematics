@@ -33,6 +33,25 @@ namespace Foundation.Mathematics
 			xyzw_ = new System.Numerics.Vector4(x, y, z, w);
 		}
 
+#if SIMD_VECTOR4
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector4(Vector2 v, float z, float w)
+		{
+			xyzw_ = new System.Numerics.Vector4(v.xy_.X, v.xy_.Y, z, w);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector4(Vector2 xy, Vector2 zw)
+		{
+			xyzw_ = new System.Numerics.Vector4(xy.xy_.X, xy.xy_.Y, zw.xy_.X, zw.xy_.Y);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector4(Vector3 v, float w)
+		{
+			xyzw_ = new System.Numerics.Vector4(v.xyz_.X, v.xyz_.Y, v.xyz_.Z, w);
+		}
+#else
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Vector4(Vector2 v, float z, float w)
 		{
@@ -50,6 +69,7 @@ namespace Foundation.Mathematics
 		{
 			xyzw_ = new System.Numerics.Vector4(v.xyz_, w);
 		}
+#endif
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Vector4(float[] v)
@@ -68,6 +88,17 @@ namespace Foundation.Mathematics
 			xyzw_ = new System.Numerics.Vector4(info.GetSingle("X"), info.GetSingle("Y"), info.GetSingle("Z"), info.GetSingle("W"));
 		}
 
+#if SIMD_VECTOR4
+		public static implicit operator Vector4(Vector2 v)
+		{
+			return new Vector4(new System.Numerics.Vector4(v.xy_.X, v.xy_.Y, 0f, 1f));
+		}
+
+		public static implicit operator Vector4(Vector3 v)
+		{
+			return new Vector4(new System.Numerics.Vector4(v.xyz_.X, v.xyz_.Y, v.xyz_.Z, 1f));
+		}
+#else
 		public static implicit operator Vector4(Vector2 v)
 		{
 			return new Vector4(new System.Numerics.Vector4(v.xy_, 0f, 1f));
@@ -77,49 +108,66 @@ namespace Foundation.Mathematics
 		{
 			return new Vector4(new System.Numerics.Vector4(v.xyz_, 1f));
 		}
+#endif
 
-		public float X 
-		{ 
-			readonly get { return xyzw_.X; } 
-			set { xyzw_.X = value; } 
-		}
-		
-		public float Y 
-		{ 
-			readonly get { return xyzw_.Y; } 
-			set { xyzw_.Y = value; } 
-		}
-		
-		public float Z 
-		{ 
-			readonly get { return xyzw_.Z; } 
-			set { xyzw_.Z = value; } 
-		}
-		
-		public float W 
-		{ 
-			readonly get { return xyzw_.W; } 
-			set { xyzw_.W = value; } 
+		public float X
+		{
+			readonly get => xyzw_.X;
+			set => xyzw_.X = value;
 		}
 
+		public float Y
+		{
+			readonly get => xyzw_.Y;
+			set => xyzw_.Y = value;
+		}
+
+		public float Z
+		{
+			readonly get => xyzw_.Z;
+			set => xyzw_.Z = value;
+		}
+
+		public float W
+		{
+			readonly get => xyzw_.W;
+			set => xyzw_.W = value;
+		}
+
+#if SIMD_VECTOR4
 		[Browsable(false)]
 		public Vector2 XY
 		{
-			readonly get { return new Vector2(xyzw_.X, xyzw_.Y); }
-			set { xyzw_ = new System.Numerics.Vector4(value.xy_, xyzw_.Z, xyzw_.W); }
+			readonly get => new Vector2(xyzw_.X, xyzw_.Y);
+			set => xyzw_ = new System.Numerics.Vector4(value.xy_.X, value.xy_.Y, xyzw_.Z, xyzw_.W);
 		}
 
 		[Browsable(false)]
 		public Vector3 XYZ
 		{
-			readonly get { return new Vector3(xyzw_.X, xyzw_.Y, xyzw_.Z); }
-			set { xyzw_ = new System.Numerics.Vector4(value.xyz_, xyzw_.W); }
+			readonly get => new Vector3(xyzw_.X, xyzw_.Y, xyzw_.Z);
+			set => xyzw_ = new System.Numerics.Vector4(value.xyz_.X, value.xyz_.Y, value.xyz_.Z, xyzw_.W);
 		}
+#else
+		[Browsable(false)]
+		public Vector2 XY
+		{
+			readonly get => new Vector2(xyzw_.X, xyzw_.Y);
+			set => xyzw_ = new System.Numerics.Vector4(value.xy_, xyzw_.Z, xyzw_.W);
+		}
+
+		[Browsable(false)]
+		public Vector3 XYZ
+		{
+			readonly get => new Vector3(xyzw_.X, xyzw_.Y, xyzw_.Z);
+			set => xyzw_ = new System.Numerics.Vector4(value.xyz_, xyzw_.W);
+		}
+#endif
 
 		[Browsable(false)]
 		public float Magnitude
 		{
-			readonly get { return xyzw_.Length(); }
+			readonly get => xyzw_.Length();
 			set
 			{
 				float m = xyzw_.Length();
@@ -129,28 +177,22 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float MagnitudeSquared
-		{
-			get { return xyzw_.LengthSquared(); }
-		}
+		public readonly float MagnitudeSquared => xyzw_.LengthSquared();
 
 		[Browsable(false)]
 		public float Length
 		{
-			readonly get { return xyzw_.Length(); }
+			readonly get => xyzw_.Length();
 			set
 			{
 				float m = xyzw_.Length();
 				if (m > 0f)
-					this *= value / m;
+					this *= value/m;
 			}
 		}
 
 		[Browsable(false)]
-		public readonly float LengthSquared
-		{
-			get { return xyzw_.LengthSquared(); }
-		}
+		public readonly float LengthSquared => xyzw_.LengthSquared();
 
 		public readonly override bool Equals(object other)
 		{
@@ -343,29 +385,10 @@ namespace Foundation.Mathematics
 			//xyzw_ = vx*m.row0_ + vy*m.row1_ + vz*m.row2_ + vw*m.row3_;
 		}
 
-		internal readonly float x_ 
-		{ 
-			get { return xyzw_.X; } 
-			/*set { xyzw_.X = value; }*/ 
-		}
-		
-		internal readonly float y_ 
-		{ 
-			get { return xyzw_.Y; } 
-			/*set { xyzw_.Y = value; }*/ 
-		}
-		
-		internal readonly float z_
-		{ 
-			get { return xyzw_.Z; } 
-			/*set { xyzw_.Z = value; }*/ 
-		}
-		
-		internal readonly float w_ 
-		{ 
-			get { return xyzw_.W; } 
-			/*set { xyzw_.W = value; }*/ 
-		}
+		internal readonly float x_ => xyzw_.X;
+		internal readonly float y_ => xyzw_.Y;
+		internal readonly float z_ => xyzw_.Z;
+		internal readonly float w_ => xyzw_.W;
 
 		internal System.Numerics.Vector4 xyzw_;
 #else
