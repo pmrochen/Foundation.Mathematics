@@ -76,5 +76,22 @@ namespace Foundation.Mathematics
 			float phi = GetNext/*Single*/(0f, SingleConstants.TwoPi - SingleConstants.Tolerance/*Epsilon*/);
 			return (float)Math.Sin(theta)*((float)Math.Cos(phi)*tangentX + (float)Math.Sin(phi)*tangentY) + (float)Math.Cos(theta)*direction;
 		}
+
+		public static Quaternion GetNextQuaternion()
+		{
+			float t1 = GetNext/*Single*/(0f, SingleConstants.TwoPi);
+			float t2 = GetNext/*Single*/(0f, SingleConstants.TwoPi);
+			float m = GetNext/*Single*/(0f, 1f);
+
+			float r1 = MathF.Sqrt(1f - m);
+			float r2 = MathF.Sqrt(m);
+
+			float s1 = (float)Math.Sin(t1);
+			float c1 = (float)Math.Cos(t1);
+			float s2 = (float)Math.Sin(t2);
+			float c2 = (float)Math.Cos(t2);
+
+			return new Quaternion(s1*r1, c1*r1, s2*r2, c2*r2);
+		}
 	}
 }
