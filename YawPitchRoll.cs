@@ -320,7 +320,6 @@ namespace Foundation.Mathematics
 			return new Vector3(sinH*cosP, -sinP, cosH*cosP);
 		}
 
-		// #TODO internal System.Numerics.Vector3 v_;
 		internal float yaw_;
 		internal float pitch_;
 		internal float roll_;

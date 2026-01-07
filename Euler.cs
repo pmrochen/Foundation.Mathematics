@@ -411,7 +411,6 @@ namespace Foundation.Mathematics
 			return e;
 		}
 
-		// #TODO internal System.Numerics.Vector3 v_;
 		internal float x_;
 		internal float y_;
 		internal float z_;

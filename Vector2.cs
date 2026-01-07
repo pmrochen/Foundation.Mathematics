@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 
 namespace Foundation.Mathematics
 {
-#if SIMD && !SIMD_VECTOR4
+#if SIMD
 	[StructLayout(LayoutKind.Sequential, Size = 16)]
 #endif
 	[Serializable]
@@ -19,47 +19,6 @@ namespace Foundation.Mathematics
 	public struct Vector2 : ISerializable, IFormattable, IEquatable<Vector2>
 	{
 #if SIMD
-#if SIMD_VECTOR4
-		public static readonly Vector2 Zero = new Vector2(System.Numerics.Vector4.Zero);
-		public static readonly Vector2 UnitX = new Vector2(System.Numerics.Vector4.UnitX);
-		public static readonly Vector2 UnitY = new Vector2(0f, 1f);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector2(float scalar)
-		{
-			xy_ = new System.Numerics.Vector4(scalar);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector2(float x, float y)
-		{
-			xy_ = new System.Numerics.Vector4(x, y, y, y);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector2(float[] v)
-		{
-			xy_ = new System.Numerics.Vector4(v[0], v[1], v[1], v[1]);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector2(System.Numerics.Vector2 v)
-		{
-			xy_ = new System.Numerics.Vector4(v.X, v.Y, v.Y, v.Y);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector2(System.Numerics.Vector4 v)
-		{
-			xy_ = v;
-		}
-
-		private Vector2(SerializationInfo info, StreamingContext context)
-		{
-			float y = info.GetSingle("Y");
-			xy_ = new System.Numerics.Vector4(info.GetSingle("X"), y, y, y);
-		}
-#else
 		public static readonly Vector2 Zero = new Vector2(System.Numerics.Vector2.Zero);
 		public static readonly Vector2 UnitX = new Vector2(System.Numerics.Vector2.UnitX);
 		public static readonly Vector2 UnitY = new Vector2(System.Numerics.Vector2.UnitY);
@@ -83,7 +42,7 @@ namespace Foundation.Mathematics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector2(System.Numerics.Vector2 v)
+		internal Vector2(System.Numerics.Vector2 v)
 		{
 			xy_ = v;
 		}
@@ -92,7 +51,6 @@ namespace Foundation.Mathematics
 		{
 			xy_ = new System.Numerics.Vector2(info.GetSingle("X"), info.GetSingle("Y"));
 		}
-#endif
 
 		public float X
 		{
@@ -106,60 +64,6 @@ namespace Foundation.Mathematics
 			set => xy_.Y = value;
 		}
 
-#if SIMD_VECTOR4
-		[Browsable(false)]
-		public float Magnitude
-		{
-			readonly get => AsVector2.Length();
-			set
-			{
-				float m = AsVector2.Length();
-				if (m > 0f)
-					this *= value/m;
-			}
-		}
-
-		[Browsable(false)]
-		public readonly float MagnitudeSquared => AsVector2.LengthSquared();
-
-		[Browsable(false)]
-		public float Length
-		{
-			readonly get => AsVector2.Length();
-			set
-			{
-				float m = AsVector2.Length();
-				if (m > 0f)
-					this *= value/m;
-			}
-		}
-
-		[Browsable(false)]
-		public readonly float LengthSquared => AsVector2.LengthSquared();
-
-		public readonly override bool Equals(object other)
-		{
-			return (other is Vector2 rhs) && (AsVector2 == rhs.AsVector2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public readonly bool Equals(Vector2 other)
-		{
-			return (AsVector2 == other.AsVector2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool operator ==(Vector2 lhs, Vector2 rhs)
-		{
-			return (lhs.AsVector2 == rhs.AsVector2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool operator !=(Vector2 lhs, Vector2 rhs)
-		{
-			return (lhs.AsVector2 != rhs.AsVector2);
-		}
-#else
 		[Browsable(false)]
 		public float Magnitude
 		{
@@ -212,7 +116,6 @@ namespace Foundation.Mathematics
 		{
 			return (lhs.xy_ != rhs.xy_);
 		}
-#endif
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 operator +(Vector2 v)
@@ -267,80 +170,6 @@ namespace Foundation.Mathematics
 			//return new Vector2(vx*m.row0_ + vy*m.row1_);
 		}
 
-#if SIMD_VECTOR4
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 operator /(Vector2 c, Vector2 d)
-		{
-			return new Vector2(c.AsVector2/d.AsVector2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 operator /(Vector2 c, float f)
-		{
-			return new Vector2(c.AsVector2/f);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 operator /(float f, Vector2 c)
-		{
-			return new Vector2(new System.Numerics.Vector2(f)/c.AsVector2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 Abs(Vector2 v)
-		{
-			return new Vector2(System.Numerics.Vector4.Abs(v.xy_));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float Dot(Vector2 u, Vector2 v)
-		{
-			return System.Numerics.Vector2.Dot(u.AsVector2, v.AsVector2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float Distance(Vector2 u, Vector2 v)
-		{
-			return System.Numerics.Vector2.Distance(u.AsVector2, v.AsVector2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float DistanceSquared(Vector2 u, Vector2 v)
-		{
-			return System.Numerics.Vector2.DistanceSquared(u.AsVector2, v.AsVector2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 Min(Vector2 c, Vector2 d)
-		{
-			return new Vector2(System.Numerics.Vector4.Min(c.xy_, d.xy_));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 Max(Vector2 c, Vector2 d)
-		{
-			return new Vector2(System.Numerics.Vector4.Max(c.xy_, d.xy_));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 Clamp(Vector2 c, Vector2 low, Vector2 high)
-		{
-			return new Vector2(System.Numerics.Vector4.Clamp(c.xy_, low.xy_, high.xy_));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 Lerp(Vector2 c, Vector2 d, float t)
-		{
-			return new Vector2(System.Numerics.Vector4.Lerp(c.xy_, d.xy_, t));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 Normalize(Vector2 v)
-		{
-			float m = v.AsVector2.Length();
-			return (m > 0f) ? new Vector2(v.xy_/m) : v;
-		}
-#else
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 operator /(Vector2 c, Vector2 d)
 		{
@@ -357,6 +186,37 @@ namespace Foundation.Mathematics
 		public static Vector2 operator /(float f, Vector2 c)
 		{
 			return new Vector2(new System.Numerics.Vector2(f)/c.xy_);
+		}
+
+		public float this[int index] // #TODO Use System.Numerics.Vector2 indexing operator
+		{
+			readonly get
+			{
+				switch (index)
+				{
+					case 0:
+						return xy_.X;
+					case 1:
+						return xy_.Y;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
+
+			set
+			{
+				switch (index)
+				{
+					case 0:
+						xy_.X = value;
+						break;
+					case 1:
+						xy_.Y = value;
+						break;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -413,13 +273,12 @@ namespace Foundation.Mathematics
 			float m = v.xy_.Length();
 			return (m > 0f) ? new Vector2(v.xy_/m) : v;
 		}
-#endif
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 Scale(Vector2 v, Vector2 s)
-		{
-			return new Vector2(v.xy_*s.xy_);
-		}
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//public static Vector2 Scale(Vector2 v, Vector2 s)
+		//{
+		//	return new Vector2(v.xy_*s.xy_);
+		//}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 Transform(Vector2 v, in Matrix2 m)
@@ -440,11 +299,11 @@ namespace Foundation.Mathematics
 				xy_ /= m;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Scale(Vector2 v)
-		{
-			xy_ *= v.xy_;
-		}
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//public void Scale(Vector2 v)
+		//{
+		//	xy_ *= v.xy_;
+		//}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Transform(in Matrix2 m)
@@ -460,13 +319,7 @@ namespace Foundation.Mathematics
 		internal readonly float x_ => xy_.X;
 		internal readonly float y_ => xy_.Y;
 
-#if SIMD_VECTOR4
-		internal readonly System.Numerics.Vector2 AsVector2 => new System.Numerics.Vector2(xy_.X, xy_.Y);
-
-		internal System.Numerics.Vector4 xy_;
-#else
 		internal System.Numerics.Vector2 xy_;
-#endif
 #else
 		public static readonly Vector2 Zero = new Vector2(0f, 0f);
 		public static readonly Vector2 UnitX = new Vector2(1f, 0f);
@@ -557,32 +410,32 @@ namespace Foundation.Mathematics
 			return (x_ == other.x_) && (y_ == other.y_);
 		}
 		
-		public static bool operator==(Vector2 lhs, Vector2 rhs)
+		public static bool operator ==(Vector2 lhs, Vector2 rhs)
 		{
 			return (lhs.x_ == rhs.x_) && (lhs.y_ == rhs.y_);
 		}
 
-		public static bool operator!=(Vector2 lhs, Vector2 rhs)
+		public static bool operator !=(Vector2 lhs, Vector2 rhs)
 		{
 			return (lhs.x_ != rhs.x_) || (lhs.y_ != rhs.y_);
 		}
 
-		public static Vector2 operator+(Vector2 v)
+		public static Vector2 operator +(Vector2 v)
 		{
 			return v;
 		}
 
-		public static Vector2 operator-(Vector2 v)
+		public static Vector2 operator -(Vector2 v)
 		{
 			return new Vector2(-v.x_, -v.y_);
 		}
 
-		public static Vector2 operator+(Vector2 u, Vector2 v)
+		public static Vector2 operator +(Vector2 u, Vector2 v)
 		{
 			return new Vector2(u.x_ + v.x_, u.y_ + v.y_);
 		}
 
-		public static Vector2 operator-(Vector2 u, Vector2 v)
+		public static Vector2 operator -(Vector2 u, Vector2 v)
 		{
 			return new Vector2(u.x_ - v.x_, u.y_ - v.y_);
 		}
@@ -592,12 +445,12 @@ namespace Foundation.Mathematics
 			return new Vector2(u.x_*v.x_, u.y_*v.y_);
 		}
 
-		public static Vector2 operator*(Vector2 v, float f)
+		public static Vector2 operator *(Vector2 v, float f)
 		{
 			return new Vector2(v.x_*f, v.y_*f);
 		}
 
-		public static Vector2 operator*(float f, Vector2 v)
+		public static Vector2 operator *(float f, Vector2 v)
 		{
 			return new Vector2(f*v.x_, f*v.y_);
 		}
@@ -619,14 +472,45 @@ namespace Foundation.Mathematics
 			return new Vector2(u.x_/v.x_, u.y_/v.y_);
 		}
 
-		public static Vector2 operator/(Vector2 v, float f)
+		public static Vector2 operator /(Vector2 v, float f)
 		{
 			return new Vector2(v.x_/f, v.y_/f);
 		}
 
-		public static Vector2 operator/(float f, Vector2 v)
+		public static Vector2 operator /(float f, Vector2 v)
 		{
 			return new Vector2(f/v.x_, f/v.y_);
+		}
+
+		public float this[int index]
+		{
+			readonly get
+			{
+				switch (index)
+				{
+					case 0:
+						return x_;
+					case 1:
+						return y_;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
+
+			set
+			{
+				switch (index)
+				{
+					case 0:
+						x_ = value;
+						break;
+					case 1:
+						y_ = value;
+						break;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
 		}
 
 		public static Vector2 Abs(Vector2 v)
@@ -675,10 +559,10 @@ namespace Foundation.Mathematics
 			return (m > 0f) ? new Vector2(v.x_/m, v.y_/m) : v;
 		}
 
-		public static Vector2 Scale(Vector2 v, Vector2 s)
-		{
-			return new Vector2(v.x_*s.x_, v.y_*s.y_);
-		}
+		//public static Vector2 Scale(Vector2 v, Vector2 s)
+		//{
+		//	return new Vector2(v.x_*s.x_, v.y_*s.y_);
+		//}
 
 		public static Vector2 Transform(Vector2 v, in Matrix2 m)
 		{
@@ -696,11 +580,11 @@ namespace Foundation.Mathematics
 			}
 		}
 
-		public void Scale(Vector2 v)
-		{
-			x_ *= v.x_;
-			y_ *= v.y_;
-		}
+		//public void Scale(Vector2 v)
+		//{
+		//	x_ *= v.x_;
+		//	y_ *= v.y_;
+		//}
 
 		public void Transform(in Matrix2 m)
 		{
@@ -719,53 +603,19 @@ namespace Foundation.Mathematics
 			info.AddValue("Y", y_);
 		}
 
-		public float this[int index]
-		{
-			readonly get
-			{
-				switch (index)
-				{
-					case 0:
-						return x_;
-					case 1:
-						return y_;
-					default:
-						throw new IndexOutOfRangeException();
-				}
-			}
-
-			set
-			{
-				switch (index)
-				{
-					case 0:
-						X = value;
-						break;
-					case 1:
-						Y = value;
-						break;
-					default:
-						throw new IndexOutOfRangeException();
-				}
-			}
-		}
-
 		public static explicit operator Vector2(IntVector2 v)
 		{
 			return new Vector2((float)v.x_, (float)v.y_);
 		}
 
 		[Browsable(false)]
-		public readonly bool IsFinite
-		{
-			get { return Functions.IsFinite(x_) && Functions.IsFinite(y_); }
-		}
+		public readonly Vector2 YX => new Vector2(y_, x_);
 
 		[Browsable(false)]
-		public readonly Axis MajorAxis
-		{
-			get { return (MathF.Abs(y_) > MathF.Abs(x_)) ? Axis.Y : Axis.X; }
-		}
+		public readonly bool IsFinite => Functions.IsFinite(x_) && Functions.IsFinite(y_);
+
+		[Browsable(false)]
+		public readonly Axis MajorAxis => (MathF.Abs(y_) > MathF.Abs(x_)) ? Axis.Y : Axis.X;
 
 		public readonly override int GetHashCode()
 		{
@@ -776,8 +626,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool ApproxEquals(Vector2 v, float tolerance)
 		{
-			return (Math.Abs(v.x_ - x_) < tolerance) &&
-				(Math.Abs(v.y_ - y_) < tolerance);
+			return (Math.Abs(v.x_ - x_) < tolerance) && (Math.Abs(v.y_ - y_) < tolerance);
 		}
 
 		public readonly bool ApproxEquals(Vector2 v)

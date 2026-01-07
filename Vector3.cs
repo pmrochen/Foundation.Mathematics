@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 
 namespace Foundation.Mathematics
 {
-#if SIMD && !SIMD_VECTOR4
+#if SIMD
 	[StructLayout(LayoutKind.Sequential, Size = 16)]
 #endif
 	[Serializable]
@@ -19,59 +19,6 @@ namespace Foundation.Mathematics
 	public struct Vector3 : ISerializable, IFormattable, IEquatable<Vector3>
 	{
 #if SIMD
-#if SIMD_VECTOR4
-		public static readonly Vector3 Zero = new Vector3(System.Numerics.Vector4.Zero);
-		public static readonly Vector3 UnitX = new Vector3(System.Numerics.Vector4.UnitX);
-		public static readonly Vector3 UnitY = new Vector3(System.Numerics.Vector4.UnitY);
-		public static readonly Vector3 UnitZ = new Vector3(0f, 0f, 1f);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector3(float scalar)
-		{
-			xyz_ = new System.Numerics.Vector4(scalar);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector3(float x, float y, float z)
-		{
-			xyz_ = new System.Numerics.Vector4(x, y, z, z);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector3(Vector2 v, float z)
-		{
-			xyz_ = new System.Numerics.Vector4(v.xy_.X, v.xy_.Y, z, z);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector3(float[] v)
-		{
-			xyz_ = new System.Numerics.Vector4(v[0], v[1], v[2], v[2]);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal Vector3(System.Numerics.Vector3 v)
-		{
-			xyz_ = new System.Numerics.Vector4(v.X, v.Y, v.Z, v.Z);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal Vector3(System.Numerics.Vector4 v)
-		{
-			xyz_ = v;
-		}
-
-		private Vector3(SerializationInfo info, StreamingContext context)
-		{
-			float z = info.GetSingle("Z");
-			xyz_ = new System.Numerics.Vector4(info.GetSingle("X"), info.GetSingle("Y"), z, z);
-		}
-
-		public static implicit operator Vector3(Vector2 v)
-		{
-			return new Vector3(new System.Numerics.Vector4(v.xy_.X, v.xy_.Y, 0f, 0f));
-		}
-#else
 		public static readonly Vector3 Zero = new Vector3(System.Numerics.Vector3.Zero);
 		public static readonly Vector3 UnitX = new Vector3(System.Numerics.Vector3.UnitX);
 		public static readonly Vector3 UnitY = new Vector3(System.Numerics.Vector3.UnitY);
@@ -116,7 +63,6 @@ namespace Foundation.Mathematics
 		{
 			return new Vector3(new System.Numerics.Vector3(v.xy_, 0f));
 		}
-#endif
 
 		public float X
 		{
@@ -136,67 +82,6 @@ namespace Foundation.Mathematics
 			set => xyz_.Z = value;
 		}
 
-#if SIMD_VECTOR4
-		[Browsable(false)]
-		public Vector2 XY
-		{
-			readonly get => new Vector2(xyz_.X, xyz_.Y);
-			set => xyz_ = new System.Numerics.Vector4(value.xy_.X, value.xy_.Y, xyz_.Z, xyz_.W);
-		}
-
-		[Browsable(false)]
-		public float Magnitude
-		{
-			readonly get => AsVector3.Length();
-			set
-			{
-				float m = AsVector3.Length();
-				if (m > 0f)
-					this *= value/m;
-			}
-		}
-
-		[Browsable(false)]
-		public readonly float MagnitudeSquared => AsVector3.LengthSquared();
-
-		[Browsable(false)]
-		public float Length
-		{
-			readonly get => AsVector3.Length();
-			set
-			{
-				float m = AsVector3.Length();
-				if (m > 0f)
-					this *= value/m;
-			}
-		}
-
-		[Browsable(false)]
-		public readonly float LengthSquared => AsVector3.LengthSquared();
-
-		public readonly override bool Equals(object other)
-		{
-			return (other is Vector3 rhs) && (AsVector3 == rhs.AsVector3);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public readonly bool Equals(Vector3 other)
-		{
-			return (AsVector3 == other.AsVector3);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool operator ==(Vector3 lhs, Vector3 rhs)
-		{
-			return (lhs.AsVector3 == rhs.AsVector3);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool operator !=(Vector3 lhs, Vector3 rhs)
-		{
-			return (lhs.AsVector3 != rhs.AsVector3);
-		}
-#else
 		[Browsable(false)]
 		public Vector2 XY
 		{
@@ -256,7 +141,6 @@ namespace Foundation.Mathematics
 		{
 			return (lhs.xyz_ != rhs.xyz_);
 		}
-#endif
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 operator +(Vector3 v)
@@ -313,86 +197,6 @@ namespace Foundation.Mathematics
 			//return new Vector3(vx*m.row0_ + vy*m.row1_ + vz*m.row2_);
 		}
 
-#if SIMD_VECTOR4
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 operator /(Vector3 c, Vector3 d)
-		{
-			return new Vector3(c.AsVector3/d.AsVector3);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 operator /(Vector3 c, float f)
-		{
-			return new Vector3(c.AsVector3/f);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 operator /(float f, Vector3 c)
-		{
-			return new Vector3(new System.Numerics.Vector3(f)/c.AsVector3);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 Abs(Vector3 v)
-		{
-			return new Vector3(System.Numerics.Vector4.Abs(v.xyz_));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float Dot(Vector3 u, Vector3 v)
-		{
-			return System.Numerics.Vector3.Dot(u.AsVector3, v.AsVector3);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 Cross(Vector3 u, Vector3 v)
-		{
-			return new Vector3(System.Numerics.Vector3.Cross(u.AsVector3, v.AsVector3));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float Distance(Vector3 u, Vector3 v)
-		{
-			return System.Numerics.Vector3.Distance(u.AsVector3, v.AsVector3);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float DistanceSquared(Vector3 u, Vector3 v)
-		{
-			return System.Numerics.Vector3.DistanceSquared(u.AsVector3, v.AsVector3);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 Min(Vector3 c, Vector3 d)
-		{
-			return new Vector3(System.Numerics.Vector4.Min(c.xyz_, d.xyz_));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 Max(Vector3 c, Vector3 d)
-		{
-			return new Vector3(System.Numerics.Vector4.Max(c.xyz_, d.xyz_));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 Clamp(Vector3 c, Vector3 low, Vector3 high)
-		{
-			return new Vector3(System.Numerics.Vector4.Clamp(c.xyz_, low.xyz_, high.xyz_));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 Lerp(Vector3 c, Vector3 d, float t)
-		{
-			return new Vector3(System.Numerics.Vector4.Lerp(c.xyz_, d.xyz_, t));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 Normalize(Vector3 v)
-		{
-			float m = v.AsVector3.Length();
-			return (m > 0f) ? new Vector3(v.xyz_/m) : v;
-		}
-#else
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 operator /(Vector3 c, Vector3 d)
 		{
@@ -409,6 +213,42 @@ namespace Foundation.Mathematics
 		public static Vector3 operator /(float f, Vector3 c)
 		{
 			return new Vector3(new System.Numerics.Vector3(f)/c.xyz_);
+		}
+
+		public float this[int index] // #TODO Use System.Numerics.Vector3 indexing operator
+		{
+			readonly get
+			{
+				switch (index)
+				{
+					case 0:
+						return xyz_.X;
+					case 1:
+						return xyz_.Y;
+					case 2:
+						return xyz_.Z;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
+
+			set
+			{
+				switch (index)
+				{
+					case 0:
+						xyz_.X = value;
+						break;
+					case 1:
+						xyz_.Y = value;
+						break;
+					case 2:
+						xyz_.Z = value;
+						break;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -471,13 +311,12 @@ namespace Foundation.Mathematics
 			float m = v.xyz_.Length();
 			return (m > 0f) ? new Vector3(v.xyz_/m) : v;
 		}
-#endif
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector3 Scale(Vector3 v, Vector3 s)
-		{
-			return new Vector3(v.xyz_*s.xyz_);
-		}
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//public static Vector3 Scale(Vector3 v, Vector3 s)
+		//{
+		//	return new Vector3(v.xyz_*s.xyz_);
+		//}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 Transform(Vector3 v, in Matrix3 m)
@@ -513,11 +352,11 @@ namespace Foundation.Mathematics
 				xyz_ /= m;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Scale(Vector3 v)
-		{
-			xyz_ *= v.xyz_;
-		}
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//public void Scale(Vector3 v)
+		//{
+		//	xyz_ *= v.xyz_;
+		//}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Transform(in Matrix3 m)
@@ -549,13 +388,7 @@ namespace Foundation.Mathematics
 		internal readonly float y_ => xyz_.Y;
 		internal readonly float z_ => xyz_.Z;
 
-#if SIMD_VECTOR4
-		internal readonly System.Numerics.Vector3 AsVector3 => new System.Numerics.Vector3(xyz_.X, xyz_.Y, xyz_.Z);
-
-		internal System.Numerics.Vector4 xyz_;
-#else
 		internal System.Numerics.Vector3 xyz_;
-#endif
 #else
 		public static readonly Vector3 Zero = new Vector3(0f, 0f, 0f);
 		public static readonly Vector3 UnitX = new Vector3(1f, 0f, 0f);
@@ -676,32 +509,32 @@ namespace Foundation.Mathematics
 			return (x_ == other.x_) && (y_ == other.y_) && (z_ == other.z_);
 		}
 		
-		public static bool operator==(Vector3 lhs, Vector3 rhs)
+		public static bool operator ==(Vector3 lhs, Vector3 rhs)
 		{
 			return (lhs.x_ == rhs.x_) && (lhs.y_ == rhs.y_) && (lhs.z_ == rhs.z_);
 		}
 
-		public static bool operator!=(Vector3 lhs, Vector3 rhs)
+		public static bool operator !=(Vector3 lhs, Vector3 rhs)
 		{
 			return (lhs.x_ != rhs.x_) || (lhs.y_ != rhs.y_) || (lhs.z_ != rhs.z_);
 		}
 
-		public static Vector3 operator+(Vector3 v)
+		public static Vector3 operator +(Vector3 v)
 		{
 			return v;
 		}
 
-		public static Vector3 operator-(Vector3 v)
+		public static Vector3 operator -(Vector3 v)
 		{
 			return new Vector3(-v.x_, -v.y_, -v.z_);
 		}
 
-		public static Vector3 operator+(Vector3 u, Vector3 v)
+		public static Vector3 operator +(Vector3 u, Vector3 v)
 		{
 			return new Vector3(u.x_ + v.x_, u.y_ + v.y_, u.z_ + v.z_);
 		}
 
-		public static Vector3 operator-(Vector3 u, Vector3 v)
+		public static Vector3 operator -(Vector3 u, Vector3 v)
 		{
 			return new Vector3(u.x_ - v.x_, u.y_ - v.y_, u.z_ - v.z_);
 		}
@@ -711,17 +544,17 @@ namespace Foundation.Mathematics
 			return new Vector3(u.x_*v.x_, u.y_*v.y_, u.z_*v.z_);
 		}
 
-		public static Vector3 operator*(Vector3 v, float f)
+		public static Vector3 operator *(Vector3 v, float f)
 		{
 			return new Vector3(v.x_*f, v.y_*f, v.z_*f);
 		}
 
-		public static Vector3 operator*(float f, Vector3 v)
+		public static Vector3 operator *(float f, Vector3 v)
 		{
 			return new Vector3(f*v.x_, f*v.y_, f*v.z_);
 		}
 
-		public static Vector3 operator*(Vector3 v, in Matrix3 m)
+		public static Vector3 operator *(Vector3 v, in Matrix3 m)
 		{
 			return new Vector3(v.x_*m.m00_ + v.y_*m.m10_ + v.z_*m.m20_,
 				v.x_*m.m01_ + v.y_*m.m11_ + v.z_*m.m21_,
@@ -740,14 +573,50 @@ namespace Foundation.Mathematics
 			return new Vector3(u.x_/v.x_, u.y_/v.y_, u.z_/v.z_);
 		}
 
-		public static Vector3 operator/(Vector3 v, float f)
+		public static Vector3 operator /(Vector3 v, float f)
 		{
 			return new Vector3(v.x_/f, v.y_/f, v.z_/f);
 		}
 
-		public static Vector3 operator/(float f, Vector3 v)
+		public static Vector3 operator /(float f, Vector3 v)
 		{
 			return new Vector3(f/v.x_, f/v.y_, f/v.z_);
+		}
+
+		public float this[int index]
+		{
+			readonly get
+			{
+				switch (index)
+				{
+					case 0:
+						return x_;
+					case 1:
+						return y_;
+					case 2:
+						return z_;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
+
+			set
+			{
+				switch (index)
+				{
+					case 0:
+						x_ = value;
+						break;
+					case 1:
+						y_ = value;
+						break;
+					case 2:
+						z_ = value;
+						break;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
 		}
 
 		public static Vector3 Abs(Vector3 v)
@@ -802,10 +671,10 @@ namespace Foundation.Mathematics
 			return (m > 0f) ? new Vector3(v.x_/m, v.y_/m, v.z_/m) : v;
 		}
 
-		public static Vector3 Scale(Vector3 v, Vector3 s)
-		{
-			return new Vector3(v.x_*s.x_, v.y_*s.y_, v.z_*s.z_);
-		}
+		//public static Vector3 Scale(Vector3 v, Vector3 s)
+		//{
+		//	return new Vector3(v.x_*s.x_, v.y_*s.y_, v.z_*s.z_);
+		//}
 
 		public static Vector3 Transform(Vector3 v, in Matrix3 m)
 		{
@@ -832,12 +701,12 @@ namespace Foundation.Mathematics
 			}
 		}
 
-		public void Scale(Vector3 v)
-		{
-			x_ *= v.x_;
-			y_ *= v.y_;
-			z_ *= v.z_;
-		}
+		//public void Scale(Vector3 v)
+		//{
+		//	x_ *= v.x_;
+		//	y_ *= v.y_;
+		//	z_ *= v.z_;
+		//}
 
 		public void Transform(in Matrix3 m)
 		{
@@ -867,64 +736,25 @@ namespace Foundation.Mathematics
 			info.AddValue("Z", z_);
 		}
 
-		public float this[int index]
-		{
-			readonly get
-			{
-				switch (index)
-				{
-					case 0:
-						return x_;
-					case 1:
-						return y_;
-					case 2:
-						return z_;
-					default:
-						throw new IndexOutOfRangeException();
-				}
-			}
-
-			set
-			{
-				switch (index)
-				{
-					case 0:
-						X = value;
-						break;
-					case 1:
-						Y = value;
-						break;
-					case 2:
-						Z = value;
-						break;
-					default:
-						throw new IndexOutOfRangeException();
-				}
-			}
-		}
-
 		public static explicit operator Vector3(IntVector3 v)
 		{
 			return new Vector3((float)v.x_, (float)v.y_, (float)v.z_);
 		}
 
 		[Browsable(false)]
-		public readonly Vector2 XZ
-		{
-			get { return new Vector2(x_, z_); }
-		}
+		public readonly Vector2 XZ => new Vector2(x_, z_);
 
 		[Browsable(false)]
-		public readonly Vector2 ZY
-		{
-			get { return new Vector2(z_, y_); }
-		}
+		public readonly Vector2 ZY => new Vector2(z_, y_);
 
 		[Browsable(false)]
-		public readonly bool IsFinite
-		{
-			get { return Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_); }
-		}
+		public readonly Vector3 YZX => new Vector3(y_, z_, x_);
+
+		[Browsable(false)]
+		public readonly Vector3 ZXY => new Vector3(z_, x_, y_);
+
+		[Browsable(false)]
+		public readonly bool IsFinite => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_);
 
 		[Browsable(false)]
 		public readonly Axis MajorAxis

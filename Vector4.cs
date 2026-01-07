@@ -33,25 +33,6 @@ namespace Foundation.Mathematics
 			xyzw_ = new System.Numerics.Vector4(x, y, z, w);
 		}
 
-#if SIMD_VECTOR4
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector4(Vector2 v, float z, float w)
-		{
-			xyzw_ = new System.Numerics.Vector4(v.xy_.X, v.xy_.Y, z, w);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector4(Vector2 xy, Vector2 zw)
-		{
-			xyzw_ = new System.Numerics.Vector4(xy.xy_.X, xy.xy_.Y, zw.xy_.X, zw.xy_.Y);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector4(Vector3 v, float w)
-		{
-			xyzw_ = new System.Numerics.Vector4(v.xyz_.X, v.xyz_.Y, v.xyz_.Z, w);
-		}
-#else
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Vector4(Vector2 v, float z, float w)
 		{
@@ -69,7 +50,6 @@ namespace Foundation.Mathematics
 		{
 			xyzw_ = new System.Numerics.Vector4(v.xyz_, w);
 		}
-#endif
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Vector4(float[] v)
@@ -78,7 +58,7 @@ namespace Foundation.Mathematics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector4(System.Numerics.Vector4 v)
+		internal Vector4(System.Numerics.Vector4 v)
 		{
 			xyzw_ = v;
 		}
@@ -88,17 +68,6 @@ namespace Foundation.Mathematics
 			xyzw_ = new System.Numerics.Vector4(info.GetSingle("X"), info.GetSingle("Y"), info.GetSingle("Z"), info.GetSingle("W"));
 		}
 
-#if SIMD_VECTOR4
-		public static implicit operator Vector4(Vector2 v)
-		{
-			return new Vector4(new System.Numerics.Vector4(v.xy_.X, v.xy_.Y, 0f, 1f));
-		}
-
-		public static implicit operator Vector4(Vector3 v)
-		{
-			return new Vector4(new System.Numerics.Vector4(v.xyz_.X, v.xyz_.Y, v.xyz_.Z, 1f));
-		}
-#else
 		public static implicit operator Vector4(Vector2 v)
 		{
 			return new Vector4(new System.Numerics.Vector4(v.xy_, 0f, 1f));
@@ -108,7 +77,6 @@ namespace Foundation.Mathematics
 		{
 			return new Vector4(new System.Numerics.Vector4(v.xyz_, 1f));
 		}
-#endif
 
 		public float X
 		{
@@ -134,21 +102,6 @@ namespace Foundation.Mathematics
 			set => xyzw_.W = value;
 		}
 
-#if SIMD_VECTOR4
-		[Browsable(false)]
-		public Vector2 XY
-		{
-			readonly get => new Vector2(xyzw_.X, xyzw_.Y);
-			set => xyzw_ = new System.Numerics.Vector4(value.xy_.X, value.xy_.Y, xyzw_.Z, xyzw_.W);
-		}
-
-		[Browsable(false)]
-		public Vector3 XYZ
-		{
-			readonly get => new Vector3(xyzw_.X, xyzw_.Y, xyzw_.Z);
-			set => xyzw_ = new System.Numerics.Vector4(value.xyz_.X, value.xyz_.Y, value.xyz_.Z, xyzw_.W);
-		}
-#else
 		[Browsable(false)]
 		public Vector2 XY
 		{
@@ -162,7 +115,6 @@ namespace Foundation.Mathematics
 			readonly get => new Vector3(xyzw_.X, xyzw_.Y, xyzw_.Z);
 			set => xyzw_ = new System.Numerics.Vector4(value.xyz_, xyzw_.W);
 		}
-#endif
 
 		[Browsable(false)]
 		public float Magnitude
@@ -290,6 +242,47 @@ namespace Foundation.Mathematics
 		public static Vector4 operator /(float f, Vector4 c)
 		{
 			return new Vector4(new System.Numerics.Vector4(f)/c.xyzw_);
+		}
+
+		public float this[int index] // #TODO Use System.Numerics.Vector4 indexing operator
+		{
+			readonly get
+			{
+				switch (index)
+				{
+					case 0:
+						return xyzw_.X;
+					case 1:
+						return xyzw_.Y;
+					case 2:
+						return xyzw_.Z;
+					case 3:
+						return xyzw_.W;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
+
+			set
+			{
+				switch (index)
+				{
+					case 0:
+						xyzw_.X = value;
+						break;
+					case 1:
+						xyzw_.Y = value;
+						break;
+					case 2:
+						xyzw_.Z = value;
+						break;
+					case 3:
+						xyzw_.W = value;
+						break;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -551,32 +544,32 @@ namespace Foundation.Mathematics
 			return (x_ == other.x_) && (y_ == other.y_) && (z_ == other.z_) && (w_ == other.w_);
 		}
 		
-		public static bool operator==(Vector4 lhs, Vector4 rhs)
+		public static bool operator ==(Vector4 lhs, Vector4 rhs)
 		{
 			return (lhs.x_ == rhs.x_) && (lhs.y_ == rhs.y_) && (lhs.z_ == rhs.z_) && (lhs.w_ == rhs.w_);
 		}
 
-		public static bool operator!=(Vector4 lhs, Vector4 rhs)
+		public static bool operator !=(Vector4 lhs, Vector4 rhs)
 		{
 			return (lhs.x_ != rhs.x_) || (lhs.y_ != rhs.y_) || (lhs.z_ != rhs.z_) || (lhs.w_ != rhs.w_);
 		}
 
-		public static Vector4 operator+(Vector4 v)
+		public static Vector4 operator +(Vector4 v)
 		{
 			return v;
 		}
 
-		public static Vector4 operator-(Vector4 v)
+		public static Vector4 operator -(Vector4 v)
 		{
 			return new Vector4(-v.x_, -v.y_, -v.z_, -v.w_);
 		}
 
-		public static Vector4 operator+(Vector4 u, Vector4 v)
+		public static Vector4 operator +(Vector4 u, Vector4 v)
 		{
 			return new Vector4(u.x_ + v.x_, u.y_ + v.y_, u.z_ + v.z_, u.w_ + v.w_);
 		}
 
-		public static Vector4 operator-(Vector4 u, Vector4 v)
+		public static Vector4 operator -(Vector4 u, Vector4 v)
 		{
 			return new Vector4(u.x_ - v.x_, u.y_ - v.y_, u.z_ - v.z_, u.w_ - v.w_);
 		}
@@ -586,17 +579,17 @@ namespace Foundation.Mathematics
 			return new Vector4(u.x_*v.x_, u.y_*v.y_, u.z_*v.z_, u.w_*v.w_);
 		}
 
-		public static Vector4 operator*(Vector4 v, float f)
+		public static Vector4 operator *(Vector4 v, float f)
 		{
 			return new Vector4(v.x_*f, v.y_*f, v.z_*f, v.w_*f);
 		}
 
-		public static Vector4 operator*(float f, Vector4 v)
+		public static Vector4 operator *(float f, Vector4 v)
 		{
 			return new Vector4(f*v.x_, f*v.y_, f*v.z_, f*v.w_);
 		}
 
-		public static Vector4 operator*(Vector4 v, in Matrix4 m)
+		public static Vector4 operator *(Vector4 v, in Matrix4 m)
 		{
 			return new Vector4(v.x_*m.m00_ + v.y_*m.m10_ + v.z_*m.m20_ + v.w_*m.m30_,
 				v.x_*m.m01_ + v.y_*m.m11_ + v.z_*m.m21_ + v.w_*m.m31_,
@@ -617,14 +610,55 @@ namespace Foundation.Mathematics
 			return new Vector4(u.x_/v.x_, u.y_/v.y_, u.z_/v.z_, u.w_/v.w_);
 		}
 
-		public static Vector4 operator/(Vector4 v, float f)
+		public static Vector4 operator /(Vector4 v, float f)
 		{
 			return new Vector4(v.x_/f, v.y_/f, v.z_/f, v.w_/f);
 		}
 
-		public static Vector4 operator/(float f, Vector4 v)
+		public static Vector4 operator /(float f, Vector4 v)
 		{
 			return new Vector4(f/v.x_, f/v.y_, f/v.z_, f/v.w_);
+		}
+
+		public float this[int index]
+		{
+			readonly get
+			{
+				switch (index)
+				{
+					case 0:
+						return x_;
+					case 1:
+						return y_;
+					case 2:
+						return z_;
+					case 3:
+						return w_;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
+
+			set
+			{
+				switch (index)
+				{
+					case 0:
+						x_ = value;
+						break;
+					case 1:
+						y_ = value;
+						break;
+					case 2:
+						z_ = value;
+						break;
+					case 3:
+						w_ = value;
+						break;
+					default:
+						throw new IndexOutOfRangeException();
+				}
+			}
 		}
 
 		public static Vector4 Abs(Vector4 v)
@@ -720,47 +754,6 @@ namespace Foundation.Mathematics
 			info.AddValue("W", w_);
 		}
 
-		public float this[int index]
-		{
-			readonly get
-			{
-				switch (index)
-				{
-					case 0:
-						return x_;
-					case 1:
-						return y_;
-					case 2:
-						return z_;
-					case 3:
-						return w_;
-					default:
-						throw new IndexOutOfRangeException();
-				}
-			}
-
-			set
-			{
-				switch (index)
-				{
-					case 0:
-						X = value;
-						break;
-					case 1:
-						Y = value;
-						break;
-					case 2:
-						Z = value;
-						break;
-					case 3:
-						W = value;
-						break;
-					default:
-						throw new IndexOutOfRangeException();
-				}
-			}
-		}
-
 		public static explicit operator Vector4(IntVector4 v)
 		{
 			return new Vector4((float)v.x_, (float)v.y_, (float)v.z_, (float)v.w_);
@@ -769,7 +762,7 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly bool IsFinite
 		{
-			get { return Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_) && Functions.IsFinite(w_); }
+			get => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_) && Functions.IsFinite(w_);
 		}
 
 		public readonly override int GetHashCode()
