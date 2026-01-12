@@ -30,7 +30,7 @@ namespace Foundation.Mathematics
 				string str = (string)obj;
 				Type objType = context.PropertyDescriptor.PropertyType;
 				double val = (str.Length > 0) ? 
-					Functions.Radians(Functions.ParseDouble(SingleConverter.CorrectDecimalSeparator(str, culture), culture)) :
+					Functions.Radians(Double.Parse(SingleConverter.CorrectDecimalSeparator(str, culture), culture)) :
 					0.0;
 				if (objType == typeof(float))
 					return (float)val;
