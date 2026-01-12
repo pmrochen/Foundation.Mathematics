@@ -93,5 +93,29 @@ namespace Foundation.Mathematics
 
 			return new Quaternion(s1*r1, c1*r1, s2*r2, c2*r2);
 		}
+
+		public static Matrix3 GetNextRotationMatrix()
+		{
+			//float d = Math.Clamp(range, 0f, 1f);
+			float theta = GetNext(0f, SingleConstants.TwoPi/* *d*/);
+			float phi = GetNext(0f, SingleConstants.TwoPi);
+			float m = GetNext(0f, 2f/* *d*/);
+
+			float r = MathF.Sqrt(m);
+			float sp = (float)Math.Sin(phi);
+			float cp = (float)Math.Cos(phi);
+			float vx = sp*r;
+			float vy = cp*r;
+			float vz = MathF.Sqrt(2f - m);
+
+			float st = (float)Math.Sin(theta);
+			float ct = (float)Math.Cos(theta);
+			float sx = vx*ct - vy*st;
+			float sy = vx*st + vy*ct;
+
+			return new Matrix3(vx*sx - ct, vx*sy - st, vx*vz,
+				vy*sx + st, vy*sy - ct, vy*vz,
+				vz*sx, vz*sy, 1f - m);
+		}
 	}
 }

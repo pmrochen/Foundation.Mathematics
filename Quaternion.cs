@@ -198,6 +198,11 @@ namespace Foundation.Mathematics
 			return new Quaternion(q.xyzw_/f);
 		}
 
+		public static Quaternion operator /(float f, Quaternion q)
+		{
+			return f*Inverse(q);
+		}
+
 		public float this[int index] // #TODO Use System.Numerics.Vector4 indexing operator
 		{
 			readonly get
@@ -376,13 +381,13 @@ namespace Foundation.Mathematics
 		public readonly float AbsoluteValue => MathF.Sqrt(x_*x_ + y_*y_ + z_*z_ + w_*w_);
 
 		[Browsable(false)]
-		public readonly float Norm => (x_*x_ + y_*y_ + z_*z_ + w_*w_);
+		public readonly float Norm => x_*x_ + y_*y_ + z_*z_ + w_*w_;
 
 		[Browsable(false)]
 		public readonly float Magnitude => MathF.Sqrt(x_*x_ + y_*y_ + z_*z_ + w_*w_);
 
 		[Browsable(false)]
-		public readonly float MagnitudeSquared => (x_*x_ + y_*y_ + z_*z_ + w_*w_);
+		public readonly float MagnitudeSquared => x_*x_ + y_*y_ + z_*z_ + w_*w_;
 
 		public readonly override bool Equals(object other)
 		{
@@ -464,6 +469,11 @@ namespace Foundation.Mathematics
 		public static Quaternion operator /(Quaternion q, float f)
 		{
 			return new Quaternion(q.x_/f, q.y_/f, q.z_/f, q.w_/f);
+		}
+
+		public static Quaternion operator /(float f, Quaternion q)
+		{
+			return f*Inverse(q);
 		}
 
 		public float this[int index]
@@ -594,11 +604,6 @@ namespace Foundation.Mathematics
 		public readonly bool IsFinite
 		{
 			get => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_) && Functions.IsFinite(w_);
-		}
-
-		public static Quaternion operator /(float f, Quaternion q)
-		{
-			return f*Inverse(q);
 		}
 
 		public readonly override int GetHashCode()
@@ -921,7 +926,6 @@ namespace Foundation.Mathematics
 			Vector3 v1 = Vector3.Normalize(u);
 			Vector3 v2 = Vector3.Normalize(v);
 			Vector3 h = Vector3.Normalize(v1 + v2);
-
 			return new Quaternion(Vector3.Cross(v1, h), Vector3.Dot(v1, h));
 		}
 
