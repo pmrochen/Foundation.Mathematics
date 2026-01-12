@@ -187,14 +187,11 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 operator *(Vector3 v, in Matrix3 m)
 		{
-			return new Vector3(System.Numerics.Vector3.Dot(v.xyz_, m.column0_),
-				System.Numerics.Vector3.Dot(v.xyz_, m.column1_),
-				System.Numerics.Vector3.Dot(v.xyz_, m.column2_));
+			//return new Vector3(System.Numerics.Vector3.Dot(v.xyz_, m.column0_),
+			//	System.Numerics.Vector3.Dot(v.xyz_, m.column1_),
+			//	System.Numerics.Vector3.Dot(v.xyz_, m.column2_));
 
-			//System.Numerics.Vector3 vx = new System.Numerics.Vector3(v.xyz_.X);
-			//System.Numerics.Vector3 vy = new System.Numerics.Vector3(v.xyz_.Y);
-			//System.Numerics.Vector3 vz = new System.Numerics.Vector3(v.xyz_.Z);
-			//return new Vector3(vx*m.row0_ + vy*m.row1_ + vz*m.row2_);
+			return new Vector3(v.xyz_.X*m.row0_ + v.xyz_.Y*m.row1_ + v.xyz_.Z*m.row2_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -269,6 +266,11 @@ namespace Foundation.Mathematics
 			return new Vector3(System.Numerics.Vector3.Cross(u.xyz_, v.xyz_));
 		}
 
+		public static Matrix3 Tensor(Vector3 u, Vector3 v)
+		{
+			return new Matrix3(u.xyz_.X*v.xyz_, u.xyz_.Y*v.xyz_, u.xyz_.Z*v.xyz_);
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Distance(Vector3 u, Vector3 v)
 		{
@@ -321,27 +323,21 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 Transform(Vector3 v, in Matrix3 m)
 		{
-			return new Vector3(System.Numerics.Vector3.Dot(v.xyz_, m.column0_),
-				System.Numerics.Vector3.Dot(v.xyz_, m.column1_),
-				System.Numerics.Vector3.Dot(v.xyz_, m.column2_));
+			//return new Vector3(System.Numerics.Vector3.Dot(v.xyz_, m.column0_),
+			//	System.Numerics.Vector3.Dot(v.xyz_, m.column1_),
+			//	System.Numerics.Vector3.Dot(v.xyz_, m.column2_));
 
-			//System.Numerics.Vector3 vx = new System.Numerics.Vector3(v.xyz_.X);
-			//System.Numerics.Vector3 vy = new System.Numerics.Vector3(v.xyz_.Y);
-			//System.Numerics.Vector3 vz = new System.Numerics.Vector3(v.xyz_.Z);
-			//return new Vector3(vx*m.row0_ + vy*m.row1_ + vz*m.row2_);
+			return new Vector3(v.xyz_.X*m.row0_ + v.xyz_.Y*m.row1_ + v.xyz_.Z*m.row2_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 Transform(Vector3 v, in AffineTransform t)
 		{
-			return new Vector3(System.Numerics.Vector4.Dot(new System.Numerics.Vector4(v.xyz_, 1f), t.column0_),
-				System.Numerics.Vector4.Dot(new System.Numerics.Vector4(v.xyz_, 1f), t.column1_),
-				System.Numerics.Vector4.Dot(new System.Numerics.Vector4(v.xyz_, 1f), t.column2_));
+			//return new Vector3(System.Numerics.Vector4.Dot(new System.Numerics.Vector4(v.xyz_, 1f), t.column0_),
+			//	System.Numerics.Vector4.Dot(new System.Numerics.Vector4(v.xyz_, 1f), t.column1_),
+			//	System.Numerics.Vector4.Dot(new System.Numerics.Vector4(v.xyz_, 1f), t.column2_));
 
-			//System.Numerics.Vector3 vx = new System.Numerics.Vector3(v.xyz_.X);
-			//System.Numerics.Vector3 vy = new System.Numerics.Vector3(v.xyz_.Y);
-			//System.Numerics.Vector3 vz = new System.Numerics.Vector3(v.xyz_.Z);
-			//return new Vector3(vx*t.Right.xyz_ + vy*t.Up.xyz_ + vz*t.Forward.xyz_ + t.Origin.xyz_);
+			return new Vector3(v.xyz_.X*t.row0_ + v.xyz_.Y*t.row1_ + v.xyz_.Z*t.row2_ + t.row3_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -361,27 +357,21 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Transform(in Matrix3 m)
 		{
-			xyz_ = new System.Numerics.Vector3(System.Numerics.Vector3.Dot(xyz_, m.column0_),
-				System.Numerics.Vector3.Dot(xyz_, m.column1_),
-				System.Numerics.Vector3.Dot(xyz_, m.column2_));
+			//xyz_ = new System.Numerics.Vector3(System.Numerics.Vector3.Dot(xyz_, m.column0_),
+			//	System.Numerics.Vector3.Dot(xyz_, m.column1_),
+			//	System.Numerics.Vector3.Dot(xyz_, m.column2_));
 
-			//System.Numerics.Vector3 vx = new System.Numerics.Vector3(xyz_.X);
-			//System.Numerics.Vector3 vy = new System.Numerics.Vector3(xyz_.Y);
-			//System.Numerics.Vector3 vz = new System.Numerics.Vector3(xyz_.Z);
-			//xyz_ = vx*m.row0_ + vy*m.row1_ + vz*m.row2_;
+			xyz_ = xyz_.X*m.row0_ + xyz_.Y*m.row1_ + xyz_.Z*m.row2_;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Transform(in AffineTransform t)
 		{
-			xyz_ = new System.Numerics.Vector3(System.Numerics.Vector4.Dot(new System.Numerics.Vector4(xyz_, 1f), t.column0_),
-				System.Numerics.Vector4.Dot(new System.Numerics.Vector4(xyz_, 1f), t.column1_),
-				System.Numerics.Vector4.Dot(new System.Numerics.Vector4(xyz_, 1f), t.column2_));
+			//xyz_ = new System.Numerics.Vector3(System.Numerics.Vector4.Dot(new System.Numerics.Vector4(xyz_, 1f), t.column0_),
+			//	System.Numerics.Vector4.Dot(new System.Numerics.Vector4(xyz_, 1f), t.column1_),
+			//	System.Numerics.Vector4.Dot(new System.Numerics.Vector4(xyz_, 1f), t.column2_));
 
-			//System.Numerics.Vector3 vx = new System.Numerics.Vector3(xyz_.X);
-			//System.Numerics.Vector3 vy = new System.Numerics.Vector3(xyz_.Y);
-			//System.Numerics.Vector3 vz = new System.Numerics.Vector3(xyz_.Z);
-			//xyz_ = vx*t.Right.xyz_ + vy*t.Up.xyz_ + vz*t.Forward.xyz_ + t.Origin.xyz_;
+			xyz_ = xyz_.X*t.row0_ + xyz_.Y*t.row1_ + xyz_.Z*t.row2_ + t.row3_;
 		}
 
 		internal readonly float x_ => xyz_.X;
@@ -437,33 +427,37 @@ namespace Foundation.Mathematics
 
 		public float X
 		{
-			readonly get { return x_; }
-			set { x_ = value; }
+			readonly get => x_;
+			set => x_ = value;
 		}
 
 		public float Y
 		{
-			readonly get { return y_; }
-			set { y_ = value; }
+			readonly get => y_;
+			set => y_ = value;
 		}
 
 		public float Z
 		{
-			readonly get { return z_; }
-			set { z_ = value; }
+			readonly get => z_;
+			set => z_ = value;
 		}
 
 		[Browsable(false)]
 		public Vector2 XY
 		{
-			readonly get { return new Vector2(x_, y_); }
-			set { x_ = value.x_; y_ = value.y_; }
+			readonly get => new Vector2(x_, y_);
+			set 
+			{ 
+				x_ = value.x_; 
+				y_ = value.y_; 
+			}
 		}
 
 		[Browsable(false)]
 		public float Magnitude
 		{
-			readonly get { return MathF.Sqrt(x_*x_ + y_*y_ + z_*z_); }
+			readonly get => MathF.Sqrt(x_*x_ + y_*y_ + z_*z_);
 			set
 			{
 				float m = MathF.Sqrt(x_*x_ + y_*y_ + z_*z_);
@@ -473,15 +467,12 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float MagnitudeSquared
-		{
-			get { return (x_*x_ + y_*y_ + z_*z_); }
-		}
+		public readonly float MagnitudeSquared => x_*x_ + y_*y_ + z_*z_;
 
 		[Browsable(false)]
 		public float Length
 		{
-			readonly get { return MathF.Sqrt(x_*x_ + y_*y_ + z_*z_); }
+			readonly get => MathF.Sqrt(x_*x_ + y_*y_ + z_*z_);
 			set
 			{
 				float m = MathF.Sqrt(x_*x_ + y_*y_ + z_*z_);
@@ -491,10 +482,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float LengthSquared
-		{
-			get { return (x_*x_ + y_*y_ + z_*z_); }
-		}
+		public readonly float LengthSquared => x_*x_ + y_*y_ + z_*z_;
 
 		public readonly override bool Equals(object other)
 		{
@@ -632,6 +620,11 @@ namespace Foundation.Mathematics
 		public static Vector3 Cross(Vector3 u, Vector3 v)
 		{
 			return new Vector3(u.y_*v.z_ - u.z_*v.y_, u.z_*v.x_ - u.x_*v.z_, u.x_*v.y_ - u.y_*v.x_);
+		}
+
+		public static Matrix3 Tensor(Vector3 u, Vector3 v)
+		{
+			return new Matrix3(u.x_*v.x_, u.x_*v.y_, u.x_*v.z_, u.y_*v.x_, u.y_*v.y_, u.y_*v.z_, u.z_*v.x_, u.z_*v.y_, u.z_*v.z_);
 		}
 
 		public static float Distance(Vector3 u, Vector3 v)
@@ -884,11 +877,6 @@ namespace Foundation.Mathematics
 		public static Vector3 FromAxis(Axis axis)
 		{
 			return new Vector3((axis == Axis.X) ? 1f : 0f, (axis == Axis.Y) ? 1f : 0f, (axis == Axis.Z) ? 1f : 0f);
-		}
-
-		public static Matrix3 Tensor(Vector3 u, Vector3 v)
-		{
-			return new Matrix3(u.x_*v.x_, u.x_*v.y_, u.x_*v.z_, u.y_*v.x_, u.y_*v.y_, u.y_*v.z_, u.z_*v.x_, u.z_*v.y_, u.z_*v.z_);
 		}
 
 		public static float Angle(Vector3 u, Vector3 v)

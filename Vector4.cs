@@ -214,16 +214,12 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4 operator *(Vector4 v, in Matrix4 m)
 		{
-			return new Vector4(System.Numerics.Vector4.Dot(v.xyzw_, m.column0_),
-				System.Numerics.Vector4.Dot(v.xyzw_, m.column1_),
-				System.Numerics.Vector4.Dot(v.xyzw_, m.column2_),
-				System.Numerics.Vector4.Dot(v.xyzw_, m.column3_));
+			//return new Vector4(System.Numerics.Vector4.Dot(v.xyzw_, m.column0_),
+			//	System.Numerics.Vector4.Dot(v.xyzw_, m.column1_),
+			//	System.Numerics.Vector4.Dot(v.xyzw_, m.column2_),
+			//	System.Numerics.Vector4.Dot(v.xyzw_, m.column3_));
 
-			//System.Numerics.Vector4 vx = new System.Numerics.Vector4(v.xyzw_.X);
-			//System.Numerics.Vector4 vy = new System.Numerics.Vector4(v.xyzw_.Y);
-			//System.Numerics.Vector4 vz = new System.Numerics.Vector4(v.xyzw_.Z);
-			//System.Numerics.Vector4 vw = new System.Numerics.Vector4(v.xyzw_.W);
-			//return new Vector4(vx*m.row0_ + vy*m.row1_ + vz*m.row2_ + vw*m.row3_);
+			return new Vector4(v.xyzw_.X*m.row0_ + v.xyzw_.Y*m.row1_ + v.xyzw_.Z*m.row2_ + v.xyzw_.W*m.row3_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -297,6 +293,11 @@ namespace Foundation.Mathematics
 			return System.Numerics.Vector4.Dot(u.xyzw_, v.xyzw_);
 		}
 
+		public static Matrix4 Tensor(Vector4 u, Vector4 v)
+		{
+			return new Matrix4(u.xyzw_.X*v.xyzw_, u.xyzw_.Y*v.xyzw_, u.xyzw_.Z*v.xyzw_, u.xyzw_.W*v.xyzw_);
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Distance(Vector4 u, Vector4 v)
 		{
@@ -343,16 +344,12 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4 Transform(Vector4 v, in Matrix4 m)
 		{
-			return new Vector4(System.Numerics.Vector4.Dot(v.xyzw_, m.column0_),
-				System.Numerics.Vector4.Dot(v.xyzw_, m.column1_),
-				System.Numerics.Vector4.Dot(v.xyzw_, m.column2_),
-				System.Numerics.Vector4.Dot(v.xyzw_, m.column3_));
+			//return new Vector4(System.Numerics.Vector4.Dot(v.xyzw_, m.column0_),
+			//	System.Numerics.Vector4.Dot(v.xyzw_, m.column1_),
+			//	System.Numerics.Vector4.Dot(v.xyzw_, m.column2_),
+			//	System.Numerics.Vector4.Dot(v.xyzw_, m.column3_));
 
-			//System.Numerics.Vector4 vx = new System.Numerics.Vector4(v.xyzw_.X);
-			//System.Numerics.Vector4 vy = new System.Numerics.Vector4(v.xyzw_.Y);
-			//System.Numerics.Vector4 vz = new System.Numerics.Vector4(v.xyzw_.Z);
-			//System.Numerics.Vector4 vw = new System.Numerics.Vector4(v.xyzw_.W);
-			//return new Vector4(vx*m.row0_ + vy*m.row1_ + vz*m.row2_ + vw*m.row3_);
+			return new Vector4(v.xyzw_.X*m.row0_ + v.xyzw_.Y*m.row1_ + v.xyzw_.Z*m.row2_ + v.xyzw_.W*m.row3_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -366,16 +363,12 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Transform(in Matrix4 m)
 		{
-			xyzw_ = new System.Numerics.Vector4(System.Numerics.Vector4.Dot(xyzw_, m.column0_),
-				System.Numerics.Vector4.Dot(xyzw_, m.column1_),
-				System.Numerics.Vector4.Dot(xyzw_, m.column2_),
-				System.Numerics.Vector4.Dot(xyzw_, m.column3_));
+			//xyzw_ = new System.Numerics.Vector4(System.Numerics.Vector4.Dot(xyzw_, m.column0_),
+			//	System.Numerics.Vector4.Dot(xyzw_, m.column1_),
+			//	System.Numerics.Vector4.Dot(xyzw_, m.column2_),
+			//	System.Numerics.Vector4.Dot(xyzw_, m.column3_));
 
-			//System.Numerics.Vector4 vx = new System.Numerics.Vector4(xyzw_.X);
-			//System.Numerics.Vector4 vy = new System.Numerics.Vector4(xyzw_.Y);
-			//System.Numerics.Vector4 vz = new System.Numerics.Vector4(xyzw_.Z);
-			//System.Numerics.Vector4 vw = new System.Numerics.Vector4(xyzw_.W);
-			//xyzw_ = vx*m.row0_ + vy*m.row1_ + vz*m.row2_ + vw*m.row3_;
+			xyzw_ = xyzw_.X*m.row0_ + xyzw_.Y*m.row1_ + xyzw_.Z*m.row2_ + xyzw_.W*m.row3_;
 		}
 
 		internal readonly float x_ => xyzw_.X;
@@ -459,46 +452,55 @@ namespace Foundation.Mathematics
 
 		public float X
 		{
-			readonly get { return x_; }
-			set { x_ = value; }
+			readonly get => x_;
+			set => x_ = value;
 		}
 
 		public float Y
 		{
-			readonly get { return y_; }
-			set { y_ = value; }
+			readonly get => y_;
+			set => y_ = value;
 		}
 
 		public float Z
 		{
-			readonly get { return z_; }
-			set { z_ = value; }
+			readonly get => z_;
+			set => z_ = value;
 		}
 
 		public float W
 		{
-			readonly get { return w_; }
-			set { w_ = value; }
+			readonly get => w_;
+			set => w_ = value;
 		}
 
 		[Browsable(false)]
 		public Vector2 XY
 		{
-			readonly get { return new Vector2(x_, y_); }
-			set { x_ = value.x_; y_ = value.y_; }
+			readonly get => new Vector2(x_, y_);
+			set 
+			{ 
+				x_ = value.x_; 
+				y_ = value.y_; 
+			}
 		}
 
 		[Browsable(false)]
 		public Vector3 XYZ
 		{
-			readonly get { return new Vector3(x_, y_, z_); }
-			set { x_ = value.x_; y_ = value.y_; z_ = value.z_; }
+			readonly get => new Vector3(x_, y_, z_);
+			set
+			{ 
+				x_ = value.x_; 
+				y_ = value.y_; 
+				z_ = value.z_; 
+			}
 		}
 
 		[Browsable(false)]
 		public float Magnitude
 		{
-			readonly get { return MathF.Sqrt(x_*x_ + y_*y_ + z_*z_ + w_*w_); }
+			readonly get => MathF.Sqrt(x_*x_ + y_*y_ + z_*z_ + w_*w_);
 			set
 			{
 				float m = MathF.Sqrt(x_*x_ + y_*y_ + z_*z_ + w_*w_);
@@ -508,15 +510,12 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float MagnitudeSquared
-		{
-			get { return (x_*x_ + y_*y_ + z_*z_ + w_*w_); }
-		}
+		public readonly float MagnitudeSquared => x_*x_ + y_*y_ + z_*z_ + w_*w_;
 
 		[Browsable(false)]
 		public float Length
 		{
-			readonly get { return MathF.Sqrt(x_*x_ + y_*y_ + z_*z_ + w_*w_); }
+			readonly get => MathF.Sqrt(x_*x_ + y_*y_ + z_*z_ + w_*w_);
 			set
 			{
 				float m = MathF.Sqrt(x_*x_ + y_*y_ + z_*z_ + w_*w_);
@@ -526,10 +525,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float LengthSquared
-		{
-			get { return (x_*x_ + y_*y_ + z_*z_ + w_*w_); }
-		}
+		public readonly float LengthSquared => x_*x_ + y_*y_ + z_*z_ + w_*w_;
 
 		public readonly override bool Equals(object other)
 		{
@@ -669,6 +665,12 @@ namespace Foundation.Mathematics
 		public static float Dot(Vector4 u, Vector4 v)
 		{
 			return (u.x_*v.x_ + u.y_*v.y_ + u.z_*v.z_ + u.w_*v.w_);
+		}
+
+		public static Matrix4 Tensor(Vector4 u, Vector4 v)
+		{
+			return new Matrix4(u.x_*v.x_, u.x_*v.y_, u.x_*v.z_, u.x_*v.w_, u.y_*v.x_, u.y_*v.y_, u.y_*v.z_, u.y_*v.w_,
+				u.z_*v.x_, u.z_*v.y_, u.z_*v.z_, u.z_*v.w_, u.w_*v.x_, u.w_*v.y_, u.w_*v.z_, u.w_*v.w_);
 		}
 
 		public static float Distance(Vector4 u, Vector4 v)
@@ -894,12 +896,6 @@ namespace Foundation.Mathematics
 			float d6 = v.x_*w.y_ - v.y_*w.x_;
 			return new Vector4(-u.y_*d1 + u.z_*d2 - u.w_*d3, u.x_*d1 - u.z_*d4 + u.w_*d5, 
 				-u.x_*d2 + u.y_*d4 - u.w_*d6, u.x_*d3 - u.y_*d5 + u.z_*d6);
-		}
-
-		public static Matrix4 Tensor(Vector4 u, Vector4 v)
-		{
-			return new Matrix4(u.x_*v.x_, u.x_*v.y_, u.x_*v.z_, u.x_*v.w_, u.y_*v.x_, u.y_*v.y_, u.y_*v.z_, u.y_*v.w_,
-				u.z_*v.x_, u.z_*v.y_, u.z_*v.z_, u.z_*v.w_, u.w_*v.x_, u.w_*v.y_, u.w_*v.z_, u.w_*v.w_);
 		}
 
 		public static float Angle(Vector4 u, Vector4 v)

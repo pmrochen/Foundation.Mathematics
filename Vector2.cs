@@ -162,12 +162,10 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 operator *(Vector2 v, in Matrix2 m)
 		{
-			return new Vector2(System.Numerics.Vector2.Dot(v.xy_, m.column0_),
-				System.Numerics.Vector2.Dot(v.xy_, m.column1_));
+			//return new Vector2(System.Numerics.Vector2.Dot(v.xy_, m.column0_),
+			//	System.Numerics.Vector2.Dot(v.xy_, m.column1_));
 
-			//System.Numerics.Vector2 vx = new System.Numerics.Vector2(v.xy_.X);
-			//System.Numerics.Vector2 vy = new System.Numerics.Vector2(v.xy_.Y);
-			//return new Vector2(vx*m.row0_ + vy*m.row1_);
+			return new Vector2(v.xy_.X*m.row0_ + v.xy_.Y*m.row1_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -283,12 +281,10 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 Transform(Vector2 v, in Matrix2 m)
 		{
-			return new Vector2(System.Numerics.Vector2.Dot(v.xy_, m.column0_),
-				System.Numerics.Vector2.Dot(v.xy_, m.column1_));
+			//return new Vector2(System.Numerics.Vector2.Dot(v.xy_, m.column0_),
+			//	System.Numerics.Vector2.Dot(v.xy_, m.column1_));
 
-			//System.Numerics.Vector2 vx = new System.Numerics.Vector2(v.xy_.X);
-			//System.Numerics.Vector2 vy = new System.Numerics.Vector2(v.xy_.Y);
-			//return new Vector2(vx*m.row0_ + vy*m.row1_);
+			return new Vector2(v.xy_.X*m.row0_ + v.xy_.Y*m.row1_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -308,12 +304,10 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Transform(in Matrix2 m)
 		{
-			xy_ = new System.Numerics.Vector2(System.Numerics.Vector2.Dot(xy_, m.column0_),
-				System.Numerics.Vector2.Dot(xy_, m.column1_));
+			//xy_ = new System.Numerics.Vector2(System.Numerics.Vector2.Dot(xy_, m.column0_),
+			//	System.Numerics.Vector2.Dot(xy_, m.column1_));
 
-			//System.Numerics.Vector2 vx = new System.Numerics.Vector2(xy_.X);
-			//System.Numerics.Vector2 vy = new System.Numerics.Vector2(xy_.Y);
-			//xy_ = vx*m.row0_ + vy*m.row1_;
+			xy_ = xy_.X*m.row0_ + xy_.Y*m.row1_;
 		}
 
 		internal readonly float x_ => xy_.X;
@@ -351,20 +345,20 @@ namespace Foundation.Mathematics
 
 		public float X
 		{
-			readonly get { return x_; }
-			set { x_ = value; }
+			readonly get => x_;
+			set => x_ = value;
 		}
 
 		public float Y
 		{
-			readonly get { return y_; }
-			set { y_ = value; }
+			readonly get => y_;
+			set => y_ = value;
 		}
 
 		[Browsable(false)]
 		public float Magnitude
 		{
-			readonly get { return MathF.Sqrt(x_*x_ + y_*y_); }
+			readonly get => MathF.Sqrt(x_*x_ + y_*y_);
 			set
 			{
 				float m = MathF.Sqrt(x_*x_ + y_*y_);
@@ -374,15 +368,12 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float MagnitudeSquared
-		{
-			get { return (x_*x_ + y_*y_); }
-		}
+		public readonly float MagnitudeSquared => x_*x_ + y_*y_;
 
 		[Browsable(false)]
 		public float Length
 		{
-			readonly get { return MathF.Sqrt(x_*x_ + y_*y_); }
+			readonly get => MathF.Sqrt(x_*x_ + y_*y_);
 			set
 			{
 				float m = MathF.Sqrt(x_*x_ + y_*y_);
@@ -392,10 +383,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float LengthSquared
-		{
-			get { return (x_*x_ + y_*y_); }
-		}
+		public readonly float LengthSquared => x_*x_ + y_*y_;
 
 		public readonly override bool Equals(object other)
 		{
@@ -730,7 +718,7 @@ namespace Foundation.Mathematics
 
 		public static float Cross(Vector2 u, Vector2 v)
 		{
-			return (u.x_*v.y_ - u.y_*v.x_);
+			return u.x_*v.y_ - u.y_*v.x_;
 		}
 
 		public static float Angle(Vector2 u, Vector2 v)
