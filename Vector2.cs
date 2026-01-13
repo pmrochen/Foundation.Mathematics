@@ -290,7 +290,7 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Normalize()
 		{
-			float m = Magnitude;
+			float m = xy_.Length();
 			if (m > 0f)
 				xy_ /= m;
 		}
@@ -312,6 +312,7 @@ namespace Foundation.Mathematics
 
 		internal readonly float x_ => xy_.X;
 		internal readonly float y_ => xy_.Y;
+		internal readonly System.Numerics.Vector2 yx_ => new System.Numerics.Vector2(xy_.Y, xy_.X);
 
 		internal System.Numerics.Vector2 xy_;
 #else

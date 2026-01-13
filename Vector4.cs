@@ -105,14 +105,14 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public Vector2 XY
 		{
-			readonly get => new Vector2(xyzw_.X, xyzw_.Y);
+			readonly get => new Vector2(xy_);
 			set => xyzw_ = new System.Numerics.Vector4(value.xy_, xyzw_.Z, xyzw_.W);
 		}
 
 		[Browsable(false)]
 		public Vector3 XYZ
 		{
-			readonly get => new Vector3(xyzw_.X, xyzw_.Y, xyzw_.Z);
+			readonly get => new Vector3(xyz_);
 			set => xyzw_ = new System.Numerics.Vector4(value.xyz_, xyzw_.W);
 		}
 
@@ -355,7 +355,7 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Normalize()
 		{
-			float m = Magnitude;
+			float m = xyzw_.Length();
 			if (m > 0f)
 				xyzw_ /= m;
 		}
@@ -375,6 +375,9 @@ namespace Foundation.Mathematics
 		internal readonly float y_ => xyzw_.Y;
 		internal readonly float z_ => xyzw_.Z;
 		internal readonly float w_ => xyzw_.W;
+		internal readonly System.Numerics.Vector2 xy_ => new System.Numerics.Vector2(xyzw_.X, xyzw_.Y);
+		internal readonly System.Numerics.Vector3 xyz_ => new System.Numerics.Vector3(xyzw_.X, xyzw_.Y, xyzw_.Z);
+		internal readonly System.Numerics.Vector4 wzyx_ => new System.Numerics.Vector4(xyzw_.W, xyzw_.Z, xyzw_.Y, xyzw_.X);
 
 		internal System.Numerics.Vector4 xyzw_;
 #else

@@ -85,9 +85,21 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public Vector2 XY
 		{
-			readonly get => new Vector2(xyz_.X, xyz_.Y);
+			readonly get => new Vector2(xy_);
 			set => xyz_ = new System.Numerics.Vector3(value.xy_, xyz_.Z);
 		}
+
+		[Browsable(false)]
+		public readonly Vector2 XZ => new Vector2(xz_);
+
+		[Browsable(false)]
+		public readonly Vector2 ZY => new Vector2(zy_);
+
+		[Browsable(false)]
+		public readonly Vector3 YZX => new Vector3(yzx_);
+
+		[Browsable(false)]
+		public readonly Vector3 ZXY => new Vector3(zxy_);
 
 		[Browsable(false)]
 		public float Magnitude
@@ -343,7 +355,7 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Normalize()
 		{
-			float m = Magnitude;
+			float m = xyz_.Length();
 			if (m > 0f)
 				xyz_ /= m;
 		}
@@ -377,6 +389,14 @@ namespace Foundation.Mathematics
 		internal readonly float x_ => xyz_.X;
 		internal readonly float y_ => xyz_.Y;
 		internal readonly float z_ => xyz_.Z;
+		internal readonly System.Numerics.Vector2 xy_ => new System.Numerics.Vector2(xyz_.X, xyz_.Y);
+		internal readonly System.Numerics.Vector2 xz_ => new System.Numerics.Vector2(xyz_.X, xyz_.Z);
+		internal readonly System.Numerics.Vector2 zy_ => new System.Numerics.Vector2(xyz_.Z, xyz_.Y);
+		internal readonly System.Numerics.Vector3 zyx_ => new System.Numerics.Vector3(xyz_.Z, xyz_.Y, xyz_.X);
+		internal readonly System.Numerics.Vector3 yzx_ => new System.Numerics.Vector3(xyz_.Y, xyz_.Z, xyz_.X);
+		internal readonly System.Numerics.Vector3 zxy_ => new System.Numerics.Vector3(xyz_.Z, xyz_.X, xyz_.Y);
+		internal readonly System.Numerics.Vector4 xyzx_ => new System.Numerics.Vector4(xyz_, xyz_.X);
+		internal readonly System.Numerics.Vector4 xyzmx_ => new System.Numerics.Vector4(xyz_, -xyz_.X);
 
 		internal System.Numerics.Vector3 xyz_;
 #else
@@ -453,6 +473,18 @@ namespace Foundation.Mathematics
 				y_ = value.y_; 
 			}
 		}
+
+		[Browsable(false)]
+		public readonly Vector2 XZ => new Vector2(x_, z_);
+
+		[Browsable(false)]
+		public readonly Vector2 ZY => new Vector2(z_, y_);
+
+		[Browsable(false)]
+		public readonly Vector3 YZX => new Vector3(y_, z_, x_);
+
+		[Browsable(false)]
+		public readonly Vector3 ZXY => new Vector3(z_, x_, y_);
 
 		[Browsable(false)]
 		public float Magnitude
@@ -733,18 +765,6 @@ namespace Foundation.Mathematics
 		{
 			return new Vector3((float)v.x_, (float)v.y_, (float)v.z_);
 		}
-
-		[Browsable(false)]
-		public readonly Vector2 XZ => new Vector2(x_, z_);
-
-		[Browsable(false)]
-		public readonly Vector2 ZY => new Vector2(z_, y_);
-
-		[Browsable(false)]
-		public readonly Vector3 YZX => new Vector3(y_, z_, x_);
-
-		[Browsable(false)]
-		public readonly Vector3 ZXY => new Vector3(z_, x_, y_);
 
 		[Browsable(false)]
 		public readonly bool IsFinite => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_);
