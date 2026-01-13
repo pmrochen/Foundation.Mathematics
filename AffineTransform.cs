@@ -566,10 +566,19 @@ namespace Foundation.Mathematics
 		public static AffineTransform Reflection(in Plane plane)
 		{
 			Plane p = Plane.Normalize(plane);
+#if SIMD
+			System.Numerics.Vector3 n = p.abc_;
+			System.Numerics.Vector4 t = -2f*p.abcd_;
+			return new AffineTransform(t.X*n + System.Numerics.Vector3.UnitX,
+				t.Y*n + System.Numerics.Vector3.UnitY,
+				t.Z*n + System.Numerics.Vector3.UnitZ,
+				t.W*n);
+#else
 			return new AffineTransform(-2f*p.a_*p.a_ + 1f, -2f*p.b_*p.a_, -2f*p.c_*p.a_,
 				-2f*p.a_*p.b_, -2f*p.b_*p.b_ + 1f, -2f*p.c_*p.b_,
 				-2f*p.a_*p.c_, -2f*p.b_*p.c_, -2f*p.c_*p.c_ + 1f,
 				-2f*p.a_*p.d_, -2f*p.b_*p.d_, -2f*p.c_*p.d_);
+#endif
 		}
 
 		public static AffineTransform Inverse(in AffineTransform t)

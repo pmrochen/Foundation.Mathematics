@@ -320,6 +320,19 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ d_.GetHashCode();
 		}
 
+		public readonly bool ApproxEquals(Plane p, float tolerance) // #TODO SIMD
+		{
+			return (Math.Abs(p.a_ - a_) < tolerance) &&
+				(Math.Abs(p.b_ - b_) < tolerance) &&
+				(Math.Abs(p.c_ - c_) < tolerance) &&
+				(Math.Abs(p.d_ - d_) < tolerance);
+		}
+
+		public readonly bool ApproxEquals(Plane p)
+		{
+			return ApproxEquals(p, 1e-6f);
+		}
+
 		public readonly override string ToString()
 		{
 			return String.Format("{0} {1} {2} {3}", a_, b_, c_, d_);

@@ -615,9 +615,11 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ w_.GetHashCode();
 		}
 
-		public readonly bool ApproxEquals(Quaternion q, float tolerance)
+		public readonly bool ApproxEquals(Quaternion q, float tolerance) // #TODO SIMD
 		{
-			return (Math.Abs(q.x_ - x_) < tolerance) && (Math.Abs(q.y_ - y_) < tolerance) && (Math.Abs(q.z_ - z_) < tolerance) &&
+			return (Math.Abs(q.x_ - x_) < tolerance) && 
+				(Math.Abs(q.y_ - y_) < tolerance) && 
+				(Math.Abs(q.z_ - z_) < tolerance) &&
 				(Math.Abs(q.w_ - w_) < tolerance);
 		}
 

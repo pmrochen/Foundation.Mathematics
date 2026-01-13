@@ -320,6 +320,19 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ d_.GetHashCode();
 		}
 
+		public readonly bool ApproxEquals(HalfSpace hs, float tolerance) // #TODO SIMD
+		{
+			return (Math.Abs(hs.a_ - a_) < tolerance) &&
+				(Math.Abs(hs.b_ - b_) < tolerance) &&
+				(Math.Abs(hs.c_ - c_) < tolerance) &&
+				(Math.Abs(hs.d_ - d_) < tolerance);
+		}
+
+		public readonly bool ApproxEquals(HalfSpace hs)
+		{
+			return ApproxEquals(hs, 1e-6f);
+		}
+
 		public readonly override string ToString()
 		{
 			return String.Format("{0} {1} {2} {3}", a_, b_, c_, d_);

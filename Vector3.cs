@@ -791,7 +791,7 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ z_.GetHashCode();
 		}
 
-		public readonly bool ApproxEquals(Vector3 v, float tolerance)
+		public readonly bool ApproxEquals(Vector3 v, float tolerance) // #TODO SIMD
 		{
 			return (Math.Abs(v.x_ - x_) < tolerance) &&
 				(Math.Abs(v.y_ - y_) < tolerance) &&

@@ -1563,10 +1563,19 @@ namespace Foundation.Mathematics
 		public static Matrix4 Reflection(in Plane plane)
 		{
 			Plane p = Plane.Normalize(plane);
+#if SIMD
+			System.Numerics.Vector3 n = p.abc_;
+			System.Numerics.Vector4 t = -2f*p.abcd_;
+			return new Matrix4(new System.Numerics.Vector4(t.X*n, 0f) + System.Numerics.Vector4.UnitX,
+				new System.Numerics.Vector4(t.Y*n, 0f) + System.Numerics.Vector4.UnitY,
+				new System.Numerics.Vector4(t.Z*n, 0f) + System.Numerics.Vector4.UnitZ,
+				new System.Numerics.Vector4(t.W*n, 1f));
+#else
 			return new Matrix4(-2f*p.a_*p.a_ + 1f, -2f*p.b_*p.a_, -2f*p.c_*p.a_, 0f,
 				-2f*p.a_*p.b_, -2f*p.b_*p.b_ + 1f, -2f*p.c_*p.b_, 0f,
 				-2f*p.a_*p.c_, -2f*p.b_*p.c_, -2f*p.c_*p.c_ + 1f, 0f,
 				-2f*p.a_*p.d_, -2f*p.b_*p.d_, -2f*p.c_*p.d_, 1f);
+#endif
 		}
 
 		public static Matrix4 Adjoint(in Matrix4 m)
