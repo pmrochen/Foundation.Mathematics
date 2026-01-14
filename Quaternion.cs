@@ -803,14 +803,13 @@ namespace Foundation.Mathematics
 			float m = axis.Magnitude;
 			if ((m > 0f) && (angle != 0f))
 			{
-				axis /= m;
 				float half = angle*0.5f;
-				float sinHalf = (float)Math.Sin(half);
+				float sinHalfN = (float)Math.Sin(half)/m;
 				float cosHalf = (float)Math.Cos(half);
 #if SIMD
-				return new Quaternion(axis*sinHalf, cosHalf);
+				return new Quaternion(axis*sinHalfN, cosHalf);
 #else
-				return new Quaternion(axis.x_*sinHalf, axis.y_*sinHalf, axis.z_*sinHalf, cosHalf);
+				return new Quaternion(axis.x_*sinHalfN, axis.y_*sinHalfN, axis.z_*sinHalfN, cosHalf);
 #endif
 			}
 
