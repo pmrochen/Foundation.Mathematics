@@ -280,6 +280,10 @@ namespace Foundation.Mathematics
 		internal readonly float z_ => xyzw_.Z;
 		internal readonly float w_ => xyzw_.W;
 		internal readonly System.Numerics.Vector3 xyz_ => new System.Numerics.Vector3(xyzw_.X, xyzw_.Y, xyzw_.Z);
+		internal readonly System.Numerics.Vector3 zyx_ => new System.Numerics.Vector3(xyzw_.Z, xyzw_.Y, xyzw_.X);
+		internal readonly System.Numerics.Vector3 yzx_ => new System.Numerics.Vector3(xyzw_.Y, xyzw_.Z, xyzw_.X);
+		internal readonly System.Numerics.Vector3 zxy_ => new System.Numerics.Vector3(xyzw_.Z, xyzw_.X, xyzw_.Y);
+		internal readonly System.Numerics.Vector3 www_ => new System.Numerics.Vector3(xyzw_.W, xyzw_.W, xyzw_.W);
 		internal readonly System.Numerics.Vector4 wzyx_ => new System.Numerics.Vector4(xyzw_.W, xyzw_.Z, xyzw_.Y, xyzw_.X);
 
 		internal System.Numerics.Vector4 xyzw_;
@@ -864,15 +868,10 @@ namespace Foundation.Mathematics
 		public static Quaternion Lerp(Quaternion q, Quaternion r, float t)
 		{
 			float cosTheta = Dot(q, r);
-
 			float t0 = 1f - t;
 			float t1 = t;
-			if (/*shortestArc &&*/ (cosTheta < 0f))
-			{
-				// If r is on the oposite hemisphere use -r instead of r
+			if (/*shortestArc &&*/ (cosTheta < 0f)) // If r is on the oposite hemisphere use -r instead of r
 				t1 = -t1;
-			}
-
 #if SIMD
 			return /*Quaternion.Normalize*/(t0*q + t1*r);
 #else
@@ -886,17 +885,15 @@ namespace Foundation.Mathematics
 			float cosTheta = Dot(q, r);
 
 			float signOfT1 = 1f;
-			if (/*shortestArc &&*/ (cosTheta < 0f))
+			if (/*shortestArc &&*/ (cosTheta < 0f)) // If r is on the oposite hemisphere use -r instead of r
 			{
-				// If r is on the oposite hemisphere use -r instead of r
 				cosTheta = -cosTheta;
 				signOfT1 = -1f;
 			}
 
 			float t0, t1;
-			if ((1f - cosTheta) < 1e-6f)
+			if ((1f - cosTheta) < 1e-6f) // If q is nearly the same as r we just linearly interpolate
 			{
-				// If q is nearly the same as r we just linearly interpolate
 				t0 = 1f - t;
 				t1 = t;
 			}
@@ -904,10 +901,10 @@ namespace Foundation.Mathematics
 			{
 				cosTheta = Math.Clamp(cosTheta, -1f, 1f);
 				float theta = (float)Math.Acos(cosTheta);
-				//if (Math.Abs(theta) < 1e-6f) // if theta == 0 then return q
+				//if (Math.Abs(theta) < 1e-6f) // If theta == 0 then return q
 				//	return q;
 				float iSinTheta = 1f/MathF.Sqrt(1f - cosTheta*cosTheta); // instead of 1/sin(theta)
-				//if (Math.Abs(sinTheta) < 1e-6f) // if theta*2 = 180 degrees then result is undefined
+				//if (Math.Abs(sinTheta) < 1e-6f) // If theta*2 == 180 degrees then result is undefined
 				//	return q*0.5f + r*0.5f;
 				float tTheta = t*theta;
 				t0 = (float)Math.Sin(theta - tTheta) * iSinTheta;

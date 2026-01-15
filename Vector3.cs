@@ -366,6 +366,15 @@ namespace Foundation.Mathematics
 		//	xyz_ *= v.xyz_;
 		//}
 
+		public static Vector3 Rotate(Vector3 v, Quaternion q)
+		{
+			System.Numerics.Vector3 qyzx = q.yzx_;
+			System.Numerics.Vector3 qzxy = q.zxy_;
+			System.Numerics.Vector3 t1 = qyzx*v.zxy_ - qzxy*v.yzx_;
+			System.Numerics.Vector3 t2 = q.www_*t1 + qyzx*t1.ZXY() - qzxy*t1.YZX();
+			return new Vector3(v.xyz_ + 2f*t2);
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Transform(in Matrix3 m)
 		{
@@ -701,6 +710,17 @@ namespace Foundation.Mathematics
 		//	return new Vector3(v.x_*s.x_, v.y_*s.y_, v.z_*s.z_);
 		//}
 
+		public static Vector3 Rotate(Vector3 v, Quaternion q)
+		{
+			float x1 = q.y_*v.z_ - q.z_*v.y_;
+			float y1 = q.z_*v.x_ - q.x_*v.z_;
+			float z1 = q.x_*v.y_ - q.y_*v.x_;
+			float x2 = q.w_*x1 + q.y_*z1 - q.z_*y1;
+			float y2 = q.w_*y1 + q.z_*x1 - q.x_*z1;
+			float z2 = q.w_*z1 + q.x_*y1 - q.y_*x1;
+			return new Vector3(v.x_ + 2f*x2, v.y_ + 2f*y2, v.z_ + 2f*z2);
+		}
+
 		public static Vector3 Transform(Vector3 v, in Matrix3 m)
 		{
 			return new Vector3(v.x_*m.m00_ + v.y_*m.m10_ + v.z_*m.m20_,
@@ -954,35 +974,24 @@ namespace Foundation.Mathematics
 					case Axis.X:
 					{
 						float vy = v.y_, vz = v.z_;
-						return new Vector3(v.x_, vy * cosine - vz * sine, vz * cosine + vy * sine);
+						return new Vector3(v.x_, vy*cosine - vz*sine, vz*cosine + vy*sine);
 					}
 
 					case Axis.Y:
 					{
 						float vx = v.x_, vz = v.z_;
-						return new Vector3(vx * cosine + vz * sine, v.y_, vz * cosine - vx * sine);
+						return new Vector3(vx*cosine + vz*sine, v.y_, vz*cosine - vx*sine);
 					}
 
 					case Axis.Z:
 					{
 						float vx = v.x_, vy = v.y_;
-						return new Vector3(vx * cosine - vy * sine, vy * cosine + vx * sine, v.z_);
+						return new Vector3(vx*cosine - vy*sine, vy*cosine + vx*sine, v.z_);
 					}
 				}
 			}
 
 			return v;
-		}
-
-		public static Vector3 Rotate(Vector3 v, Quaternion q)
-		{
-			float x1 = q.y_*v.z_ - q.z_*v.y_;
-			float y1 = q.z_*v.x_ - q.x_*v.z_;
-			float z1 = q.x_*v.y_ - q.y_*v.x_;
-			float x2 = q.w_*x1 + q.y_*z1 - q.z_*y1;
-			float y2 = q.w_*y1 + q.z_*x1 - q.x_*z1;
-			float z2 = q.w_*z1 + q.x_*y1 - q.y_*x1;
-			return new Vector3(v.x_ + 2f*x2, v.y_ + 2f*y2, v.z_ + 2f*z2);
 		}
 
 		/// <summary>
