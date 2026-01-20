@@ -408,13 +408,8 @@ namespace Foundation.Mathematics
 			Constant = -Vector3.Dot(n, p + offset);
 		}
 
-		//public void Transform(in AffineTransform t)
+		//public void Transform(in AffineTransform t) // #TODO
 		//{
-		//    Vector3 v = -d_*Normal;
-		//    Vector3 n = Vector3.Normalize(Normal*t.r_);	// #FIXME normal must be transformed by inverse transpose
-		//    Normal = n;
-		//    v.Transform(t);
-		//    d_ = -Vector3.Dot(n, v);
 		//}
 
 		/// <summary>
