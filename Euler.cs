@@ -110,20 +110,20 @@ namespace Foundation.Mathematics
 		public readonly override bool Equals(object other)
 		{
 			if (other is Euler rhs)
-				return (x_ == rhs.x_) && (y_ == rhs.y_) && (z_ == rhs.z_) && (order_ == rhs.order_);
+				return (order_ == rhs.order_) && (x_ == rhs.x_) && (y_ == rhs.y_) && (z_ == rhs.z_);
 
 			return false;
 		}
 
 		public readonly bool Equals(Euler other)
 		{
-			return (x_ == other.x_) && (y_ == other.y_) && (z_ == other.z_) && (order_ == other.order_);
+			return (order_ == other.order_) && (x_ == other.x_) && (y_ == other.y_) && (z_ == other.z_);
 		}
 
 		public readonly bool ApproxEquals(Euler e, float tolerance)
 		{
-			return (Math.Abs(e.x_ - x_) < tolerance) && (Math.Abs(e.y_ - y_) < tolerance) && (Math.Abs(e.z_ - z_) < tolerance) &&
-				(order_ == e.order_);
+			return (order_ == e.order_) && (Math.Abs(e.x_ - x_) < tolerance) && (Math.Abs(e.y_ - y_) < tolerance) && 
+				(Math.Abs(e.z_ - z_) < tolerance);
 		}
 
 		public readonly bool ApproxEquals(Euler e)
@@ -277,12 +277,12 @@ namespace Foundation.Mathematics
 
 		public static bool operator ==(Euler lhs, Euler rhs)
 		{
-			return (lhs.x_ == rhs.x_) && (lhs.y_ == rhs.y_) && (lhs.z_ == rhs.z_) && (lhs.order_ == rhs.order_);
+			return (lhs.order_ == rhs.order_) && (lhs.x_ == rhs.x_) && (lhs.y_ == rhs.y_) && (lhs.z_ == rhs.z_);
 		}
 
 		public static bool operator !=(Euler lhs, Euler rhs)
 		{
-			return (lhs.x_ != rhs.x_) || (lhs.y_ != rhs.y_) || (lhs.z_ != rhs.z_) || (lhs.order_ != rhs.order_);
+			return (lhs.order_ != rhs.order_) || (lhs.x_ != rhs.x_) || (lhs.y_ != rhs.y_) || (lhs.z_ != rhs.z_);
 		}
 
 		public static Euler operator +(Euler e)
