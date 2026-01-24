@@ -259,12 +259,6 @@ namespace Foundation.Mathematics
 			return FromMatrix(Matrix3.Rotation(q));
 		}
 
-		//[Obsolete("Use YawPitchRoll.FromMatrix(Matrix3)")]
-		//public static YawPitchRoll FromBasis(Matrix3 m)
-		//{
-		//    return FromMatrix(m);
-		//}
-
 		public static YawPitchRoll FromMatrix/*3*/(in Matrix3 m)
 		{
 			Euler e = Euler.FromMatrix(m, EulerOrder.ZXY);
