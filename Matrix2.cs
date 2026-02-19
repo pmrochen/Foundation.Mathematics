@@ -705,9 +705,14 @@ namespace Foundation.Mathematics
 
 		public static Matrix2 Rotation(float angle)
 		{
-			float sine = (float)Math.Sin(angle);
-			float cosine = (float)Math.Cos(angle);
-			return new Matrix2(cosine, sine, -sine, cosine);
+			if (angle != 0f)
+			{
+				float sine = (float)Math.Sin(angle);
+				float cosine = (float)Math.Cos(angle);
+				return new Matrix2(cosine, sine, -sine, cosine);
+			}
+
+			return Identity;
 		}
 
 		//public void Rotate(float angle)
@@ -727,9 +732,9 @@ namespace Foundation.Mathematics
 
 		public static Matrix2 ScalingRotation(Vector2 s, float angle)
 		{
-			float sine = (float)Math.Sin(angle);
-			float cosine = (float)Math.Cos(angle);
-			return new Matrix2(cosine*s.x_, sine*s.x_, -sine*s.y_, cosine*s.y_);
+			Matrix2 r = Matrix2.Rotation(angle);
+			r.PreScale(s);
+			return r;
 		}
 
 		public static Matrix2 Shearing(float xy, float yx)

@@ -1079,8 +1079,8 @@ namespace Foundation.Mathematics
 		public static Matrix3 FromQuaternion(Quaternion q) // Input quaternion must be normalized
 		{
 			//float nq = q.Norm;
-			float s = /*(nq > 0f) ? 2f/nq :*/ 2f;
-			float xs = q.x_*s, ys = q.y_*s, zs = q.z_*s;
+			const float s = /*(nq > 0f) ? 2f/nq :*/ 2f;
+			float xs = q.x_*s, ys = q.y_*s, zs = q.z_*s; // #TODO SIMD
 			float wx = q.w_*xs, wy = q.w_*ys, wz = q.w_*zs;
 			float xx = q.x_*xs, xy = q.x_*ys, xz = q.x_*zs;
 			float yy = q.y_*ys, yz = q.y_*zs, zz = q.z_*zs;
@@ -1131,20 +1131,25 @@ namespace Foundation.Mathematics
 
 		public static Matrix3 Rotation(Axis axis, float angle)
 		{
-			float sine = (float)Math.Sin(angle);
-            float cosine = (float)Math.Cos(angle);
-
-			switch (axis)
+			if (angle != 0f)
 			{
-				case Axis.X: 
-					return new Matrix3(1f, 0f, 0f, 0f, cosine, sine, 0f, -sine, cosine);
-				case Axis.Y: 
-					return new Matrix3(cosine, 0f, -sine, 0f, 1f, 0f, sine, 0f, cosine);
-				case Axis.Z: 
-					return new Matrix3(cosine, sine, 0f, -sine, cosine, 0f, 0f, 0f, 1f);
-				default: 
-					return Zero;
+				float sine = (float)Math.Sin(angle);
+				float cosine = (float)Math.Cos(angle);
+
+				switch (axis)
+				{
+					case Axis.X:
+						return new Matrix3(1f, 0f, 0f, 0f, cosine, sine, 0f, -sine, cosine);
+					case Axis.Y:
+						return new Matrix3(cosine, 0f, -sine, 0f, 1f, 0f, sine, 0f, cosine);
+					case Axis.Z:
+						return new Matrix3(cosine, sine, 0f, -sine, cosine, 0f, 0f, 0f, 1f);
+					default:
+						return Zero;
+				}
 			}
+
+			return Identity;
 		}
 
 		//public void Rotate(Axis axis, float angle)
@@ -1160,13 +1165,13 @@ namespace Foundation.Mathematics
 				axis /= m;
 				float sine = (float)Math.Sin(angle);
 				float cosine = (float)Math.Cos(angle);
-				float mcos = 1f - cosine;
+				float mCos = 1f - cosine;
 				float aa = axis.x_*axis.x_, bb = axis.y_*axis.y_, cc = axis.z_*axis.z_;
-				float abm = axis.x_*axis.y_*mcos, acm = axis.x_*axis.z_*mcos, bcm = axis.y_*axis.z_*mcos;
-				float asin = axis.x_*sine, bsin = axis.y_*sine, csin = axis.z_*sine;
-				return new Matrix3(aa*mcos + cosine, abm + csin, acm - bsin,
-					abm - csin, bb*mcos + cosine, bcm + asin,
-					acm + bsin, bcm - asin, cc*mcos + cosine);
+				float abm = axis.x_*axis.y_*mCos, acm = axis.x_*axis.z_*mCos, bcm = axis.y_*axis.z_*mCos;
+				float aSin = axis.x_*sine, bSin = axis.y_*sine, cSin = axis.z_*sine;
+				return new Matrix3(aa*mCos + cosine, abm + cSin, acm - bSin,
+					abm - cSin, bb*mCos + cosine, bcm + aSin,
+					acm + bSin, bcm - aSin, cc*mCos + cosine);
 			}
 
 			return Identity;
@@ -1269,7 +1274,7 @@ namespace Foundation.Mathematics
 		//	this *= Rotation(e);
 		//}
 
-		public static Matrix3 Rotation(Quaternion q)
+		public static Matrix3 Rotation(Quaternion q) // #TODO SIMD
 		{
 			float nq = q.Norm;
 			float s = (nq > 0f) ? 2f/nq : 2f;
