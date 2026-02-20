@@ -415,12 +415,12 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns distance from a point to normalized half space.
 		/// </summary>
-		public readonly float GetDistanceTo(Vector3 point)
+		public readonly float GetDistance(Vector3 point)
 		{
 			return Math.Max((Vector3.Dot(Normal, point) + d_), 0f);
 		}
 
-		public readonly float GetDistanceTo(Vector3 point, bool normalized)
+		public readonly float GetDistance(Vector3 point, bool normalized)
 		{
 			return normalized ?
 				Math.Max((Vector3.Dot(Normal, point) + d_), 0f) :
@@ -430,12 +430,12 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns signed distance from a point to normalized half space.
 		/// </summary>
-		public readonly float GetSignedDistanceTo(Vector3 point)
+		public readonly float GetSignedDistance(Vector3 point)
 		{
 			return (Vector3.Dot(Normal, point) + d_);
 		}
 
-		public readonly float GetSignedDistanceTo(Vector3 point, bool normalized)
+		public readonly float GetSignedDistance(Vector3 point, bool normalized)
 		{
 			return normalized ? 
 				(Vector3.Dot(Normal, point) + d_) :

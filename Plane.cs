@@ -423,12 +423,12 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns distance from a point to normalized plane.
 		/// </summary>
-		public readonly float GetDistanceTo(Vector3 point)
+		public readonly float GetDistance(Vector3 point)
 		{
 			return Math.Abs((Vector3.Dot(Normal, point) + d_));
 		}
 
-		public readonly float GetDistanceTo(Vector3 point, bool normalized)
+		public readonly float GetDistance(Vector3 point, bool normalized)
 		{
 			return normalized ?
 				Math.Abs((Vector3.Dot(Normal, point) + d_)) :
@@ -438,12 +438,12 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns signed distance from a point to normalized plane.
 		/// </summary>
-		public readonly float GetSignedDistanceTo(Vector3 point)
+		public readonly float GetSignedDistance(Vector3 point)
 		{
 			return (Vector3.Dot(Normal, point) + d_);
 		}
 
-		public readonly float GetSignedDistanceTo(Vector3 point, bool normalized)
+		public readonly float GetSignedDistance(Vector3 point, bool normalized)
 		{
 			return normalized ? 
 				(Vector3.Dot(Normal, point) + d_) :
@@ -462,14 +462,12 @@ namespace Foundation.Mathematics
 
 		public readonly bool TestIntersection(in Ray3 ray)
 		{
-			float t;
-			return FindIntersection(ray, out t);
+			return FindIntersection(ray).HasValue;
 		}
 
 		public readonly bool TestIntersection(in Segment3 segment)
 		{
-			float t;
-			return FindIntersection(segment, out t);
+			return FindIntersection(segment).HasValue;
 		}
 
 		//public readonly bool TestIntersection(in Triangle triangle)
@@ -497,33 +495,36 @@ namespace Foundation.Mathematics
 			return ellipsoid.TestIntersection(this);
 		}
 
-		public readonly bool FindIntersection(in Line3 line, out float t)
+		public readonly float? FindIntersection(in Line3 line)
 		{
 			float nd = Vector3.Dot(Normal, line.direction_);
-			if (Math.Abs(nd) < 1e-6f)
-			{
-				t = Single.PositiveInfinity;
-				return false;
-			}
-
-			t = (-d_ - Vector3.Dot(Normal, line.origin_))/nd;
-			return true;
+			if (Math.Abs(nd) < SingleConstants.Tolerance)
+				return null;
+			return (-d_ - Vector3.Dot(Normal, line.origin_))/nd;
 		}
 
-		public readonly bool FindIntersection(in Ray3 ray, out float t)
+		public readonly float? FindIntersection(in Ray3 ray)
 		{
-			if (!FindIntersection(new Line3(ray.origin_, ray.direction_), out t))
-				return false;
-
-			return (t >= 0f);
+			float? t = FindIntersection(new Line3(ray.origin_, ray.direction_));
+			return (t.HasValue && (t.Value >= 0f)) ? t : null;
 		}
 
-		public readonly bool FindIntersection(in Segment3 segment, out float t)
+		public readonly float? FindIntersection(in Segment3 segment)
 		{
-			if (!FindIntersection(new Line3(segment.start_, segment.end_ - segment.start_), out t))
-				return false;
-
-			return (t >= 0f) && (t <= 1f);
+			float? t = FindIntersection(new Line3(segment.start_, segment.end_ - segment.start_));
+			return (t.HasValue && (t.Value >= 0f) && (t.Value <= 1f)) ? t : null;
 		}
+
+		//public readonly Vector2? FindIntersectionPoint(in Line3 line) // #TODO
+		//{
+		//}
+
+		//public readonly Vector2? FindIntersectionPoint(in Ray3 ray) // #TODO
+		//{
+		//}
+
+		//public readonly Vector2? FindIntersectionPoint(in Segment3 segment) // #TODO
+		//{
+		//}
 	}
 }
