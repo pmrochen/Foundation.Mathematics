@@ -189,7 +189,12 @@ namespace Foundation.Mathematics
 				float t0 = Vector2.Dot(segment.start_ - start_, direction)/d1DotD1;
 				float t1 = t0 + d1DotD2/d1DotD1;
 				if (d1DotD2 < 0f)
-					Functions.Swap(ref t0, ref t1);
+				{
+					float s = t0;
+					t0 = t1;
+					t1 = s;
+				}
+
 				if ((t0 <= 1f) && (t1 >= 0f))
 					return Math.Max(t0, 0f);
 				return null;
