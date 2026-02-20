@@ -700,6 +700,7 @@ namespace Foundation.Mathematics
 					i = 1;
 				if (m.m22_ > m[i][i])
 					i = 2;
+
 				int j = next_[i];
 				int k = next_[j];
 				float s = MathF.Sqrt(m[i][i] - (m[j][j] + m[k][k]) + 1f);
@@ -721,14 +722,12 @@ namespace Foundation.Mathematics
 				float ti = ypr.roll_*0.5f;
 				float tj = ypr.pitch_*0.5f;
 				float th = ypr.yaw_*0.5f;
-
 				float si = (float)Math.Sin(ti);
 				float ci = (float)Math.Cos(ti);
 				float sj = (float)Math.Sin(tj);
 				float cj = (float)Math.Cos(tj);
 				float sh = (float)Math.Sin(th);
 				float ch = (float)Math.Cos(th);
-
 				float cc = ci*ch;
 				float cs = ci*sh;
 				float sc = si*ch;
@@ -751,7 +750,6 @@ namespace Foundation.Mathematics
 				int i = safe_[o & 3];
 				int j = next_[i + n];
 				int k = next_[i + 1 - n];
-
 				float ti = e[(f != 0) ? ((s != 0) ? i : k) : i]*0.5f;
 				float tj = e[j]*0.5f;
 				float th = e[(f != 0) ? i : ((s != 0) ? i : k)]*0.5f;
@@ -772,7 +770,6 @@ namespace Foundation.Mathematics
 				float cj = (float)Math.Cos(tj);
 				float sh = (float)Math.Sin(th);
 				float ch = (float)Math.Cos(th);
-
 				float cc = ci*ch;
 				float cs = ci*sh;
 				float sc = si*ch;
@@ -782,20 +779,18 @@ namespace Foundation.Mathematics
 				if (s != 0)
 				{
 					q[i] = cj*(cs + sc);
-					q[j] = sj*(cc + ss);
+					q[j] = (n != 0) ? -sj*(cc + ss) : sj*(cc + ss);
 					q[k] = sj*(cs - sc);
 					q.W = cj*(cc - ss);
 				}
 				else
 				{
 					q[i] = cj*sc - sj*cs;
-					q[j] = cj*ss + sj*cc;
+					q[j] = (n != 0) ? -(cj*ss + sj*cc) : (cj*ss + sj*cc);
 					q[k] = cj*cs - sj*sc;
 					q.W = cj*cc + sj*ss;
 				}
 
-				if (n != 0)
-					q[j] = -q[j];
 				return q;
 			}
 

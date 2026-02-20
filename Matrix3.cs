@@ -1078,15 +1078,20 @@ namespace Foundation.Mathematics
 
 		public static Matrix3 FromQuaternion(Quaternion q) // Input quaternion must be normalized
 		{
-			//float nq = q.Norm;
-			const float s = /*(nq > 0f) ? 2f/nq :*/ 2f;
-			float xs = q.x_*s, ys = q.y_*s, zs = q.z_*s; // #TODO SIMD
-			float wx = q.w_*xs, wy = q.w_*ys, wz = q.w_*zs;
-			float xx = q.x_*xs, xy = q.x_*ys, xz = q.x_*zs;
-			float yy = q.y_*ys, yz = q.y_*zs, zz = q.z_*zs;
-			return new Matrix3(1f - (yy + zz), xy + wz, xz - wy,
-				xy - wz, 1f - (xx + zz), yz + wx,
-				xz + wy, yz - wx, 1f - (xx + yy));
+			if (q != Quaternion.Identity)
+			{
+				//float nq = q.Norm;
+				const float s = /*(nq > 0f) ? 2f/nq :*/ 2f;
+				float xs = q.x_*s, ys = q.y_*s, zs = q.z_*s; // #TODO SIMD
+				float wx = q.w_*xs, wy = q.w_*ys, wz = q.w_*zs;
+				float xx = q.x_*xs, xy = q.x_*ys, xz = q.x_*zs;
+				float yy = q.y_*ys, yz = q.y_*zs, zz = q.z_*zs;
+				return new Matrix3(1f - (yy + zz), xy + wz, xz - wy,
+					xy - wz, 1f - (xx + zz), yz + wx,
+					xz + wy, yz - wx, 1f - (xx + yy));
+			}
+
+			return Matrix3.Identity;
 		}
 
 		public static Matrix3 Concat(in Matrix3 s, in Matrix3 t, in Matrix3 u)
@@ -1276,15 +1281,20 @@ namespace Foundation.Mathematics
 
 		public static Matrix3 Rotation(Quaternion q) // #TODO SIMD
 		{
-			float nq = q.Norm;
-			float s = (nq > 0f) ? 2f/nq : 2f;
-			float xs = q.x_*s, ys = q.y_*s, zs = q.z_*s;
-			float wx = q.w_*xs, wy = q.w_*ys, wz = q.w_*zs;
-			float xx = q.x_*xs, xy = q.x_*ys, xz = q.x_*zs;
-			float yy = q.y_*ys, yz = q.y_*zs, zz = q.z_*zs;
-			return new Matrix3(1f - (yy + zz), xy + wz, xz - wy,
-				xy - wz, 1f - (xx + zz), yz + wx,
-				xz + wy, yz - wx, 1f - (xx + yy));
+			if (q != Quaternion.Identity)
+			{
+				float nq = q.Norm;
+				float s = (nq > 0f) ? 2f/nq : 2f;
+				float xs = q.x_*s, ys = q.y_*s, zs = q.z_*s;
+				float wx = q.w_*xs, wy = q.w_*ys, wz = q.w_*zs;
+				float xx = q.x_*xs, xy = q.x_*ys, xz = q.x_*zs;
+				float yy = q.y_*ys, yz = q.y_*zs, zz = q.z_*zs;
+				return new Matrix3(1f - (yy + zz), xy + wz, xz - wy,
+					xy - wz, 1f - (xx + zz), yz + wx,
+					xz + wy, yz - wx, 1f - (xx + yy));
+			}
+
+			return Matrix3.Identity;
 		}
 
 		//public void Rotate(Quaternion q)

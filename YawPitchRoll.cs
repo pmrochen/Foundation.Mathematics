@@ -254,9 +254,7 @@ namespace Foundation.Mathematics
 
 		public static YawPitchRoll FromQuaternion(Quaternion q)
 		{
-			// Using Matrix3.Rotation() instead of Matrix3.FromQuaternion()
-			// - the former does not assume that the input quaternion is normalized.
-			return FromMatrix(Matrix3.Rotation(q));
+			return (q != Quaternion.Identity) ? FromMatrix(Matrix3.Rotation(q)) : Zero;
 		}
 
 		public static YawPitchRoll FromMatrix/*3*/(in Matrix3 m)

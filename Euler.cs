@@ -338,77 +338,77 @@ namespace Foundation.Mathematics
 
 		public static Euler FromQuaternion(Quaternion q, EulerOrder order)
 		{
-			// Using Matrix3.Rotation() instead of Matrix3.FromQuaternion()
-			// - the former does not assume that the input quaternion is normalized.
-			return FromMatrix(Matrix3.Rotation(q), order);
+			return (q != Quaternion.Identity) ? FromMatrix(Matrix3.Rotation(q), order) : new Euler(0f, 0f, 0f, order);
 		}
 
 		public static Euler FromMatrix/*3*/(in Matrix3 m, EulerOrder order)
 		{
-			if (order == EulerOrder.Unspecified)
-				return Zero;
-			
-			int o = (int)order;
-			int f = o & 1; o >>= 1;
-			int s = o & 1; o >>= 1;
-			int n = o & 1; o >>= 1;
-			int i = safe_[o & 3];
-			int j = next_[i + n];
-			int k = next_[i + 1 - n];
+			if (order != EulerOrder.Unspecified)
+			{
+				int o = (int)order;
+				int f = o & 1; o >>= 1;
+				int s = o & 1; o >>= 1;
+				int n = o & 1; o >>= 1;
+				int i = safe_[o & 3];
+				int j = next_[i + n];
+				int k = next_[i + 1 - n];
 
-			float ti, tj, th;
-			if (s != 0)
-			{
-				float sy = MathF.Sqrt(m[j][i]*m[j][i] + m[k][i]*m[k][i]);
-				if (sy > 1.90735e-6f/*1e-6f*/)
+				float ti, tj, th;
+				if (s != 0)
 				{
-					ti = (float)Math.Atan2(m[j][i], m[k][i]);
-					tj = (float)Math.Atan2(sy, m[i][i]);
-					th = (float)Math.Atan2(m[i][j], -m[i][k]);
+					float sy = MathF.Sqrt(m[j][i]*m[j][i] + m[k][i]*m[k][i]);
+					if (sy > 1.90735e-6f/*1e-6f*/)
+					{
+						ti = (float)Math.Atan2(m[j][i], m[k][i]);
+						tj = (float)Math.Atan2(sy, m[i][i]);
+						th = (float)Math.Atan2(m[i][j], -m[i][k]);
+					}
+					else
+					{
+						ti = (float)Math.Atan2(-m[k][j], m[j][j]);
+						tj = (float)Math.Atan2(sy, m[i][i]);
+						th = 0f;
+					}
 				}
 				else
 				{
-					ti = (float)Math.Atan2(-m[k][j], m[j][j]);
-					tj = (float)Math.Atan2(sy, m[i][i]);
-					th = 0f;
+					float cy = MathF.Sqrt(m[i][i] * m[i][i] + m[i][j] * m[i][j]);
+					if (cy > 1.90735e-6f/*1e-6f*/)
+					{
+						ti = (float)Math.Atan2(m[j][k], m[k][k]);
+						tj = (float)Math.Atan2(-m[i][k], cy);
+						th = (float)Math.Atan2(m[i][j], m[i][i]);
+					}
+					else
+					{
+						ti = (float)Math.Atan2(-m[k][j], m[j][j]);
+						tj = (float)Math.Atan2(-m[i][k], cy);
+						th = 0f;
+					}
 				}
-			}
-			else
-			{
-				float cy = MathF.Sqrt(m[i][i] * m[i][i] + m[i][j] * m[i][j]);
-				if (cy > 1.90735e-6f/*1e-6f*/)
+
+				if (n != 0)
 				{
-					ti = (float)Math.Atan2(m[j][k], m[k][k]);
-					tj = (float)Math.Atan2(-m[i][k], cy);
-					th = (float)Math.Atan2(m[i][j], m[i][i]);
+					ti = -ti;
+					tj = -tj;
+					th = -th;
 				}
-				else
+
+				if (f != 0)
 				{
-					ti = (float)Math.Atan2(-m[k][j], m[j][j]);
-					tj = (float)Math.Atan2(-m[i][k], cy);
-					th = 0f;
+					float t = ti;
+					ti = th;
+					th = t;
 				}
+
+				Euler e = new Euler(0f, 0f, 0f, order);
+				e[(f != 0) ? ((s != 0) ? i : k) : i] = ti;
+				e[j] = tj;
+				e[(f != 0) ? i : ((s != 0) ? i : k)] = th;
+				return e;
 			}
-			
-			if (n != 0)
-			{
-				ti = -ti;
-				tj = -tj;
-				th = -th;
-			}
-			
-			if (f != 0)
-			{
-				float t = ti;
-				ti = th;
-				th = t;
-			}
-			
-			Euler e = new Euler(0f, 0f, 0f, order);
-			e[(f != 0) ? ((s != 0) ? i : k) : i] = ti;
-			e[j] = tj;
-			e[(f != 0) ? i : ((s != 0) ? i : k)] = th;
-			return e;
+
+			return Zero;
 		}
 
 		internal float x_;
