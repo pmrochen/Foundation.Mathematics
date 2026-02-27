@@ -1,6 +1,6 @@
 /*
  *  Name: Rational
- *  Source: 
+ *  Author: 
  */
 
 using System;

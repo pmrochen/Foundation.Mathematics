@@ -423,12 +423,12 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns distance from a point to normalized plane.
 		/// </summary>
-		public readonly float GetDistance(Vector3 point)
+		public readonly float GetDistanceTo(Vector3 point)
 		{
 			return Math.Abs((Vector3.Dot(Normal, point) + d_));
 		}
 
-		public readonly float GetDistance(Vector3 point, bool normalized)
+		public readonly float GetDistanceTo(Vector3 point, bool normalized)
 		{
 			return normalized ?
 				Math.Abs((Vector3.Dot(Normal, point) + d_)) :
@@ -438,12 +438,12 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns signed distance from a point to normalized plane.
 		/// </summary>
-		public readonly float GetSignedDistance(Vector3 point)
+		public readonly float GetSignedDistanceTo(Vector3 point)
 		{
 			return (Vector3.Dot(Normal, point) + d_);
 		}
 
-		public readonly float GetSignedDistance(Vector3 point, bool normalized)
+		public readonly float GetSignedDistanceTo(Vector3 point, bool normalized)
 		{
 			return normalized ? 
 				(Vector3.Dot(Normal, point) + d_) :
@@ -455,44 +455,44 @@ namespace Foundation.Mathematics
 			return (Math.Abs(Vector3.Dot(Normal, point) + d_) < 1e-6f);
 		}
 
-		public readonly bool TestIntersection(in Line3 line)
+		public readonly bool Intersects(in Line3 line)
 		{
 			return (Math.Abs(Vector3.Dot(Normal, line.direction_)) >= 1e-6f);
 		}
 
-		public readonly bool TestIntersection(in Ray3 ray)
+		public readonly bool Intersects(in Ray3 ray)
 		{
 			return FindIntersection(ray).HasValue;
 		}
 
-		public readonly bool TestIntersection(in Segment3 segment)
+		public readonly bool Intersects(in Segment3 segment)
 		{
 			return FindIntersection(segment).HasValue;
 		}
 
-		//public readonly bool TestIntersection(in Triangle triangle)
+		//public readonly bool Intersects(in Triangle triangle)
 		//{
 		//	// #TODO Check if all vertices are on one side
 		//}
 
-		public readonly bool TestIntersection(in AxisAlignedBox box)
+		public readonly bool Intersects(in AxisAlignedBox box)
 		{
-			return box.TestIntersection(this);
+			return box.Intersects(this);
 		}
 
-		public readonly bool TestIntersection(in OrientedBox box)
+		public readonly bool Intersects(in OrientedBox box)
 		{
-			return box.TestIntersection(this);
+			return box.Intersects(this);
 		}
 
-		public readonly bool TestIntersection(in Sphere sphere)
+		public readonly bool Intersects(in Sphere sphere)
 		{
-			return sphere.TestIntersection(this);
+			return sphere.Intersects(this);
 		}
 
-		public readonly bool TestIntersection(in Ellipsoid ellipsoid)
+		public readonly bool Intersects(in Ellipsoid ellipsoid)
 		{
-			return ellipsoid.TestIntersection(this);
+			return ellipsoid.Intersects(this);
 		}
 
 		public readonly float? FindIntersection(in Line3 line)

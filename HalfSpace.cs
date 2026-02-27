@@ -415,12 +415,12 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns distance from a point to normalized half space.
 		/// </summary>
-		public readonly float GetDistance(Vector3 point)
+		public readonly float GetDistanceTo(Vector3 point)
 		{
 			return Math.Max((Vector3.Dot(Normal, point) + d_), 0f);
 		}
 
-		public readonly float GetDistance(Vector3 point, bool normalized)
+		public readonly float GetDistanceTo(Vector3 point, bool normalized)
 		{
 			return normalized ?
 				Math.Max((Vector3.Dot(Normal, point) + d_), 0f) :
@@ -430,12 +430,12 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns signed distance from a point to normalized half space.
 		/// </summary>
-		public readonly float GetSignedDistance(Vector3 point)
+		public readonly float GetSignedDistanceTo(Vector3 point)
 		{
 			return (Vector3.Dot(Normal, point) + d_);
 		}
 
-		public readonly float GetSignedDistance(Vector3 point, bool normalized)
+		public readonly float GetSignedDistanceTo(Vector3 point, bool normalized)
 		{
 			return normalized ? 
 				(Vector3.Dot(Normal, point) + d_) :
@@ -447,29 +447,29 @@ namespace Foundation.Mathematics
 			return (Vector3.Dot(Normal, point) <= -d_);
 		}
 
-		public readonly bool TestIntersection(in Segment3 segment)
+		public readonly bool Intersects(in Segment3 segment)
 		{
 			return Contains(segment.Start) || Contains(segment.End);
 		}
 
-		public readonly bool TestIntersection(in Triangle3 triangle)
+		public readonly bool Intersects(in Triangle3 triangle)
 		{
 			return Contains(triangle.Vertex0) || Contains(triangle.Vertex1) || Contains(triangle.Vertex2);
 		}
 
-		public readonly bool TestIntersection(in AxisAlignedBox box)
+		public readonly bool Intersects(in AxisAlignedBox box)
 		{
-			return box.TestIntersection(this);
+			return box.Intersects(this);
 		}
 
-		public readonly bool TestIntersection(in OrientedBox box)
+		public readonly bool Intersects(in OrientedBox box)
 		{
-			return box.TestIntersection(this);
+			return box.Intersects(this);
 		}
 
-		public readonly bool TestIntersection(in Sphere sphere)
+		public readonly bool Intersects(in Sphere sphere)
 		{
-			return sphere.TestIntersection(this);
+			return sphere.Intersects(this);
 		}
 	}
 }
