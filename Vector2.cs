@@ -224,6 +224,16 @@ namespace Foundation.Mathematics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float Sum(Vector2 v)
+		{
+#if NET10_0
+			return System.Numerics.Vector2.Sum(v.xy_);
+#else
+			return (v.x_ + v.y_);
+#endif
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Dot(Vector2 u, Vector2 v)
 		{
 			return System.Numerics.Vector2.Dot(u.xy_, v.xy_);
@@ -505,6 +515,11 @@ namespace Foundation.Mathematics
 		public static Vector2 Abs(Vector2 v)
 		{
 			return new Vector2(MathF.Abs(v.x_), MathF.Abs(v.y_));
+		}
+
+		public static float Sum(Vector2 v)
+		{
+			return (v.x_ + v.y_);
 		}
 
 		public static float Dot(Vector2 u, Vector2 v)

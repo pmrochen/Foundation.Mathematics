@@ -321,6 +321,16 @@ namespace Foundation.Mathematics
 			return new IntVector4(f/v.x_, f/v.y_, f/v.z_, f/v.w_);
 		}
 
+		public static IntVector4 Abs(IntVector4 v)
+		{
+			return new IntVector4(Math.Abs(v.x_), Math.Abs(v.y_), Math.Abs(v.z_), Math.Abs(v.w_));
+		}
+
+		public static int Sum(IntVector4 v)
+		{
+			return (v.x_ + v.y_ + v.z_ + v.w_);
+		}
+
 		public static IntVector4 Min(IntVector4 u, IntVector4 v)
 		{
 			return new IntVector4(Math.Min(u.x_, v.x_), Math.Min(u.y_, v.y_), Math.Min(u.z_, v.z_),
