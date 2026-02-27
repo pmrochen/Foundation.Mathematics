@@ -76,6 +76,46 @@ namespace Foundation.Mathematics
 			return (x_ == other.x_) && (y_ == other.y_);
 		}
 
+		public readonly bool AllLessThan(IntVector2 v)
+		{
+			return (x_ < v.x_) && (y_ < v.y_);
+		}
+
+		public readonly bool AllLessThanEqual(IntVector2 v)
+		{
+			return (x_ <= v.x_) && (y_ <= v.y_);
+		}
+
+		public readonly bool AllGreaterThan(IntVector2 v)
+		{
+			return (x_ > v.x_) && (y_ > v.y_);
+		}
+
+		public readonly bool AllGreaterThanEqual(IntVector2 v)
+		{
+			return (x_ >= v.x_) && (y_ >= v.y_);
+		}
+
+		public readonly bool AnyLessThan(IntVector2 v)
+		{
+			return (x_ < v.x_) || (y_ < v.y_);
+		}
+
+		public readonly bool AnyLessThanEqual(IntVector2 v)
+		{
+			return (x_ <= v.x_) || (y_ <= v.y_);
+		}
+
+		public readonly bool AnyGreaterThan(IntVector2 v)
+		{
+			return (x_ > v.x_) || (y_ > v.y_);
+		}
+
+		public readonly bool AnyGreaterThanEqual(IntVector4 v)
+		{
+			return (x_ >= v.x_) || (y_ >= v.y_);
+		}
+
 		public readonly int[] ToArray()
 		{
 			return new int[2] { x_, y_ };

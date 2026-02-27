@@ -112,6 +112,46 @@ namespace Foundation.Mathematics
 			return (x_ == other.x_) && (y_ == other.y_) && (z_ == other.z_);
 		}
 
+		public readonly bool AllLessThan(IntVector3 v)
+		{
+			return (x_ < v.x_) && (y_ < v.y_) && (z_ < v.z_);
+		}
+
+		public readonly bool AllLessThanEqual(IntVector3 v)
+		{
+			return (x_ <= v.x_) && (y_ <= v.y_) && (z_ <= v.z_);
+		}
+
+		public readonly bool AllGreaterThan(IntVector3 v)
+		{
+			return (x_ > v.x_) && (y_ > v.y_) && (z_ > v.z_);
+		}
+
+		public readonly bool AllGreaterThanEqual(IntVector3 v)
+		{
+			return (x_ >= v.x_) && (y_ >= v.y_) && (z_ >= v.z_);
+		}
+
+		public readonly bool AnyLessThan(IntVector3 v)
+		{
+			return (x_ < v.x_) || (y_ < v.y_) || (z_ < v.z_);
+		}
+
+		public readonly bool AnyLessThanEqual(IntVector3 v)
+		{
+			return (x_ <= v.x_) || (y_ <= v.y_) || (z_ <= v.z_);
+		}
+
+		public readonly bool AnyGreaterThan(IntVector3 v)
+		{
+			return (x_ > v.x_) || (y_ > v.y_) || (z_ > v.z_);
+		}
+
+		public readonly bool AnyGreaterThanEqual(IntVector3 v)
+		{
+			return (x_ >= v.x_) || (y_ >= v.y_) || (z_ >= v.z_);
+		}
+
 		public readonly int[] ToArray()
 		{
 			return new int[3] { x_, y_, z_ };
