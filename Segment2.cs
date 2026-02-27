@@ -53,6 +53,18 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ end_.GetHashCode();
 		}
 
+		public readonly bool ApproxEquals(in Segment2 other, float tolerance)
+		{
+			return start_.ApproxEquals(other.start_, tolerance) &&
+				end_.ApproxEquals(other.end_, tolerance);
+		}
+
+		public readonly bool ApproxEquals(in Segment2 other)
+		{
+			return start_.ApproxEquals(other.start_) &&
+				end_.ApproxEquals(other.end_);
+		}
+
 		public readonly override string ToString()
 		{
 			return String.Concat(start_.ToString(), " ", end_.ToString());
@@ -99,6 +111,9 @@ namespace Foundation.Mathematics
 				new Vector2(Single.Parse(m[2], provider), Single.Parse(m[3], provider)));
 		}
 
+		[Browsable(false)]
+		public readonly bool IsFinite => start_.IsFinite && end_.IsFinite;
+
 		public Vector2 Start
 		{
 			readonly get => start_;
@@ -143,17 +158,17 @@ namespace Foundation.Mathematics
 			return Math.Clamp(Vector2.Dot(point - start_, direction)/Vector2.Dot(direction, direction), 0f, 1f)*direction + start_;
 		}
 
-		public readonly float GetDistance(Vector2 point)
+		public readonly float GetDistanceTo(Vector2 point)
 		{
 			return Vector2.Distance(GetClosestPoint(point), point);
 		}
 
-		public readonly bool TestIntersection(in Line2 line)
+		public readonly bool Intersects(in Line2 line)
 		{
 			return FindIntersection(line).HasValue;
 		}
 
-		public readonly bool TestIntersection(in Segment2 segment)
+		public readonly bool Intersects(in Segment2 segment)
 		{
 			return FindIntersection(segment).HasValue;
 		}

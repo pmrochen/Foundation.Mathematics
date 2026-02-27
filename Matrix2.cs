@@ -814,6 +814,12 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
+		public readonly bool IsFinite
+		{
+			get => Functions.IsFinite(m00_) && Functions.IsFinite(m01_) && Functions.IsFinite(m10_) && Functions.IsFinite(m11_);
+		}
+
+		[Browsable(false)]
 		public readonly float Trace => m00_ + m11_;
 
 		[Browsable(false)]

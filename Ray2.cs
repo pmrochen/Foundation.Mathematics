@@ -47,6 +47,18 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ direction_.GetHashCode();
 		}
 
+		public readonly bool ApproxEquals(in Ray2 other, float tolerance)
+		{
+			return origin_.ApproxEquals(other.origin_, tolerance) &&
+				direction_.ApproxEquals(other.direction_, tolerance);
+		}
+
+		public readonly bool ApproxEquals(in Ray2 other)
+		{
+			return origin_.ApproxEquals(other.origin_) &&
+				direction_.ApproxEquals(other.direction_);
+		}
+
 		public readonly override string ToString()
 		{
 			return String.Concat(origin_.ToString(), " ", direction_.ToString());
@@ -154,17 +166,17 @@ namespace Foundation.Mathematics
 				Math.Max(Vector2.Dot(point - origin_, direction_)/Vector2.Dot(direction_, direction_), 0f)*direction_ + origin_;
 		}
 
-		public readonly float GetDistance(Vector2 point)
+		public readonly float GetDistanceTo(Vector2 point)
 		{
 			return Vector2.Distance(GetClosestPoint(point), point);
 		}
 
-		public readonly float GetDistance(Vector2 point, bool normalized)
+		public readonly float GetDistanceTo(Vector2 point, bool normalized)
 		{
 			return Vector2.Distance(GetClosestPoint(point, normalized), point);
 		}
 
-		public readonly bool TestIntersection(in Line2 line)
+		public readonly bool Intersects(in Line2 line)
 		{
 			return FindIntersection(line).HasValue;
 		}

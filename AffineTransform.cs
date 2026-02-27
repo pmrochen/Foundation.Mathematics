@@ -151,7 +151,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool ApproxEquals(in AffineTransform t)
 		{
-			return ApproxEquals(t, 1e-6f);
+			return r_.ApproxEquals(t.r_) && t_.ApproxEquals(t.t_);
 		}
 
 		public readonly override string ToString()
@@ -620,6 +620,9 @@ namespace Foundation.Mathematics
         {
             r_.Orthonormalize();
         }
+
+		[Browsable(false)]
+		public readonly bool IsFinite => r_.IsFinite && t_.IsFinite;
 
 		[Browsable(false)]
 		public readonly Vector3 ScaleComponent => r_.ScaleComponent;

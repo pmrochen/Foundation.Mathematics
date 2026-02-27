@@ -47,6 +47,18 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ direction_.GetHashCode();
 		}
 
+		public readonly bool ApproxEquals(in Line3 other, float tolerance)
+		{
+			return origin_.ApproxEquals(other.origin_, tolerance) &&
+				direction_.ApproxEquals(other.direction_, tolerance);
+		}
+
+		public readonly bool ApproxEquals(in Line3 other)
+		{
+			return origin_.ApproxEquals(other.origin_) &&
+				direction_.ApproxEquals(other.direction_);
+		}
+
 		public readonly override string ToString()
 		{
 			return String.Concat(origin_.ToString(), " ", direction_.ToString());
@@ -171,18 +183,18 @@ namespace Foundation.Mathematics
 				(Vector3.Dot(point - origin_, direction_)/Vector3.Dot(direction_, direction_))*direction_ + origin_;
 		}
 
-		public readonly float GetDistance(Vector3 point)
+		public readonly float GetDistanceTo(Vector3 point)
 		{
 			return Vector3.Distance(GetClosestPoint(point), point);
 		}
 
-		public readonly float GetDistance(Vector3 point, bool normalized)
+		public readonly float GetDistanceTo(Vector3 point, bool normalized)
 		{
 			return Vector3.Distance(GetClosestPoint(point, normalized), point);
 		}
 
 		// #TODO
-		//public readonly float GetDistance(Line3 line)
+		//public readonly float GetDistanceTo(Line3 line)
 		//{
 		// 	return Math.Abs(Vector3.Dot(Vector3.Cross(direction_, line.direction_), (line.origin_ - origin_)));
 		//}

@@ -53,6 +53,18 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ end_.GetHashCode();
 		}
 
+		public readonly bool ApproxEquals(in Segment3 other, float tolerance)
+		{
+			return start_.ApproxEquals(other.start_, tolerance) &&
+				end_.ApproxEquals(other.end_, tolerance);
+		}
+
+		public readonly bool ApproxEquals(in Segment3 other)
+		{
+			return start_.ApproxEquals(other.start_) &&
+				end_.ApproxEquals(other.end_);
+		}
+
 		public readonly override string ToString()
 		{
 			return String.Concat(start_.ToString(), " ", end_.ToString());
@@ -98,6 +110,9 @@ namespace Foundation.Mathematics
 			return new Segment3(new Vector3(Single.Parse(m[0], provider), Single.Parse(m[1], provider), Single.Parse(m[2], provider)),
 				new Vector3(Single.Parse(m[3], provider), Single.Parse(m[4], provider), Single.Parse(m[5], provider)));
 		}
+
+		[Browsable(false)]
+		public readonly bool IsFinite => start_.IsFinite && end_.IsFinite;
 
 		public Vector3 Start
 		{
@@ -166,7 +181,7 @@ namespace Foundation.Mathematics
 			return Math.Clamp(Vector3.Dot(point - start_, direction)/Vector3.Dot(direction, direction), 0f, 1f)*direction + start_;
 		}
 
-		public readonly float GetDistance(Vector3 point)
+		public readonly float GetDistanceTo(Vector3 point)
 		{
 			return Vector3.Distance(GetClosestPoint(point), point);
 		}

@@ -53,6 +53,18 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ direction_.GetHashCode();
 		}
 
+		public readonly bool ApproxEquals(in Line2 other, float tolerance)
+		{
+			return origin_.ApproxEquals(other.origin_, tolerance) &&
+				direction_.ApproxEquals(other.direction_, tolerance);
+		}
+
+		public readonly bool ApproxEquals(in Line2 other)
+		{
+			return origin_.ApproxEquals(other.origin_) &&
+				direction_.ApproxEquals(other.direction_);
+		}
+
 		public readonly override string ToString()
 		{
 			return String.Concat(origin_.ToString(), " ", direction_.ToString());
@@ -171,12 +183,12 @@ namespace Foundation.Mathematics
 				(Vector2.Dot(point - origin_, direction_)/Vector2.Dot(direction_, direction_))*direction_ + origin_;
 		}
 
-		public readonly float GetDistance(Vector2 point)
+		public readonly float GetDistanceTo(Vector2 point)
 		{
 			return Vector2.Distance(GetClosestPoint(point), point);
 		}
 
-		public readonly float GetDistance(Vector2 point, bool normalized)
+		public readonly float GetDistanceTo(Vector2 point, bool normalized)
 		{
 			return Vector2.Distance(GetClosestPoint(point, normalized), point);
 		}
@@ -184,7 +196,7 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns signed distance from a point to normalized line.
 		/// </summary>
-		public readonly float GetSignedDistance(Vector2 point)
+		public readonly float GetSignedDistanceTo(Vector2 point)
 		{ 
 			return Vector2.Cross(origin_ - point, direction_);
 		}
@@ -192,28 +204,28 @@ namespace Foundation.Mathematics
 		/// <summary>
 		/// Returns distance between normalized lines.
 		/// </summary>
-		public readonly float GetDistance(in Line2 line)
+		public readonly float GetDistanceTo(in Line2 line)
 		{
-			return Math.Abs(GetSignedDistance(line));
+			return Math.Abs(GetSignedDistanceTo(line));
 		}
 
 		/// <summary>
 		/// Returns signed distance between normalized lines.
 		/// </summary>
-		public readonly float GetSignedDistance(in Line2 line)
+		public readonly float GetSignedDistanceTo(in Line2 line)
 		{
 			return (Math.Abs(Vector2.Cross(direction_, line.direction_)) < SingleConstants.Tolerance) ?
 				Vector2.Cross((origin_ + Vector2.Dot(line.origin_ - origin_, direction_)*direction_) - line.origin_, direction_) :
 				0f;
 		}
 
-		public readonly bool TestIntersection(in Line2 line) 
+		public readonly bool Intersects(in Line2 line) 
 		{
 			return !(Math.Abs(Vector2.Cross(direction_, line.direction_)) < SingleConstants.Tolerance) ||
 				(Math.Abs(Vector2.Cross(Vector2.Normalize(line.origin_ - origin_), direction_)) < SingleConstants.Tolerance);
 		}
 
-		public readonly bool TestIntersection(in Segment2 segment) 
+		public readonly bool Intersects(in Segment2 segment) 
 		{
 			return FindIntersection(segment).HasValue;
 		}

@@ -71,6 +71,9 @@ namespace Foundation.Mathematics
 			set => ts_ = value;
 		}
 
+		[Browsable(false)]
+		public readonly bool IsFinite => ts_.IsFinite && q_.IsFinite;
+
 		public readonly override int GetHashCode()
 		{
 			int hash = ts_.GetHashCode();
@@ -107,7 +110,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool ApproxEquals(in PackedTransform t)
 		{
-			return ApproxEquals(t, 1e-6f);
+			return ts_.ApproxEquals(t.ts_) && q_.ApproxEquals(t.q_);
 		}
 
 		//public static AffineTransform FromAffineTransform(AffineTransform t)
