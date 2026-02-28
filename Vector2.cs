@@ -224,16 +224,6 @@ namespace Foundation.Mathematics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float Sum(Vector2 v)
-		{
-#if NET10_0
-			return System.Numerics.Vector2.Sum(v.xy_);
-#else
-			return (v.x_ + v.y_);
-#endif
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Dot(Vector2 u, Vector2 v)
 		{
 			return System.Numerics.Vector2.Dot(u.xy_, v.xy_);
@@ -517,11 +507,6 @@ namespace Foundation.Mathematics
 			return new Vector2(MathF.Abs(v.x_), MathF.Abs(v.y_));
 		}
 
-		public static float Sum(Vector2 v)
-		{
-			return (v.x_ + v.y_);
-		}
-
 		public static float Dot(Vector2 u, Vector2 v)
 		{
 			return (u.x_*v.x_ + u.y_*v.y_);
@@ -601,44 +586,61 @@ namespace Foundation.Mathematics
 		internal float y_;
 #endif
 
-		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+#if SIMD && NET10_0
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllLessThan(Vector2 v) 
 		{
-			info.AddValue("X", x_);
-			info.AddValue("Y", y_);
+			return Vector2.LessThanAll(xy_, v.xy_);
 		}
 
-		public static explicit operator Vector2(IntVector2 v)
-		{
-			return new Vector2((float)v.x_, (float)v.y_);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllLessThanEqual(Vector2 v) 
+		{ 
+			return Vector2.LessThanOrEqualAll(xy_, v.xy_);
 		}
 
-		[Browsable(false)]
-		public readonly Vector2 YX => new Vector2(y_, x_);
-
-		[Browsable(false)]
-		public readonly bool IsFinite => Functions.IsFinite(x_) && Functions.IsFinite(y_);
-
-		[Browsable(false)]
-		public readonly Axis MajorAxis => (MathF.Abs(y_) > MathF.Abs(x_)) ? Axis.Y : Axis.X;
-
-		public readonly override int GetHashCode()
-		{
-			//return HashCode.Combine(x_, y_);
-			int hash = x_.GetHashCode();
-			return ((hash << 5) + hash) ^ y_.GetHashCode();
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllGreaterThan(Vector2 v) 
+		{ 
+			return Vector2.GreaterThanAll(xy_, v.xy_);
 		}
 
-		public readonly bool ApproxEquals(Vector2 v, float tolerance) // #TODO SIMD
-		{
-			return (Math.Abs(v.x_ - x_) < tolerance) && 
-				(Math.Abs(v.y_ - y_) < tolerance);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllGreaterThanEqual(Vector2 v) 
+		{ 
+			return Vector2.GreaterThanOrEqualAll(xy_, v.xy_);
 		}
 
-		public readonly bool ApproxEquals(Vector2 v)
-		{
-			return ApproxEquals(v, 1e-6f);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyLessThan(Vector2 v) 
+		{ 
+			return Vector2.LessThanAny(xy_, v.xy_);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyLessThanEqual(Vector2 v) 
+		{ 
+			return Vector2.LessThanOrEqualAny(xy_, v.xy_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyGreaterThan(Vector2 v) 
+		{
+			return Vector2.GreaterThanAny(xy_, v.xy_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyGreaterThanEqual(Vector2 v) 
+		{ 
+			return Vector2.GreaterThanOrEqualAny(xy_, v.xy_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float Sum(Vector2 v)
+		{
+			return System.Numerics.Vector2.Sum(v.xy_);
+		}
+#else
 		public readonly bool AllLessThan(Vector2 v)
 		{
 			return (x_ < v.x_) && (y_ < v.y_);
@@ -677,6 +679,50 @@ namespace Foundation.Mathematics
 		public readonly bool AnyGreaterThanEqual(Vector4 v)
 		{
 			return (x_ >= v.x_) || (y_ >= v.y_);
+		}
+
+		public static float Sum(Vector2 v)
+		{
+			return (v.x_ + v.y_);
+		}
+#endif
+
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue("X", x_);
+			info.AddValue("Y", y_);
+		}
+
+		public static explicit operator Vector2(IntVector2 v)
+		{
+			return new Vector2((float)v.x_, (float)v.y_);
+		}
+
+		[Browsable(false)]
+		public readonly Vector2 YX => new Vector2(y_, x_);
+
+		[Browsable(false)]
+		public readonly bool IsFinite => Functions.IsFinite(x_) && Functions.IsFinite(y_);
+
+		[Browsable(false)]
+		public readonly Axis MajorAxis => (MathF.Abs(y_) > MathF.Abs(x_)) ? Axis.Y : Axis.X;
+
+		public readonly override int GetHashCode()
+		{
+			//return HashCode.Combine(x_, y_);
+			int hash = x_.GetHashCode();
+			return ((hash << 5) + hash) ^ y_.GetHashCode();
+		}
+
+		public readonly bool ApproxEquals(Vector2 v, float tolerance) // #TODO SIMD
+		{
+			return (Math.Abs(v.x_ - x_) < tolerance) && 
+				(Math.Abs(v.y_ - y_) < tolerance);
+		}
+
+		public readonly bool ApproxEquals(Vector2 v)
+		{
+			return ApproxEquals(v, 1e-6f);
 		}
 
 		public readonly float[] ToArray()

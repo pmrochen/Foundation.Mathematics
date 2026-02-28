@@ -288,16 +288,6 @@ namespace Foundation.Mathematics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float Sum(Vector4 v)
-		{
-#if NET10_0
-			return System.Numerics.Vector4.Sum(v.xyzw_);
-#else
-			return (v.x_ + v.y_ + v.z_ + v.w_);
-#endif
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Dot(Vector4 u, Vector4 v)
 		{
 			return System.Numerics.Vector4.Dot(u.xyzw_, v.xyzw_);
@@ -675,11 +665,6 @@ namespace Foundation.Mathematics
 			return new Vector4(MathF.Abs(v.x_), MathF.Abs(v.y_), MathF.Abs(v.z_), MathF.Abs(v.w_));
 		}
 
-		public static float Sum(Vector4 v)
-		{
-			return (v.x_ + v.y_ + v.z_ + v.w_);
-		}
-
 		public static float Dot(Vector4 u, Vector4 v)
 		{
 			return (u.x_*v.x_ + u.y_*v.y_ + u.z_*v.z_ + u.w_*v.w_);
@@ -766,6 +751,107 @@ namespace Foundation.Mathematics
 		internal float w_;
 #endif
 
+#if SIMD && NET10_0
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllLessThan(Vector4 v) 
+		{
+			return Vector4.LessThanAll(xyzw_, v.xyzw_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllLessThanEqual(Vector4 v) 
+		{ 
+			return Vector4.LessThanOrEqualAll(xyzw_, v.xyzw_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllGreaterThan(Vector4 v) 
+		{ 
+			return Vector4.GreaterThanAll(xyzw_, v.xyzw_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllGreaterThanEqual(Vector4 v) 
+		{ 
+			return Vector4.GreaterThanOrEqualAll(xyzw_, v.xyzw_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyLessThan(Vector4 v) 
+		{ 
+			return Vector4.LessThanAny(xyzw_, v.xyzw_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyLessThanEqual(Vector4 v) 
+		{ 
+			return Vector4.LessThanOrEqualAny(xyzw_, v.xyzw_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyGreaterThan(Vector4 v) 
+		{
+			return Vector4.GreaterThanAny(xyzw_, v.xyzw_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyGreaterThanEqual(Vector4 v) 
+		{ 
+			return Vector4.GreaterThanOrEqualAny(xyzw_, v.xyzw_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float Sum(Vector4 v)
+		{
+			return System.Numerics.Vector4.Sum(v.xyzw_);
+		}
+#else
+		public readonly bool AllLessThan(Vector4 v) 
+		{ 
+			return (x_ < v.x_) && (y_ < v.y_) && (z_ < v.z_) && (w_ < v.w_); 
+		}
+
+		public readonly bool AllLessThanEqual(Vector4 v) 
+		{ 
+			return (x_ <= v.x_) && (y_ <= v.y_) && (z_ <= v.z_) && (w_ <= v.w_); 
+		}
+
+		public readonly bool AllGreaterThan(Vector4 v) 
+		{ 
+			return (x_ > v.x_) && (y_ > v.y_) && (z_ > v.z_) && (w_ > v.w_); 
+		}
+
+		public readonly bool AllGreaterThanEqual(Vector4 v) 
+		{ 
+			return (x_ >= v.x_) && (y_ >= v.y_) && (z_ >= v.z_) && (w_ >= v.w_); 
+		}
+
+		public readonly bool AnyLessThan(Vector4 v) 
+		{ 
+			return (x_ < v.x_) || (y_ < v.y_) || (z_ < v.z_) || (w_ < v.w_); 
+		}
+
+		public readonly bool AnyLessThanEqual(Vector4 v) 
+		{ 
+			return (x_ <= v.x_) || (y_ <= v.y_) || (z_ <= v.z_) || (w_ <= v.w_); 
+		}
+
+		public readonly bool AnyGreaterThan(Vector4 v) 
+		{
+			return (x_ > v.x_) || (y_ > v.y_) || (z_ > v.z_) || (w_ > v.w_); 
+		}
+
+		public readonly bool AnyGreaterThanEqual(Vector4 v) 
+		{ 
+			return (x_ >= v.x_) || (y_ >= v.y_) || (z_ >= v.z_) || (w_ >= v.w_); 
+		}
+
+		public static float Sum(Vector4 v)
+		{
+			return (v.x_ + v.y_ + v.z_ + v.w_);
+		}
+#endif
+
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("X", x_);
@@ -805,46 +891,6 @@ namespace Foundation.Mathematics
 		public readonly bool ApproxEquals(Vector4 v)
 		{
 			return ApproxEquals(v, 1e-6f);
-		}
-
-		public readonly bool AllLessThan(Vector4 v) 
-		{ 
-			return (x_ < v.x_) && (y_ < v.y_) && (z_ < v.z_) && (w_ < v.w_); 
-		}
-
-		public readonly bool AllLessThanEqual(Vector4 v) 
-		{ 
-			return (x_ <= v.x_) && (y_ <= v.y_) && (z_ <= v.z_) && (w_ <= v.w_); 
-		}
-
-		public readonly bool AllGreaterThan(Vector4 v) 
-		{ 
-			return (x_ > v.x_) && (y_ > v.y_) && (z_ > v.z_) && (w_ > v.w_); 
-		}
-
-		public readonly bool AllGreaterThanEqual(Vector4 v) 
-		{ 
-			return (x_ >= v.x_) && (y_ >= v.y_) && (z_ >= v.z_) && (w_ >= v.w_); 
-		}
-
-		public readonly bool AnyLessThan(Vector4 v) 
-		{ 
-			return (x_ < v.x_) || (y_ < v.y_) || (z_ < v.z_) || (w_ < v.w_); 
-		}
-
-		public readonly bool AnyLessThanEqual(Vector4 v) 
-		{ 
-			return (x_ <= v.x_) || (y_ <= v.y_) || (z_ <= v.z_) || (w_ <= v.w_); 
-		}
-
-		public readonly bool AnyGreaterThan(Vector4 v) 
-		{
-			return (x_ > v.x_) || (y_ > v.y_) || (z_ > v.z_) || (w_ > v.w_); 
-		}
-
-		public readonly bool AnyGreaterThanEqual(Vector4 v) 
-		{ 
-			return (x_ >= v.x_) || (y_ >= v.y_) || (z_ >= v.z_) || (w_ >= v.w_); 
 		}
 
 		public readonly float[] ToArray()

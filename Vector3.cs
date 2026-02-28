@@ -267,16 +267,6 @@ namespace Foundation.Mathematics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float Sum(Vector3 v)
-		{
-#if NET10_0
-			return System.Numerics.Vector3.Sum(v.xyz_);
-#else
-			return (v.x_ + v.y_ + v.z_);
-#endif
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Dot(Vector3 u, Vector3 v)
 		{
 			return System.Numerics.Vector3.Dot(u.xyz_, v.xyz_);
@@ -663,11 +653,6 @@ namespace Foundation.Mathematics
 			return new Vector3(MathF.Abs(v.x_), MathF.Abs(v.y_), MathF.Abs(v.z_));
 		}
 
-		public static float Sum(Vector3 v)
-		{
-			return (v.x_ + v.y_ + v.z_);
-		}
-
 		public static float Dot(Vector3 u, Vector3 v)
 		{
 			return (u.x_*v.x_ + u.y_*v.y_ + u.z_*v.z_);
@@ -789,6 +774,107 @@ namespace Foundation.Mathematics
 		internal float z_;
 #endif
 
+#if SIMD && NET10_0
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllLessThan(Vector3 v) 
+		{
+			return Vector3.LessThanAll(xyz_, v.xyz_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllLessThanEqual(Vector3 v) 
+		{ 
+			return Vector3.LessThanOrEqualAll(xyz_, v.xyz_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllGreaterThan(Vector3 v) 
+		{ 
+			return Vector3.GreaterThanAll(xyz_, v.xyz_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AllGreaterThanEqual(Vector3 v) 
+		{ 
+			return Vector3.GreaterThanOrEqualAll(xyz_, v.xyz_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyLessThan(Vector3 v) 
+		{ 
+			return Vector3.LessThanAny(xyz_, v.xyz_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyLessThanEqual(Vector3 v) 
+		{ 
+			return Vector3.LessThanOrEqualAny(xyz_, v.xyz_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyGreaterThan(Vector3 v) 
+		{
+			return Vector3.GreaterThanAny(xyz_, v.xyz_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly bool AnyGreaterThanEqual(Vector3 v) 
+		{ 
+			return Vector3.GreaterThanOrEqualAny(xyz_, v.xyz_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float Sum(Vector3 v)
+		{
+			return System.Numerics.Vector3.Sum(v.xyz_);
+		}
+#else
+		public readonly bool AllLessThan(Vector3 v)
+		{
+			return (x_ < v.x_) && (y_ < v.y_) && (z_ < v.z_);
+		}
+
+		public readonly bool AllLessThanEqual(Vector3 v)
+		{
+			return (x_ <= v.x_) && (y_ <= v.y_) && (z_ <= v.z_);
+		}
+
+		public readonly bool AllGreaterThan(Vector3 v)
+		{
+			return (x_ > v.x_) && (y_ > v.y_) && (z_ > v.z_);
+		}
+
+		public readonly bool AllGreaterThanEqual(Vector3 v)
+		{
+			return (x_ >= v.x_) && (y_ >= v.y_) && (z_ >= v.z_);
+		}
+
+		public readonly bool AnyLessThan(Vector3 v)
+		{
+			return (x_ < v.x_) || (y_ < v.y_) || (z_ < v.z_);
+		}
+
+		public readonly bool AnyLessThanEqual(Vector3 v)
+		{
+			return (x_ <= v.x_) || (y_ <= v.y_) || (z_ <= v.z_);
+		}
+
+		public readonly bool AnyGreaterThan(Vector3 v)
+		{
+			return (x_ > v.x_) || (y_ > v.y_) || (z_ > v.z_);
+		}
+
+		public readonly bool AnyGreaterThanEqual(Vector3 v)
+		{
+			return (x_ >= v.x_) || (y_ >= v.y_) || (z_ >= v.z_);
+		}
+
+		public static float Sum(Vector3 v)
+		{
+			return (v.x_ + v.y_ + v.z_);
+		}
+#endif
+
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("X", x_);
@@ -836,46 +922,6 @@ namespace Foundation.Mathematics
 		public readonly bool ApproxEquals(Vector3 v)
 		{
 			return ApproxEquals(v, 1e-6f);
-		}
-
-		public readonly bool AllLessThan(Vector3 v)
-		{
-			return (x_ < v.x_) && (y_ < v.y_) && (z_ < v.z_);
-		}
-
-		public readonly bool AllLessThanEqual(Vector3 v)
-		{
-			return (x_ <= v.x_) && (y_ <= v.y_) && (z_ <= v.z_);
-		}
-
-		public readonly bool AllGreaterThan(Vector3 v)
-		{
-			return (x_ > v.x_) && (y_ > v.y_) && (z_ > v.z_);
-		}
-
-		public readonly bool AllGreaterThanEqual(Vector3 v)
-		{
-			return (x_ >= v.x_) && (y_ >= v.y_) && (z_ >= v.z_);
-		}
-
-		public readonly bool AnyLessThan(Vector3 v)
-		{
-			return (x_ < v.x_) || (y_ < v.y_) || (z_ < v.z_);
-		}
-
-		public readonly bool AnyLessThanEqual(Vector3 v)
-		{
-			return (x_ <= v.x_) || (y_ <= v.y_) || (z_ <= v.z_);
-		}
-
-		public readonly bool AnyGreaterThan(Vector3 v)
-		{
-			return (x_ > v.x_) || (y_ > v.y_) || (z_ > v.z_);
-		}
-
-		public readonly bool AnyGreaterThanEqual(Vector3 v)
-		{
-			return (x_ >= v.x_) || (y_ >= v.y_) || (z_ >= v.z_);
 		}
 
 		public readonly float[] ToArray()
