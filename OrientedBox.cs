@@ -186,7 +186,7 @@ namespace Foundation.Mathematics
 			}
 		}
 
-		public readonly AxisAlignedBox GetCircumscribedAxisAlignedBox() // #TODO SIMD
+		public readonly AxisAlignedBox GetCircumscribedBox() // #TODO SIMD
 		{
 			Vector3 h = new Vector3(Math.Abs(halfDims_.x_*basis_[0].x_) + Math.Abs(halfDims_.y_*basis_[1].x_) + Math.Abs(halfDims_.z_*basis_[2].x_),
 				Math.Abs(halfDims_.x_*basis_[0].y_) + Math.Abs(halfDims_.y_*basis_[1].y_) + Math.Abs(halfDims_.z_*basis_[2].y_),
@@ -200,29 +200,6 @@ namespace Foundation.Mathematics
 			//	return new Sphere();
 			return new Sphere(center_, halfDims_.Magnitude);
 		}
-
-		//public Vector3[] GetVertices()
-		//{
-		//    AffineTransform m = new AffineTransform(basis_, center_);
-		//    return new Vector3[8] { Vector3.Transform(new Vector3(-halfDims_.x_, -halfDims_.y_, -halfDims_.z_), m),
-		//		Vector3.Transform(new Vector3(halfDims_.x_, -halfDims_.y_, -halfDims_.z_), m),
-		//		Vector3.Transform(new Vector3(-halfDims_.x_, halfDims_.y_, -halfDims_.z_), m),
-		//		Vector3.Transform(new Vector3(halfDims_.x_, halfDims_.y_, -halfDims_.z_), m),
-		//		Vector3.Transform(new Vector3(-halfDims_.x_, -halfDims_.y_, halfDims_.z_), m),
-		//		Vector3.Transform(new Vector3(halfDims_.x_, -halfDims_.y_, halfDims_.z_), m),
-		//		Vector3.Transform(new Vector3(-halfDims_.x_, halfDims_.y_, halfDims_.z_), m),
-		//		Vector3.Transform(new Vector3(halfDims_.x_, halfDims_.y_, halfDims_.z_), m) };
-		//}
-
-		//public HalfSpace[] GetHalfSpaces()
-		//{
-		//    return new HalfSpace[6] { new HalfSpace(-basis_[0], -halfDims_.x_*basis_[0] + center_),
-		//		new HalfSpace(basis_[0], halfDims_.x_*basis_[0] + center_),
-		//		new HalfSpace(-basis_[1], -halfDims_.y_*basis_[1] + center_),
-		//		new HalfSpace(basis_[1], halfDims_.y_*basis_[1] + center_),
-		//		new HalfSpace(-basis_[2], -halfDims_.z_*basis_[2] + center_),
-		//		new HalfSpace(basis_[2], halfDims_.z_*basis_[2] + center_) };
-		//}
 
 		public readonly IEnumerable<Vector3> GetVertices()
 		{
@@ -318,21 +295,18 @@ namespace Foundation.Mathematics
 		}
 
 		public readonly bool Intersects(in Line3 line)
-		{
-			Interval intersection;
-			return (FindIntersection(line, out intersection) > 0);
-		}
+        {
+			return FindIntersection(line).HasValue;
+        }
 
-		public readonly bool Intersects(in Ray3 ray)
-		{
-			Interval intersection;
-			return (FindIntersection(ray, out intersection) > 0);
-		}
+        public readonly bool Intersects(in Ray3 ray)
+        {
+			return FindIntersection(ray).HasValue;
+        }
 
 		public readonly bool Intersects(in Segment3 segment)
 		{
-			Interval intersection;
-			return (FindIntersection(segment, out intersection) > 0);
+			return FindIntersection(segment).HasValue;
 		}
 
 		public readonly bool Intersects(in HalfSpace halfSpace)

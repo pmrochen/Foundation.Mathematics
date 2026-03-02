@@ -159,11 +159,6 @@ namespace Foundation.Mathematics
 			set => vertex3_ = value;
 		}
 
-		//public Vector3[] GetVertices()
-		//{
-		//    return new Vector3[4] { vertex0_, vertex1_, vertex2_, vertex3_ };
-		//}
-
 		public readonly IEnumerable<Vector3> GetVertices()
 		{
 			yield return vertex0_;

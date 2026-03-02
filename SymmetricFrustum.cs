@@ -200,42 +200,6 @@ namespace Foundation.Mathematics
 			set => depthMax_ = value;
 		}
 
-		//public Vector3[] GetVertices()
-		//{
-		//    AffineTransform m = new AffineTransform(basis_, origin_);
-		//    float depthRatio = depthMax_/depthMin_;
-		//    return new Vector3[8] { Vector3.Transform(new Vector3(-halfDims_.x_, -halfDims_.y_, depthMin_), m),
-		//		Vector3.Transform(new Vector3(halfDims_.x_, -halfDims_.y_, depthMin_), m),
-		//		Vector3.Transform(new Vector3(-halfDims_.x_, halfDims_.y_, depthMin_), m),
-		//		Vector3.Transform(new Vector3(halfDims_.x_, halfDims_.y_, depthMin_), m),
-		//		Vector3.Transform(new Vector3(-halfDims_.x_*depthRatio, -halfDims_.y_*depthRatio, depthMax_), m),
-		//		Vector3.Transform(new Vector3(halfDims_.x_*depthRatio, -halfDims_.y_*depthRatio, depthMax_), m),
-		//		Vector3.Transform(new Vector3(-halfDims_.x_*depthRatio, halfDims_.y_*depthRatio, depthMax_), m),
-		//		Vector3.Transform(new Vector3(halfDims_.x_*depthRatio, halfDims_.y_*depthRatio, depthMax_), m)};
-		//}
-
-		//public HalfSpace[] GetHalfSpaces()
-		//{
-		//    AffineTransform m = new AffineTransform(basis_, origin_);
-		//    Vector3 bottomLeft = Vector3.Transform(new Vector3(-halfDims_.x_, -halfDims_.y_, depthMin_), m);
-		//    Vector3 bottomRight = Vector3.Transform(new Vector3(halfDims_.x_, -halfDims_.y_, depthMin_), m);
-		//    Vector3 topLeft = Vector3.Transform(new Vector3(-halfDims_.x_, halfDims_.y_, depthMin_), m);
-		//    Vector3 topRight = Vector3.Transform(new Vector3(halfDims_.x_, halfDims_.y_, depthMin_), m);
-
-		//    HalfSpace[] halfSpaces = new HalfSpace[(depthMax_ < Single.MaxValue) ? 6 : 5];
-		//    bool flip = (basis_.Determinant < 0f);
-		//    halfSpaces[0] = flip ? HalfSpace.FromTriangle(origin_, topLeft, bottomLeft) : HalfSpace.FromTriangle(origin_, bottomLeft, topLeft);
-		//    halfSpaces[1] = flip ? HalfSpace.FromTriangle(origin_, bottomRight, topRight) : HalfSpace.FromTriangle(origin_, topRight, bottomRight);
-		//    halfSpaces[2] = flip ? HalfSpace.FromTriangle(origin_, bottomLeft, bottomRight) : HalfSpace.FromTriangle(origin_, bottomRight, bottomLeft);
-		//    halfSpaces[3] = flip ? HalfSpace.FromTriangle(origin_, topRight, topLeft) : HalfSpace.FromTriangle(origin_, topLeft, topRight);
-
-		//    halfSpaces[4] = new HalfSpace(-basis_[2], depthMin_*basis_[2] + origin_);
-		//    if (halfSpaces.Length == 6)
-		//        halfSpaces[5] = new HalfSpace(basis_[2], depthMax_*basis_[2] + origin_);
-			
-		//    return halfSpaces;
-		//}
-
 		public readonly IEnumerable<Vector3> GetVertices()
 		{
 			AffineTransform m = new AffineTransform(basis_, origin_);

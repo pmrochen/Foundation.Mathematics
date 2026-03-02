@@ -180,24 +180,6 @@ namespace Foundation.Mathematics
 			return new Sphere(center, Vector3.Distance(center, maximum_));
 		}
 
-		//public Vector3[] GetVertices()
-		//{
-		//    return new Vector3[8] { minimum_, new Vector3(maximum_.x_, minimum_.y_, minimum_.z_),
-		//		new Vector3(minimum_.x_, maximum_.y_, minimum_.z_), new Vector3(maximum_.x_, maximum_.y_, minimum_.z_),
-		//		new Vector3(minimum_.x_, minimum_.y_, maximum_.z_), new Vector3(maximum_.x_, minimum_.y_, maximum_.z_),
-		//		new Vector3(minimum_.x_, maximum_.y_, maximum_.z_), maximum_ };
-		//}
-
-		//public HalfSpace[] GetHalfSpaces()
-		//{
-		//    return new HalfSpace[6] { new HalfSpace(new Vector3(-1f, 0f, 0f), new Vector3(minimum_.x_, 0f, 0f)),
-		//		new HalfSpace(new Vector3(1f, 0f, 0f), new Vector3(maximum_.x_, 0f, 0f)),
-		//		new HalfSpace(new Vector3(0f, -1f, 0f), new Vector3(0f, minimum_.y_, 0f)),
-		//		new HalfSpace(new Vector3(0f, 1f, 0f), new Vector3(0f, maximum_.y_, 0f)),
-		//		new HalfSpace(new Vector3(0f, 0f, -1f), new Vector3(0f, 0f, minimum_.z_)),
-		//		new HalfSpace(new Vector3(0f, 0f, 1f), new Vector3(0f, 0f, maximum_.z_)) };
-		//}
-
 		public readonly IEnumerable<Vector3> GetVertices()
 		{
 			yield return minimum_;
