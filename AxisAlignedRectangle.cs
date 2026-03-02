@@ -210,7 +210,7 @@ namespace Foundation.Mathematics
 
 		public readonly Vector2 GetClosestPoint(Vector2 point)
 		{
-			return Vector2.Min(Vector2.Max(point, minimum_), maximum_);
+			return Vector2.Clamp(point, minimum_, maximum_);
 		}
 
 		public readonly float GetDistanceTo(Vector2 point)
@@ -220,28 +220,30 @@ namespace Foundation.Mathematics
 
 		public readonly bool Contains(Vector2 point)
 		{
-			return (minimum_.x_ <= point.x_) && (maximum_.x_ >= point.x_) && // #TODO SIMD
-				(minimum_.y_ <= point.y_) && (maximum_.y_ >= point.y_);
+			return minimum_.AllLessThanEqual(point) && maximum_.AllGreaterThanEqual(point);
 		}
 
 		public readonly bool Contains(in AxisAlignedRectangle rectangle)
 		{
-			return (minimum_.x_ <= rectangle.minimum_.x_) && (maximum_.x_ >= rectangle.maximum_.x_) && // #TODO SIMD
-				(minimum_.y_ <= rectangle.minimum_.y_) && (maximum_.y_ >= rectangle.maximum_.y_);
+			return minimum_.AllLessThanEqual(rectangle.minimum_) && maximum_.AllGreaterThanEqual(rectangle.maximum_.x_);
 		}
 
 		public readonly bool Contains(in Circle2 circle)
 		{
 			Vector2 center = circle.Center;
+#if SIMD
+			Vector2 radius = new Vector2(sphere.Radius);
+			return minimum_.AllLessThanEqual(center - radius) && maximum_.AllGreaterThanEqual(center + radius);
+#else
 			float radius = circle.Radius;
-			return (minimum_.x_ <= (center.x_ - radius)) && (maximum_.x_ >= (center.x_ + radius)) && // #TODO SIMD
+			return (minimum_.x_ <= (center.x_ - radius)) && (maximum_.x_ >= (center.x_ + radius)) &&
 				(minimum_.y_ <= (center.y_ - radius)) && (maximum_.y_ >= (center.y_ + radius));
+#endif
 		}
 
 		public readonly bool Intersects(in AxisAlignedRectangle rectangle)
 		{
-			return (minimum_.x_ <= rectangle.maximum_.x_) && (maximum_.x_ >= rectangle.minimum_.x_) && // #TODO SIMD
-				(minimum_.y_ <= rectangle.maximum_.y_) && (maximum_.y_ >= rectangle.minimum_.y_);
+			return minimum_.AllLessThanEqual(rectangle.maximum_) && maximum_.AllGreaterThanEqual(rectangle.minimum_);
 		}
 
 		public readonly bool Intersects(in Line2 line)

@@ -186,13 +186,12 @@ namespace Foundation.Mathematics
 			}
 		}
 
-		public readonly AxisAlignedBox GetCircumscribedBox() // #TODO SIMD
-		{
-			Vector3 h = new Vector3(Math.Abs(halfDims_.x_*basis_[0].x_) + Math.Abs(halfDims_.y_*basis_[1].x_) + Math.Abs(halfDims_.z_*basis_[2].x_),
-				Math.Abs(halfDims_.x_*basis_[0].y_) + Math.Abs(halfDims_.y_*basis_[1].y_) + Math.Abs(halfDims_.z_*basis_[2].y_),
-				Math.Abs(halfDims_.x_*basis_[0].z_) + Math.Abs(halfDims_.y_*basis_[1].z_) + Math.Abs(halfDims_.z_*basis_[2].z_));
-			return new AxisAlignedBox(center_ - h, center_ + h);
-		}
+		//public readonly AxisAlignedBox GetCircumscribedBox()
+		//{
+		//	Vector3 h = Vector3.Abs(halfDims_.x_*basis_.Row0) + Vector3.Abs(halfDims_.y_*basis_.Row1) + 
+		//		Vector3.Abs(halfDims_.z_*basis_.Row2);
+		//	return new AxisAlignedBox(center_ - h, center_ + h);
+		//}
 
 		public readonly Sphere GetCircumscribedSphere()
 		{
@@ -216,27 +215,23 @@ namespace Foundation.Mathematics
 
 		public readonly IEnumerable<HalfSpace> GetHalfSpaces()
 		{
-			yield return new HalfSpace(-basis_[0], -halfDims_.x_*basis_[0] + center_);
-			yield return new HalfSpace(basis_[0], halfDims_.x_*basis_[0] + center_);
-			yield return new HalfSpace(-basis_[1], -halfDims_.y_*basis_[1] + center_);
-			yield return new HalfSpace(basis_[1], halfDims_.y_*basis_[1] + center_);
-			yield return new HalfSpace(-basis_[2], -halfDims_.z_*basis_[2] + center_);
-			yield return new HalfSpace(basis_[2], halfDims_.z_*basis_[2] + center_);
+			yield return new HalfSpace(-basis_.Row0, -halfDims_.x_*basis_.Row0 + center_);
+			yield return new HalfSpace(basis_.Row0, halfDims_.x_*basis_.Row0 + center_);
+			yield return new HalfSpace(-basis_.Row1, -halfDims_.y_*basis_.Row1 + center_);
+			yield return new HalfSpace(basis_.Row1, halfDims_.y_*basis_.Row1 + center_);
+			yield return new HalfSpace(-basis_.Row2, -halfDims_.z_*basis_.Row2 + center_);
+			yield return new HalfSpace(basis_.Row2, halfDims_.z_*basis_.Row2 + center_);
 		}
 
 		public void Orthonormalize()
 		{
-			//if (System.Numerics.Vector.IsHardwareAccelerated)
-			//{
-				halfDims_ *= new Vector3(basis_[0].Magnitude, basis_[1].Magnitude, basis_[2].Magnitude);
-			//}
-			//else
-			//{
-			//	halfDims_.X *= basis_[0].Magnitude;
-			//	halfDims_.Y *= basis_[1].Magnitude;
-			//	halfDims_.Z *= basis_[2].Magnitude;
-			//}
-
+#if SIMD
+			halfDims_ *= new Vector3(basis_.Row0.Magnitude, basis_.Row1.Magnitude, basis_.Row2.Magnitude);
+#else
+			halfDims_.X *= basis_.Row0.Magnitude;
+			halfDims_.Y *= basis_.Row1.Magnitude;
+			halfDims_.Z *= basis_.Row2.Magnitude;
+#endif
 			basis_.Orthonormalize();
 		}
 
@@ -270,14 +265,11 @@ namespace Foundation.Mathematics
 			return b;
 		}
 
-		public readonly Vector3 GetClosestPoint(Vector3 point) // #TODO SIMD
+		public readonly Vector3 GetClosestPoint(Vector3 point)
 		{
 			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
 			point = (point - center_)*basisTranspose;
-			Vector3 p = new Vector3((point.X < -halfDims_.X) ? -halfDims_.X : ((point.X > halfDims_.X) ? halfDims_.X : point.X),
-				(point.Y < -halfDims_.Y) ? -halfDims_.Y : ((point.Y > halfDims_.Y) ? halfDims_.Y : point.Y),
-				(point.Z < -halfDims_.Z) ? -halfDims_.Z : ((point.Z > halfDims_.Z) ? halfDims_.Z : point.Z));
-			return p*basis_ + center_;
+			return Vector3.Clamp(point, -halfDims_, halfDims_)*basis_ + center_;
 		}
 
 		public readonly float GetDistanceTo(Vector3 point)
@@ -289,9 +281,7 @@ namespace Foundation.Mathematics
 		{
 			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
 			point = (point - center_)*basisTranspose;
-			return ((-halfDims_.x_ <= point.x_) && (halfDims_.x_ >= point.x_) && // #TODO SIMD
-				(-halfDims_.y_ <= point.y_) && (halfDims_.y_ >= point.y_) &&
-				(-halfDims_.z_ <= point.z_) && (halfDims_.z_ >= point.z_));
+			return (-halfDims_).AllLessThanEqual(point) && halfDims_.AllGreaterThanEqual(point);
 		}
 
 		public readonly bool Intersects(in Line3 line)
@@ -312,19 +302,29 @@ namespace Foundation.Mathematics
 		public readonly bool Intersects(in HalfSpace halfSpace)
 		{
 			Vector3 normal = halfSpace.Normal;
-			float r = Math.Abs(halfDims_.x_*Vector3.Dot(normal, basis_[0])) + // #TODO SIMD
-				Math.Abs(halfDims_.y_*Vector3.Dot(normal, basis_[1])) +
-				Math.Abs(halfDims_.z_*Vector3.Dot(normal, basis_[2]));
-			return ((Vector3.Dot(normal, center_) + halfSpace.d_) <= r);
+#if SIMD
+			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
+			float r = Vector3.Sum(Vector3.Abs(halfDims_*(normal*basisTranspose)));
+#else
+			float r = Math.Abs(halfDims_.x_*Vector3.Dot(normal, basis_.Row0)) +
+				Math.Abs(halfDims_.y_*Vector3.Dot(normal, basis_.Row1)) +
+				Math.Abs(halfDims_.z_*Vector3.Dot(normal, basis_.Row2));
+#endif
+			return ((Vector3.Dot(normal, center_) + halfSpace.D) <= r);
 		}
 
 		public readonly bool Intersects(in Plane plane)
 		{
 			Vector3 normal = plane.Normal;
-			float r = Math.Abs(halfDims_.x_*Vector3.Dot(normal, basis_[0])) + // #TODO SIMD
-				Math.Abs(halfDims_.y_*Vector3.Dot(normal, basis_[1])) +
-				Math.Abs(halfDims_.z_*Vector3.Dot(normal, basis_[2]));
-			return (Math.Abs(Vector3.Dot(normal, center_) + plane.d_) <= r);
+#if SIMD
+			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
+			float r = Vector3.Sum(Vector3.Abs(halfDims_*(normal*basisTranspose)));
+#else
+			float r = Math.Abs(halfDims_.x_*Vector3.Dot(normal, basis_.Row0)) +
+				Math.Abs(halfDims_.y_*Vector3.Dot(normal, basis_.Row1)) +
+				Math.Abs(halfDims_.z_*Vector3.Dot(normal, basis_.Row2));
+#endif
+			return (Math.Abs(Vector3.Dot(normal, center_) + plane.D) <= r);
 		}
 
 		public readonly bool Intersects(in Triangle3 triangle)

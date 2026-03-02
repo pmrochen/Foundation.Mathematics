@@ -118,10 +118,9 @@ namespace Foundation.Mathematics
 
 		public static AxisAlignedBox FromOrientedBox(in OrientedBox b)
 		{
-			Vector3 hl = new Vector3(Math.Abs(b.halfDims_.x_ * b.basis_[0].x_) + Math.Abs(b.halfDims_.y_ * b.basis_[1].x_) + Math.Abs(b.halfDims_.z_ * b.basis_[2].x_),
-				Math.Abs(b.halfDims_.x_ * b.basis_[0].y_) + Math.Abs(b.halfDims_.y_ * b.basis_[1].y_) + Math.Abs(b.halfDims_.z_ * b.basis_[2].y_),
-				Math.Abs(b.halfDims_.x_ * b.basis_[0].z_) + Math.Abs(b.halfDims_.y_ * b.basis_[1].z_) + Math.Abs(b.halfDims_.z_ * b.basis_[2].z_));
-			return new AxisAlignedBox(b.center_ - hl, b.center_ + hl);
+			Vector3 h = Vector3.Abs(b.halfDims_.x_*b.basis_.Row0) + Vector3.Abs(b.halfDims_.y_*b.basis_.Row1) + 
+				Vector3.Abs(b.halfDims_.z_*b.basis_.Row2);
+			return new AxisAlignedBox(b.center_ - h, b.center_ + h);
 		}
 
 		[Browsable(false)]
@@ -260,7 +259,7 @@ namespace Foundation.Mathematics
 
 		public readonly Vector3 GetClosestPoint(Vector3 point)
 		{
-			return Vector3.Min(Vector3.Max(point, minimum_), maximum_);
+			return Vector3.Clamp(point, minimum_, maximum_);
 		}
 
 		public readonly float GetDistanceTo(Vector3 point)
@@ -270,25 +269,26 @@ namespace Foundation.Mathematics
 
 		public readonly bool Contains(Vector3 point)
         {
-	        return (minimum_.x_ <= point.x_) && (maximum_.x_ >= point.x_) && // #TODO SIMD
-				(minimum_.y_ <= point.y_) && (maximum_.y_ >= point.y_) &&
-		        (minimum_.z_ <= point.z_) && (maximum_.z_ >= point.z_);
+			return minimum_.AllLessThanEqual(point) && maximum_.AllGreaterThanEqual(point);
         }
 
 		public readonly bool Contains(in AxisAlignedBox box)
 		{
-			return (minimum_.x_ <= box.minimum_.x_) && (maximum_.x_ >= box.maximum_.x_) && // #TODO SIMD
-				(minimum_.y_ <= box.minimum_.y_) && (maximum_.y_ >= box.maximum_.y_) &&
-				(minimum_.z_ <= box.minimum_.z_) && (maximum_.z_ >= box.maximum_.z_);
+			return minimum_.AllLessThanEqual(box.minimum_) && maximum_.AllGreaterThanEqual(box.maximum_);
 		}
 
 		public readonly bool Contains(in Sphere sphere)
 		{
 			Vector3 center = sphere.Center;
+#if SIMD
+			Vector3 radius = new Vector3(sphere.Radius);
+			return minimum_.AllLessThanEqual(center - radius) && maximum_.AllGreaterThanEqual(center + radius);
+#else
 			float radius = sphere.Radius;
-			return (minimum_.x_ <= (center.x_ - radius)) && (maximum_.x_ >= (center.x_ + radius)) && // #TODO SIMD
+			return (minimum_.x_ <= (center.x_ - radius)) && (maximum_.x_ >= (center.x_ + radius)) &&
 				(minimum_.y_ <= (center.y_ - radius)) && (maximum_.y_ >= (center.y_ + radius)) &&
 				(minimum_.z_ <= (center.z_ - radius)) && (maximum_.z_ >= (center.z_ + radius));
+#endif
 		}
 
 		public readonly bool Intersects(in Line3 line)
@@ -311,8 +311,12 @@ namespace Foundation.Mathematics
 			Vector3 halfDims = (maximum_ - minimum_)*0.5f;
 			Vector3 center = (minimum_ + maximum_)*0.5f;
 			Vector3 normal = halfSpace.Normal;
-			float r = Math.Abs(halfDims.x_*normal.X) + Math.Abs(halfDims.y_*normal.Y) + Math.Abs(halfDims.z_*normal.Z); // #TODO SIMD
-			return ((Vector3.Dot(normal, center) + halfSpace.d_) <= r);
+#if SIMD
+			float r = Vector3.Sum(Vector3.Abs(halfDims*normal));
+#else
+			float r = Math.Abs(halfDims.x_*normal.X) + Math.Abs(halfDims.y_*normal.Y) + Math.Abs(halfDims.z_*normal.Z);
+#endif
+			return ((Vector3.Dot(normal, center) + halfSpace.D) <= r);
 		}
 
 		public readonly bool Intersects(in Plane plane)
@@ -320,8 +324,12 @@ namespace Foundation.Mathematics
 			Vector3 halfDims = (maximum_ - minimum_)*0.5f;
 			Vector3 center = (minimum_ + maximum_)*0.5f;
 			Vector3 normal = plane.Normal;
-			float r = Math.Abs(halfDims.x_*normal.X) + Math.Abs(halfDims.y_*normal.Y) + Math.Abs(halfDims.z_*normal.Z); // #TODO SIMD
-			return (Math.Abs(Vector3.Dot(normal, center) + plane.d_) <= r);
+#if SIMD
+			float r = Vector3.Sum(Vector3.Abs(halfDims*normal));
+#else
+			float r = Math.Abs(halfDims.x_*normal.X) + Math.Abs(halfDims.y_*normal.Y) + Math.Abs(halfDims.z_*normal.Z);
+#endif
+			return (Math.Abs(Vector3.Dot(normal, center) + plane.D) <= r);
 		}
 
 		public readonly bool Intersects(in Triangle3 triangle)
@@ -333,9 +341,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in AxisAlignedBox box)
         {
-            return (minimum_.x_ <= box.maximum_.x_) && (maximum_.x_ >= box.minimum_.x_) && // #TODO SIMD
-				(minimum_.y_ <= box.maximum_.y_) && (maximum_.y_ >= box.minimum_.y_) &&
-                (minimum_.z_ <= box.maximum_.z_) && (maximum_.z_ >= box.minimum_.z_);
+			return minimum_.AllLessThanEqual(box.maximum_) && maximum_.AllGreaterThanEqual(box.minimum_);
         }
 
 		public readonly bool Intersects(in OrientedBox box)
