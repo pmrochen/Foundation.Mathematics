@@ -186,7 +186,7 @@ namespace Foundation.Mathematics
 			float a = Vector3.Dot(line.direction_, line.direction_);
 			float b = 2f*Vector3.Dot(line.direction_, diff);
 			float c = Vector3.Dot(diff, diff) - radius_*radius_;
-			return ((b*b - 4f*a*c) >= 0f);
+			return !((b*b - 4f*a*c) < 0f);
 		}
 
 		public readonly bool Intersects(in Ray3 ray)
@@ -285,15 +285,15 @@ namespace Foundation.Mathematics
 			float c = Vector3.Dot(diff, diff) - radius_*radius_;
 			float delta = b*b - 4f*a*c;
 
-			if (delta > 0f)
+			if (delta < 0f)
+			{
+				return null;
+			}
+			else if (delta > 0f)
 			{
 				delta = MathF.Sqrt(delta);
 				a = 0.5f/a;
 				return new Interval((-b - delta)*a, (-b + delta)*a);
-			}
-			else if (delta < 0f)
-			{
-				return null;
 			}
 			else // delta == 0
 			{

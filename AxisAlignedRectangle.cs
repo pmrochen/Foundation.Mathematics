@@ -166,12 +166,6 @@ namespace Foundation.Mathematics
 			}
 		}
 
-		//public Vector2[] GetVertices()
-		//{
-		//    return new Vector2[4] { minimum_, new Vector2(maximum_.x_, minimum_.y_),
-		//		new Vector2(minimum_.x_, maximum_.y_), maximum_ };
-		//}
-
 		public readonly IEnumerable<Vector2> GetVertices()
 		{
 			yield return minimum_;
@@ -250,9 +244,68 @@ namespace Foundation.Mathematics
 				(minimum_.y_ <= rectangle.maximum_.y_) && (maximum_.y_ >= rectangle.minimum_.y_);
 		}
 
+		public readonly bool Intersects(in Line2 line)
+        {
+			return FindIntersection(line).HasValue;
+        }
+
+        public readonly bool Intersects(in Ray2 ray)
+        {
+			return FindIntersection(ray).HasValue;
+        }
+
+		public readonly bool Intersects(in Segment2 segment)
+		{
+			return FindIntersection(segment).HasValue;
+		}
+
 		public readonly bool Intersects(in Circle2 circle)
 		{
 			return circle.Intersects(this);
+		}
+
+		public readonly Interval? FindIntersection(in Line2 line)
+		{
+			// #TODO
+		}
+
+		public readonly Interval? FindIntersection(in Ray2 ray)
+		{
+			Interval? intersection = FindIntersection(new Line2(ray.origin_, ray.direction_));
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public readonly Interval? FindIntersection(in Segment2 segment)
+		{
+			Interval? intersection = FindIntersection(new Line2(segment.start_, segment.end_ - segment.start_));
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+				{
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+					interval.Maximum = Math.Min(interval.Maximum, 1f);
+				}
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		internal Vector2 minimum_;

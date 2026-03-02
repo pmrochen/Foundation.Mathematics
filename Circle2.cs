@@ -164,6 +164,25 @@ namespace Foundation.Mathematics
 			return (Vector2.DistanceSquared(point, center_) <= radius_*radius_);
 		}
 
+		public readonly bool Intersects(in Line2 line)
+        {
+			Vector2 diff = line.origin_ - center_;
+			float a = Vector2.Dot(line.direction_, line.direction_);
+			float b = 2f*Vector2.Dot(line.direction_, diff);
+			float c = Vector2.Dot(diff, diff) - radius_*radius_;
+			return !((b*b - 4f*a*c) < 0f);
+        }
+
+        public readonly bool Intersects(in Ray2 ray)
+        {
+			return FindIntersection(ray).HasValue;
+        }
+
+		public readonly bool Intersects(in Segment2 segment)
+		{
+			return FindIntersection(segment).HasValue;
+		}
+
 		public readonly bool Intersects(in AxisAlignedRectangle rectangle)
         {
 			float d = 0f;
@@ -207,15 +226,15 @@ namespace Foundation.Mathematics
 			float c = Vector2.Dot(diff, diff) - radius_*radius_;
 			float delta = b*b - 4f*a*c;
 
-			if (delta > 0f)
+			if (delta < 0f)
+			{
+				return null;
+			}
+			else if (delta > 0f)
 			{
 				delta = MathF.Sqrt(delta);
 				a = 0.5f/a;
 				return new Interval((-b - delta)*a, (-b + delta)*a);
-			}
-			else if (delta < 0f)
-			{
-				return null;
 			}
 			else // delta == 0
 			{
