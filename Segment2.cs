@@ -111,6 +111,26 @@ namespace Foundation.Mathematics
 				new Vector2(Single.Parse(m[2], provider), Single.Parse(m[3], provider)));
 		}
 
+		public static Segment2 FromLine(in Line2 l)
+		{
+			return new Segment2(l.origin_, l.origin_ + l.direction_);
+		}
+
+		public static Segment2 FromLine(in Line2 l, Interval interval)
+		{
+			return new Segment2(l.Evaluate(interval.Minimum), l.Evaluate(interval.Maximum));
+		}
+
+		public static Segment2 FromRay(in Ray2 r)
+		{
+			return new Segment2(r.origin_, r.origin_ + r.direction_);
+		}
+
+		public static Segment2 FromRay(in Ray2 r, Interval interval)
+		{
+			return new Segment2(r.Evaluate(interval.Minimum), r.Evaluate(interval.Maximum));
+		}
+
 		[Browsable(false)]
 		public readonly bool IsFinite => start_.IsFinite && end_.IsFinite;
 
