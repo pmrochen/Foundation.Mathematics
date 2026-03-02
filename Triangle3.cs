@@ -355,6 +355,10 @@ namespace Foundation.Mathematics
 			return halfSpace.Contains(vertex0_) || halfSpace.Contains(vertex1_) || halfSpace.Contains(vertex2_);
 		}
 
+		//public readonly bool Intersects(in Plane plane) // #TODO Check if all vertices are on one side
+		//{
+		//}
+
 		public readonly bool Intersects(in Line3 line)
         {
             return FindIntersection(line).HasValue;

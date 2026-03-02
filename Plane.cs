@@ -455,76 +455,24 @@ namespace Foundation.Mathematics
 			return (Math.Abs(Vector3.Dot(Normal, point) + d_) < 1e-6f);
 		}
 
-		public readonly bool Intersects(in Line3 line)
-		{
-			return (Math.Abs(Vector3.Dot(Normal, line.direction_)) >= 1e-6f);
-		}
-
-		public readonly bool Intersects(in Ray3 ray)
-		{
-			return FindIntersection(ray).HasValue;
-		}
-
-		public readonly bool Intersects(in Segment3 segment)
-		{
-			return FindIntersection(segment).HasValue;
-		}
-
-		//public readonly bool Intersects(in Triangle triangle)
+		//public readonly bool Intersects(in AxisAlignedBox box)
 		//{
-		//	// #TODO Check if all vertices are on one side
+		//	return box.Intersects(this);
 		//}
 
-		public readonly bool Intersects(in AxisAlignedBox box)
-		{
-			return box.Intersects(this);
-		}
-
-		public readonly bool Intersects(in OrientedBox box)
-		{
-			return box.Intersects(this);
-		}
-
-		public readonly bool Intersects(in Sphere sphere)
-		{
-			return sphere.Intersects(this);
-		}
-
-		public readonly bool Intersects(in Ellipsoid ellipsoid)
-		{
-			return ellipsoid.Intersects(this);
-		}
-
-		public readonly float? FindIntersection(in Line3 line)
-		{
-			float nd = Vector3.Dot(Normal, line.direction_);
-			if (Math.Abs(nd) < SingleConstants.Tolerance)
-				return null;
-			return (-d_ - Vector3.Dot(Normal, line.origin_))/nd;
-		}
-
-		public readonly float? FindIntersection(in Ray3 ray)
-		{
-			float? t = FindIntersection(new Line3(ray.origin_, ray.direction_));
-			return (t.HasValue && (t.Value >= 0f)) ? t : null;
-		}
-
-		public readonly float? FindIntersection(in Segment3 segment)
-		{
-			float? t = FindIntersection(new Line3(segment.start_, segment.end_ - segment.start_));
-			return (t.HasValue && (t.Value >= 0f) && (t.Value <= 1f)) ? t : null;
-		}
-
-		//public readonly Vector2? FindIntersectionPoint(in Line3 line) // #TODO
+		//public readonly bool Intersects(in OrientedBox box)
 		//{
+		//	return box.Intersects(this);
 		//}
 
-		//public readonly Vector2? FindIntersectionPoint(in Ray3 ray) // #TODO
+		//public readonly bool Intersects(in Sphere sphere)
 		//{
+		//	return sphere.Intersects(this);
 		//}
 
-		//public readonly Vector2? FindIntersectionPoint(in Segment3 segment) // #TODO
+		//public readonly bool Intersects(in Ellipsoid ellipsoid)
 		//{
+		//	return ellipsoid.Intersects(this);
 		//}
 	}
 }

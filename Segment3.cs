@@ -111,6 +111,26 @@ namespace Foundation.Mathematics
 				new Vector3(Single.Parse(m[3], provider), Single.Parse(m[4], provider), Single.Parse(m[5], provider)));
 		}
 
+		public static Segment3 FromLine(in Line3 l)
+		{
+			return new Segment3(l.origin_, l.origin_ + l.direction_);
+		}
+
+		public static Segment3 FromLine(in Line3 l, Interval interval)
+		{
+			return new Segment3(l.Evaluate(interval.Minimum), l.Evaluate(interval.Maximum));
+		}
+
+		public static Segment3 FromRay(in Ray3 r)
+		{
+			return new Segment3(r.origin_, r.origin_ + r.direction_);
+		}
+
+		public static Segment3 FromRay(in Ray3 r, Interval interval)
+		{
+			return new Segment3(r.Evaluate(interval.Minimum), r.Evaluate(interval.Maximum));
+		}
+
 		[Browsable(false)]
 		public readonly bool IsFinite => start_.IsFinite && end_.IsFinite;
 
@@ -185,6 +205,26 @@ namespace Foundation.Mathematics
 		{
 			return Vector3.Distance(GetClosestPoint(point), point);
 		}
+
+		public readonly bool Intersects(in HalfSpace halfSpace)
+		{
+			return halfSpace.Contains(start_) || halfSpace.Contains(end_);
+		}
+
+		public readonly bool Intersects(in Plane plane)
+		{
+			return FindIntersection(plane).HasValue;
+		}
+
+		public readonly float? FindIntersection(in Plane plane)
+		{
+			float? t = new Line3(start_, end_ - start_).FindIntersection(plane);
+			return (t.HasValue && (t.Value >= 0f) && (t.Value <= 1f)) ? t : null;
+		}
+
+		//public readonly Vector2? FindIntersectionPoint(in Plane plane)
+		//{
+		//}
 
 		internal Vector3 start_;
 		internal Vector3 end_;

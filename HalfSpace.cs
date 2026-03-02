@@ -447,29 +447,19 @@ namespace Foundation.Mathematics
 			return (Vector3.Dot(Normal, point) <= -d_);
 		}
 
-		public readonly bool Intersects(in Segment3 segment)
-		{
-			return Contains(segment.Start) || Contains(segment.End);
-		}
+		//public readonly bool Intersects(in AxisAlignedBox box)
+		//{
+		//	return box.Intersects(this);
+		//}
 
-		public readonly bool Intersects(in Triangle3 triangle)
-		{
-			return Contains(triangle.Vertex0) || Contains(triangle.Vertex1) || Contains(triangle.Vertex2);
-		}
+		//public readonly bool Intersects(in OrientedBox box)
+		//{
+		//	return box.Intersects(this);
+		//}
 
-		public readonly bool Intersects(in AxisAlignedBox box)
-		{
-			return box.Intersects(this);
-		}
-
-		public readonly bool Intersects(in OrientedBox box)
-		{
-			return box.Intersects(this);
-		}
-
-		public readonly bool Intersects(in Sphere sphere)
-		{
-			return sphere.Intersects(this);
-		}
+		//public readonly bool Intersects(in Sphere sphere)
+		//{
+		//	return sphere.Intersects(this);
+		//}
 	}
 }

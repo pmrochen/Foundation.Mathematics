@@ -199,6 +199,23 @@ namespace Foundation.Mathematics
 		// 	return Math.Abs(Vector3.Dot(Vector3.Cross(direction_, line.direction_), (line.origin_ - origin_)));
 		//}
 
+		public readonly bool Intersects(in Plane plane)
+		{
+			return (Math.Abs(Vector3.Dot(plane.Normal, direction_)) >= 1e-6f);
+		}
+
+		public readonly float? FindIntersection(in Plane plane)
+		{
+			float nd = Vector3.Dot(plane.Normal, direction_);
+			if (Math.Abs(nd) < SingleConstants.Tolerance)
+				return null;
+			return (-plane.D - Vector3.Dot(plane.Normal, origin_))/nd;
+		}
+
+		//public readonly Vector2? FindIntersectionPoint(in Plane plane)
+		//{
+		//}
+
 		internal Vector3 origin_;
 		internal Vector3 direction_;
 	}

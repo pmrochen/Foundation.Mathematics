@@ -182,6 +182,21 @@ namespace Foundation.Mathematics
 			return Vector3.Distance(GetClosestPoint(point, normalized), point);
 		}
 
+		public readonly bool Intersects(in Plane plane)
+		{
+			return FindIntersection(plane).HasValue;
+		}
+
+		public readonly float? FindIntersection(in Plane plane)
+		{
+			float? t = new Line3(origin_, direction_).FindIntersection(plane);
+			return (t.HasValue && (t.Value >= 0f)) ? t : null;
+		}
+
+		//public readonly Vector2? FindIntersectionPoint(in Plane plane)
+		//{
+		//}
+
 		internal Vector3 origin_;
 		internal Vector3 direction_;
 	}
