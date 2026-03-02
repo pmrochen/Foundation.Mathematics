@@ -117,6 +117,9 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly bool IsEmpty => (minimum_ > maximum_);
 
+		[Browsable(false)]
+		public readonly bool IsPoint => (minimum_ == maximum_);
+
 		public float Minimum
 		{
 			readonly get => minimum_;
