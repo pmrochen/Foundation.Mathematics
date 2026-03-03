@@ -207,6 +207,14 @@ namespace Foundation.Mathematics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3 operator *(in Matrix3 m, Vector3 v)
+		{
+			return new Vector3(System.Numerics.Vector3.Dot(m.row0_, v.xyz_),
+				System.Numerics.Vector3.Dot(m.row1_, v.xyz_),
+				System.Numerics.Vector3.Dot(m.row2_, v.xyz_));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 operator /(Vector3 c, Vector3 d)
 		{
 			return new Vector3(c.xyz_/d.xyz_);
@@ -326,12 +334,6 @@ namespace Foundation.Mathematics
 			return (m > 0f) ? new Vector3(v.xyz_/m) : v;
 		}
 
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//public static Vector3 Scale(Vector3 v, Vector3 s)
-		//{
-		//	return new Vector3(v.xyz_*s.xyz_);
-		//}
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 Transform(Vector3 v, in Matrix3 m)
 		{
@@ -359,12 +361,6 @@ namespace Foundation.Mathematics
 			if (m > 0f)
 				xyz_ /= m;
 		}
-
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//public void Scale(Vector3 v)
-		//{
-		//	xyz_ *= v.xyz_;
-		//}
 
 		public static Vector3 Rotate(Vector3 v, Quaternion q)
 		{
@@ -590,12 +586,12 @@ namespace Foundation.Mathematics
 				v.x_*m.m02_ + v.y_*m.m12_ + v.z_*m.m22_);
 		}
 
-		//public static Vector3 operator *(Matrix3 m, Vector3 v)
-		//{
-		//    return new Vector3(m.m00_*v.x_ + m.m01_*v.y_ + m.m02_*v.z_,
-		//		m.m10_*v.x_ + m.m11_*v.y_ + m.m12_*v.z_,
-		//		m.m20_*v.x_ + m.m21_*v.y_ + m.m22_*v.z_);
-		//}
+		public static Vector3 operator *(in Matrix3 m, Vector3 v)
+		{
+		    return new Vector3(m.m00_*v.x_ + m.m01_*v.y_ + m.m02_*v.z_,
+				m.m10_*v.x_ + m.m11_*v.y_ + m.m12_*v.z_,
+				m.m20_*v.x_ + m.m21_*v.y_ + m.m22_*v.z_);
+		}
 
 		public static Vector3 operator /(Vector3 u, Vector3 v)
 		{
@@ -705,11 +701,6 @@ namespace Foundation.Mathematics
 			return (m > 0f) ? new Vector3(v.x_/m, v.y_/m, v.z_/m) : v;
 		}
 
-		//public static Vector3 Scale(Vector3 v, Vector3 s)
-		//{
-		//	return new Vector3(v.x_*s.x_, v.y_*s.y_, v.z_*s.z_);
-		//}
-
 		public static Vector3 Rotate(Vector3 v, Quaternion q)
 		{
 			float x1 = q.y_*v.z_ - q.z_*v.y_;
@@ -745,13 +736,6 @@ namespace Foundation.Mathematics
 				z_ /= m;
 			}
 		}
-
-		//public void Scale(Vector3 v)
-		//{
-		//	x_ *= v.x_;
-		//	y_ *= v.y_;
-		//	z_ *= v.z_;
-		//}
 
 		public void Transform(in Matrix3 m)
 		{

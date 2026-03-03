@@ -223,6 +223,15 @@ namespace Foundation.Mathematics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4 operator *(in Matrix4 m, Vector4 v)
+		{
+			return new Vector4(System.Numerics.Vector4.Dot(m.row0_, v.xyzw_),
+				System.Numerics.Vector4.Dot(m.row1_, v.xyzw_),
+				System.Numerics.Vector4.Dot(m.row2_, v.xyzw_),
+				System.Numerics.Vector4.Dot(m.row3_, v.xyzw_));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4 operator /(Vector4 c, Vector4 d)
 		{
 			return new Vector4(c.xyzw_/d.xyzw_);
@@ -596,13 +605,13 @@ namespace Foundation.Mathematics
 				v.x_*m.m03_ + v.y_*m.m13_ + v.z_*m.m23_ + v.w_*m.m33_);
 		}
 
-		//public static Vector4 operator *(Matrix4 m, Vector4 v)
-		//{
-		//    return new Vector4(m.m00_*v.x_ + m.m01_*v.y_ + m.m02_*v.z_ + m.m03_*v.w_,
-		//		m.m10_*v.x_ + m.m11_*v.y_ + m.m12_*v.z_ + m.m13_*v.w_,
-		//		m.m20_*v.x_ + m.m21_*v.y_ + m.m22_*v.z_ + m.m23_*v.w_,
-		//		m.m30_*v.x_ + m.m31_*v.y_ + m.m32_*v.z_ + m.m33_*v.w_);
-		//}
+		public static Vector4 operator *(in Matrix4 m, Vector4 v)
+		{
+		    return new Vector4(m.m00_*v.x_ + m.m01_*v.y_ + m.m02_*v.z_ + m.m03_*v.w_,
+				m.m10_*v.x_ + m.m11_*v.y_ + m.m12_*v.z_ + m.m13_*v.w_,
+				m.m20_*v.x_ + m.m21_*v.y_ + m.m22_*v.z_ + m.m23_*v.w_,
+				m.m30_*v.x_ + m.m31_*v.y_ + m.m32_*v.z_ + m.m33_*v.w_);
+		}
 
 		public static Vector4 operator /(Vector4 u, Vector4 v)
 		{

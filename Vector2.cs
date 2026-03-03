@@ -162,10 +162,14 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 operator *(Vector2 v, in Matrix2 m)
 		{
-			//return new Vector2(System.Numerics.Vector2.Dot(v.xy_, m.column0_),
-			//	System.Numerics.Vector2.Dot(v.xy_, m.column1_));
-
+			//return new Vector2(System.Numerics.Vector2.Dot(v.xy_, m.column0_), System.Numerics.Vector2.Dot(v.xy_, m.column1_));
 			return new Vector2(v.xy_.X*m.row0_ + v.xy_.Y*m.row1_);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 operator *(in Matrix2 m, Vector2 v)
+		{
+			return new Vector2(System.Numerics.Vector2.Dot(m.row0_, v.xy_), System.Numerics.Vector2.Dot(m.row1_, v.xy_));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -272,12 +276,6 @@ namespace Foundation.Mathematics
 			return (m > 0f) ? new Vector2(v.xy_/m) : v;
 		}
 
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//public static Vector2 Scale(Vector2 v, Vector2 s)
-		//{
-		//	return new Vector2(v.xy_*s.xy_);
-		//}
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 Transform(Vector2 v, in Matrix2 m)
 		{
@@ -294,12 +292,6 @@ namespace Foundation.Mathematics
 			if (m > 0f)
 				xy_ /= m;
 		}
-
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//public void Scale(Vector2 v)
-		//{
-		//	xy_ *= v.xy_;
-		//}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Transform(in Matrix2 m)
@@ -446,15 +438,13 @@ namespace Foundation.Mathematics
 
 		public static Vector2 operator *(Vector2 v, in Matrix2 m)
 		{
-			return new Vector2(v.x_*m.m00_ + v.y_*m.m10_,
-				v.x_*m.m01_ + v.y_*m.m11_);
+			return new Vector2(v.x_*m.m00_ + v.y_*m.m10_, v.x_*m.m01_ + v.y_*m.m11_);
 		}
 
-		//public static Vector2 operator *(Matrix2 m, Vector2 v)
-		//{
-		//    return new Vector2(m.m00_*v.x_ + m.m01_*v.y_,
-		//		m.m10_*v.x_ + m.m11_*v.y_);
-		//}
+		public static Vector2 operator *(in Matrix2 m, Vector2 v)
+		{
+		    return new Vector2(m.m00_*v.x_ + m.m01_*v.y_, m.m10_*v.x_ + m.m11_*v.y_);
+		}
 
 		public static Vector2 operator /(Vector2 u, Vector2 v)
 		{
@@ -548,15 +538,9 @@ namespace Foundation.Mathematics
 			return (m > 0f) ? new Vector2(v.x_/m, v.y_/m) : v;
 		}
 
-		//public static Vector2 Scale(Vector2 v, Vector2 s)
-		//{
-		//	return new Vector2(v.x_*s.x_, v.y_*s.y_);
-		//}
-
 		public static Vector2 Transform(Vector2 v, in Matrix2 m)
 		{
-			return new Vector2(v.x_*m.m00_ + v.y_*m.m10_,
-				v.x_*m.m01_ + v.y_*m.m11_);
+			return new Vector2(v.x_*m.m00_ + v.y_*m.m10_, v.x_*m.m01_ + v.y_*m.m11_);
 		}
 
 		public void Normalize()
@@ -568,12 +552,6 @@ namespace Foundation.Mathematics
 				y_ /= m;
 			}
 		}
-
-		//public void Scale(Vector2 v)
-		//{
-		//	x_ *= v.x_;
-		//	y_ *= v.y_;
-		//}
 
 		public void Transform(in Matrix2 m)
 		{
