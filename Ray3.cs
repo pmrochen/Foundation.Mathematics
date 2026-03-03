@@ -187,10 +187,171 @@ namespace Foundation.Mathematics
 			return FindIntersection(plane).HasValue;
 		}
 
+		public readonly bool Intersects(in Triangle3 triangle)
+		{
+			return FindIntersection(triangle).HasValue;
+		}
+
+		public readonly bool Intersects(in AxisAlignedBox box)
+		{
+			return FindIntersection(box).HasValue;
+		}
+
+		public readonly bool Intersects(in OrientedBox box)
+		{
+			return FindIntersection(box).HasValue;
+		}
+
+		public readonly bool Intersects(in Sphere sphere)
+		{
+			return FindIntersection(sphere).HasValue;
+		}
+
+		public readonly bool Intersects(in Ellipsoid ellipsoid)
+		{
+			Matrix3 m = ellipsoid.Matrix;
+			Vector3 diff = origin_ - ellipsoid.Center;
+			Vector3 matDir = direction_*m;
+			Vector3 matDiff = diff*m;
+			float a2 = Vector3.Dot(direction_, matDir);
+			float a1 = Vector3.Dot(direction_, matDiff);
+			float a0 = Vector3.Dot(diff, matDiff) - 1f;
+
+			float discr = a1*a1 - a0*a2;
+			if (discr < 0f)
+				return false;
+			if (a0 <= 0f)
+				return true;
+
+			return (a1 < 0f);
+		}
+
 		public readonly float? FindIntersection(in Plane plane)
 		{
 			float? t = new Line3(origin_, direction_).FindIntersection(plane);
 			return (t.HasValue && (t.Value >= 0f)) ? t : null;
+		}
+
+		public readonly float? FindIntersection(in Triangle3 triangle)
+		{
+			// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
+
+			Vector3 edge1 = triangle.vertex1_ - triangle.vertex0_;
+			Vector3 edge2 = triangle.vertex2_ - triangle.vertex0_;
+			Vector3 pvec = Vector3.Cross(direction_, edge2);
+			float det = Vector3.Dot(edge1, pvec);
+			if (Math.Abs(det) < 1e-6f)
+				return null;
+
+			float invDet = 1f/det;
+			Vector3 tvec = origin_ - triangle.vertex0_;
+			float u = Vector3.Dot(tvec, pvec)*invDet;
+			if ((u < 0f) || (u > 1f))
+				return null;
+
+			Vector3 qvec = Vector3.Cross(tvec, edge1);
+			float v = Vector3.Dot(direction_, qvec)*invDet;
+			if ((v < 0f) || ((u + v) > 1f))
+				return null;
+
+			float t = Vector3.Dot(edge2, qvec)*invDet;
+			if (t >= 0f)
+				return t;
+			else
+				return null;
+		}
+
+		public readonly Interval? FindIntersection(in AxisAlignedBox box)
+		{
+			Interval? intersection = new Line3(origin_, direction_).FindIntersection(box);
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public readonly Interval? FindIntersection(in OrientedBox box)
+		{
+			Interval? intersection = new Line3(origin_, direction_).FindIntersection(box);
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public readonly Interval? FindIntersection(in Sphere sphere)
+		{
+			Interval? intersection = new Line3(origin_, direction_).FindIntersection(sphere);
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public readonly Interval? FindIntersection(in Ellipsoid ellipsoid)
+		{
+			Matrix3 m = ellipsoid.Matrix;
+			Vector3 diff = origin_ - ellipsoid.Center;
+			Vector3 matDir = direction_*m;
+			Vector3 matDiff = diff*m;
+			float a2 = Vector3.Dot(direction_, matDir);
+			float a1 = Vector3.Dot(direction_, matDiff);
+			float a0 = Vector3.Dot(diff, matDiff) - 1f;
+
+			float discr = a1*a1 - a0*a2;
+			if (discr < 0f)
+			{
+				return null;
+			}
+			else if (discr > 0f)
+			{
+				float root = MathF.Sqrt(discr);
+				float inv = 1f/a2;
+				float t0 = (-a1 - root)*inv;
+				float t1 = (-a1 + root)*inv;
+
+				if (t0 >= 0f)
+					return new Interval(t0, t1);
+				else if (t1 >= 0f)
+					return new Interval(t1);
+				else
+					return null;
+			}
+			else
+			{
+				float t0 = -a1/a2;
+				if (t0 >= 0f)
+					return new Interval(t0);
+				else
+					return null;
+			}
 		}
 
 		//public readonly Vector2? FindIntersectionPoint(in Plane plane)

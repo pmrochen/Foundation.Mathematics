@@ -225,14 +225,14 @@ namespace Foundation.Mathematics
 
 		public readonly bool Contains(in AxisAlignedRectangle rectangle)
 		{
-			return minimum_.AllLessThanEqual(rectangle.minimum_) && maximum_.AllGreaterThanEqual(rectangle.maximum_.x_);
+			return minimum_.AllLessThanEqual(rectangle.minimum_) && maximum_.AllGreaterThanEqual(rectangle.maximum_);
 		}
 
 		public readonly bool Contains(in Circle2 circle)
 		{
 			Vector2 center = circle.Center;
 #if SIMD
-			Vector2 radius = new Vector2(sphere.Radius);
+			Vector2 radius = new Vector2(circle.Radius);
 			return minimum_.AllLessThanEqual(center - radius) && maximum_.AllGreaterThanEqual(center + radius);
 #else
 			float radius = circle.Radius;
@@ -246,68 +246,9 @@ namespace Foundation.Mathematics
 			return minimum_.AllLessThanEqual(rectangle.maximum_) && maximum_.AllGreaterThanEqual(rectangle.minimum_);
 		}
 
-		public readonly bool Intersects(in Line2 line)
-        {
-			return FindIntersection(line).HasValue;
-        }
-
-        public readonly bool Intersects(in Ray2 ray)
-        {
-			return FindIntersection(ray).HasValue;
-        }
-
-		public readonly bool Intersects(in Segment2 segment)
-		{
-			return FindIntersection(segment).HasValue;
-		}
-
 		public readonly bool Intersects(in Circle2 circle)
 		{
 			return circle.Intersects(this);
-		}
-
-		public readonly Interval? FindIntersection(in Line2 line)
-		{
-			// #TODO
-		}
-
-		public readonly Interval? FindIntersection(in Ray2 ray)
-		{
-			Interval? intersection = FindIntersection(new Line2(ray.origin_, ray.direction_));
-
-			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
-			{
-				Interval interval = intersection.Value;
-				if (interval.Minimum != interval.Maximum)
-					interval.Minimum = Math.Max(interval.Minimum, 0f);
-
-				return interval;
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-		public readonly Interval? FindIntersection(in Segment2 segment)
-		{
-			Interval? intersection = FindIntersection(new Line2(segment.start_, segment.end_ - segment.start_));
-
-			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
-			{
-				Interval interval = intersection.Value;
-				if (interval.Minimum != interval.Maximum)
-				{
-					interval.Minimum = Math.Max(interval.Minimum, 0f);
-					interval.Maximum = Math.Min(interval.Maximum, 1f);
-				}
-
-				return interval;
-			}
-			else
-			{
-				return null;
-			}
 		}
 
 		internal Vector2 minimum_;

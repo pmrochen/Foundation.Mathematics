@@ -455,24 +455,29 @@ namespace Foundation.Mathematics
 			return (Math.Abs(Vector3.Dot(Normal, point) + d_) < 1e-6f);
 		}
 
-		//public readonly bool Intersects(in AxisAlignedBox box)
-		//{
-		//	return box.Intersects(this);
-		//}
+		public readonly bool Intersects(in Triangle3 triangle)
+		{
+			return triangle.Intersects(this);
+		}
 
-		//public readonly bool Intersects(in OrientedBox box)
-		//{
-		//	return box.Intersects(this);
-		//}
+		public readonly bool Intersects(in AxisAlignedBox box)
+		{
+			return box.Intersects(this);
+		}
 
-		//public readonly bool Intersects(in Sphere sphere)
-		//{
-		//	return sphere.Intersects(this);
-		//}
+		public readonly bool Intersects(in OrientedBox box)
+		{
+			return box.Intersects(this);
+		}
 
-		//public readonly bool Intersects(in Ellipsoid ellipsoid)
-		//{
-		//	return ellipsoid.Intersects(this);
-		//}
+		public readonly bool Intersects(in Sphere sphere)
+		{
+			return sphere.Intersects(this);
+		}
+
+		public readonly bool Intersects(in Ellipsoid ellipsoid)
+		{
+			return ellipsoid.Intersects(this);
+		}
 	}
 }

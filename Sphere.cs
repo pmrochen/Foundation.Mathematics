@@ -180,25 +180,6 @@ namespace Foundation.Mathematics
 			return (Vector3.DistanceSquared(point, center_) <= radius_*radius_);
 		}
 
-        public readonly bool Intersects(in Line3 line)
-        {
-			Vector3 diff = line.origin_ - center_;
-			float a = Vector3.Dot(line.direction_, line.direction_);
-			float b = 2f*Vector3.Dot(line.direction_, diff);
-			float c = Vector3.Dot(diff, diff) - radius_*radius_;
-			return !((b*b - 4f*a*c) < 0f);
-		}
-
-		public readonly bool Intersects(in Ray3 ray)
-        {
-			return FindIntersection(ray).HasValue;
-        }
-
-		public readonly bool Intersects(in Segment3 segment)
-		{
-			return FindIntersection(segment).HasValue;
-		}
-
 		public readonly bool Intersects(in HalfSpace halfSpace)
         {
 	        return ((Vector3.Dot(halfSpace.Normal, center_) + halfSpace.d_) <= radius_);
@@ -277,67 +258,9 @@ namespace Foundation.Mathematics
 		//	return cone.Intersects(this);
 		//}
 
-        public readonly Interval? FindIntersection(in Line3 line)
-        {
-			Vector3 diff = line.origin_ - center_;
-			float a = Vector3.Dot(line.direction_, line.direction_);
-			float b = 2f*Vector3.Dot(line.direction_, diff);
-			float c = Vector3.Dot(diff, diff) - radius_*radius_;
-			float delta = b*b - 4f*a*c;
-
-			if (delta < 0f)
-			{
-				return null;
-			}
-			else if (delta > 0f)
-			{
-				delta = MathF.Sqrt(delta);
-				a = 0.5f/a;
-				return new Interval((-b - delta)*a, (-b + delta)*a);
-			}
-			else // delta == 0
-			{
-				return new Interval(-b*0.5f/a);
-			}
-		}
-
-		public readonly Interval? FindIntersection(in Ray3 ray)
-        {
-			Interval? intersection = FindIntersection(new Line3(ray.origin_, ray.direction_));
-
-			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
-			{
-				Interval interval = intersection.Value;
-				if (interval.Minimum != interval.Maximum)
-					interval.Minimum = Math.Max(interval.Minimum, 0f);
-
-				return interval;
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-		public readonly Interval? FindIntersection(in Segment3 segment)
+		public readonly bool Intersects(in SymmetricFrustum frustum)
 		{
-			Interval? intersection = FindIntersection(new Line3(segment.start_, segment.end_ - segment.start_));
-
-			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
-			{
-				Interval interval = intersection.Value;
-				if (interval.Minimum != interval.Maximum)
-				{
-					interval.Minimum = Math.Max(interval.Minimum, 0f);
-					interval.Maximum = Math.Min(interval.Maximum, 1f);
-				}
-
-				return interval;
-			}
-			else
-			{
-				return null;
-			}
+			return frustum.Intersects(this);
 		}
 
 		internal Vector3 center_;

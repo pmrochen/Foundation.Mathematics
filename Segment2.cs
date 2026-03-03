@@ -193,6 +193,16 @@ namespace Foundation.Mathematics
 			return FindIntersection(segment).HasValue;
 		}
 
+		public readonly bool Intersects(in AxisAlignedRectangle rectangle)
+		{
+			return FindIntersection(rectangle).HasValue;
+		}
+
+		public readonly bool Intersects(in Circle2 circle)
+		{
+			return FindIntersection(circle).HasValue;
+		}
+
 		public readonly float? FindIntersection(in Line2 line) 
 		{
 			Vector2 direction = end_ - start_;
@@ -242,11 +252,53 @@ namespace Foundation.Mathematics
 			return null;
 		}
 
-		//public readonly Vector2? FindIntersectionPoint(in Line2 line) // #TODO
+		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)
+		{
+			Interval? intersection = new Line2(start_, end_ - start_).FindIntersection(rectangle);
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+				{
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+					interval.Maximum = Math.Min(interval.Maximum, 1f);
+				}
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public readonly Interval? FindIntersection(in Circle2 circle)
+		{
+			Interval? intersection = new Line2(start_, end_ - start_).FindIntersection(circle);
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+				{
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+					interval.Maximum = Math.Min(interval.Maximum, 1f);
+				}
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		//public readonly Vector2? FindIntersectionPoint(in Line2 line)
 		//{
 		//}
 
-		//public readonly Vector2? FindIntersectionPoint(in Segment2 segment) // #TODO
+		//public readonly Vector2? FindIntersectionPoint(in Segment2 segment)
 		//{
 		//}
 

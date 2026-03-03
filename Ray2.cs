@@ -181,6 +181,16 @@ namespace Foundation.Mathematics
 			return FindIntersection(line).HasValue;
 		}
 
+		public readonly bool Intersects(in AxisAlignedRectangle rectangle)
+		{
+			return FindIntersection(rectangle).HasValue;
+		}
+
+		public readonly bool Intersects(in Circle2 circle)
+		{
+			return FindIntersection(circle).HasValue;
+		}
+
 		public readonly float? FindIntersection(in Line2 line) 
 		{
 			float d1CrossD2 = Vector2.Cross(direction_, line.direction_);
@@ -197,7 +207,43 @@ namespace Foundation.Mathematics
 			return null;
 		}
 
-		//public readonly Vector2? FindIntersectionPoint(in Line2 line) // #TODO
+		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)
+		{
+			Interval? intersection = new Line2(origin_, direction_).FindIntersection(rectangle);
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public readonly Interval? FindIntersection(in Circle2 circle)
+		{
+			Interval? intersection = new Line2(origin_, direction_).FindIntersection(circle);
+
+			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
+			{
+				Interval interval = intersection.Value;
+				if (interval.Minimum != interval.Maximum)
+					interval.Minimum = Math.Max(interval.Minimum, 0f);
+
+				return interval;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		//public readonly Vector2? FindIntersectionPoint(in Line2 line)
 		//{
 		//}
 

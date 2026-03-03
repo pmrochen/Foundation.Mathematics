@@ -325,20 +325,20 @@ namespace Foundation.Mathematics
 		public readonly Vector3 GetClosestPoint(Vector3 point)
 		{
 			Vector3 closestPoint;
-			DistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint);
+			GetDistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint);
 			return closestPoint;
 		}
 
 		public readonly float GetDistanceTo(Vector3 point)
 		{
 			Vector3 closestPoint;
-			return MathF.Sqrt(DistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint));
+			return MathF.Sqrt(GetDistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint));
 		}
 
 		public readonly float GetDistanceSquaredTo(Vector3 point)
 		{
 			Vector3 closestPoint;
-			return DistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint);
+			return GetDistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint);
 		}
 
 		//public readonly bool Intersects(Plane plane)
@@ -359,21 +359,6 @@ namespace Foundation.Mathematics
 		//{
 		//}
 
-		public readonly bool Intersects(in Line3 line)
-        {
-            return FindIntersection(line).HasValue;
-        }
-
-        public readonly bool Intersects(in Ray3 ray)
-        {
-			return FindIntersection(ray).HasValue;
-        }
-
-        public readonly bool Intersects(in Segment3 segment)
-        {
-			return FindIntersection(segment).HasValue;
-        }
-
 		public readonly bool Intersects(in AxisAlignedBox box)
 		{
 			return box.Intersects(this);
@@ -386,94 +371,10 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Sphere sphere)
 		{
-			return (GetDistanceSquaredTo(sphere.Center) <= sphere.Radius*sphere.Radius);
+			return sphere.Intersects(this);
 		}
 
-		public readonly float? FindIntersection(in Line3 line)
-        {
-			// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
-
-			Vector3 edge1 = vertex1_ - vertex0_;
-            Vector3 edge2 = vertex2_ - vertex0_;
-            Vector3 pvec = Vector3.Cross(line.direction_, edge2);
-	        float det = Vector3.Dot(edge1, pvec);
-			if (Math.Abs(det) < 1e-6f)
-				return null;
-
-	        float invDet = 1f/det;
-            Vector3 tvec = line.origin_ - vertex0_;
-	        float u = Vector3.Dot(tvec, pvec)*invDet;
-			if ((u < 0f) || (u > 1f))
-				return null;
-
-	        Vector3 qvec = Vector3.Cross(tvec, edge1);
-	        float v = Vector3.Dot(line.direction_, qvec)*invDet;
-			if ((v < 0f) || ((u + v) > 1f))
-				return null;
-
-	        return Vector3.Dot(edge2, qvec)*invDet;
-        }
-
-		public readonly float? FindIntersection(in Ray3 ray)
-		{
-			// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
-
-			Vector3 edge1 = vertex1_ - vertex0_;
-			Vector3 edge2 = vertex2_ - vertex0_;
-			Vector3 pvec = Vector3.Cross(ray.direction_, edge2);
-			float det = Vector3.Dot(edge1, pvec);
-			if (Math.Abs(det) < 1e-6f)
-				return null;
-
-			float invDet = 1f/det;
-			Vector3 tvec = ray.origin_ - vertex0_;
-			float u = Vector3.Dot(tvec, pvec)*invDet;
-			if ((u < 0f) || (u > 1f))
-				return null;
-
-			Vector3 qvec = Vector3.Cross(tvec, edge1);
-			float v = Vector3.Dot(ray.direction_, qvec)*invDet;
-			if ((v < 0f) || ((u + v) > 1f))
-				return null;
-
-			float t = Vector3.Dot(edge2, qvec)*invDet;
-			if (t >= 0f)
-				return t;
-			else
-				return null;
-		}
-
-		public readonly float? FindIntersection(in Segment3 segment)
-        {
-			// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
-
-			Vector3 edge1 = vertex1_ - vertex0_;
-			Vector3 edge2 = vertex2_ - vertex0_;
-			Vector3 direction = segment.end_ - segment.start_;
-			Vector3 pvec = Vector3.Cross(direction, edge2);
-			float det = Vector3.Dot(edge1, pvec);
-			if (Math.Abs(det) < 1e-6f)
-				return null;
-
-			float invDet = 1f/det;
-			Vector3 tvec = segment.start_ - vertex0_;
-			float u = Vector3.Dot(tvec, pvec)*invDet;
-			if ((u < 0f) || (u > 1f))
-				return null;
-
-			Vector3 qvec = Vector3.Cross(tvec, edge1);
-			float v = Vector3.Dot(direction, qvec)*invDet;
-			if ((v < 0f) || ((u + v) > 1f))
-				return null;
-
-			float t = Vector3.Dot(edge2, qvec)*invDet;
-			if ((t >= 0f) && (t <= 1f))
-				return t;
-			else
-				return null;
-		}
-
-		private static float DistanceSquaredPointTriangle(Vector3 point, Vector3 v0, Vector3 v1, Vector3 v2, out Vector3 closestPoint)
+		private static float GetDistanceSquaredPointTriangle(Vector3 point, Vector3 v0, Vector3 v1, Vector3 v2, out Vector3 closestPoint)
 		{
 			// http://www.geometrictools.com/
 

@@ -232,81 +232,6 @@ namespace Foundation.Mathematics
 			return (Evaluate(point) <= 0f);
 		}
 
-		public readonly bool Intersects(in Line3 line)
-		{
-			Matrix3 m = Matrix;
-			Vector3 diff = line.Origin - center_;
-			Vector3 matDir = line.Direction*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(line.Direction, matDir);
-			float a1 = Vector3.Dot(line.Direction, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			float discr = a1*a1 - a0*a2;
-			return (discr >= 0f);
-		}
-
-		public readonly bool Intersects(in Ray3 ray)
-		{
-			Matrix3 m = Matrix;
-			Vector3 diff = ray.Origin - center_;
-			Vector3 matDir = ray.Direction*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(ray.Direction, matDir);
-			float a1 = Vector3.Dot(ray.Direction, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			float discr = a1*a1 - a0*a2;
-			if (discr < 0f)
-				return false;
-			if (a0 <= 0f)
-				return true;
-
-			return (a1 < 0f);
-		}
-
-		public readonly bool Intersects(in Segment3 segment)
-		{
-			Matrix3 m = Matrix;
-			Vector3 direction = segment.End - segment.Start;
-			Vector3 diff = segment.Center - center_;
-			Vector3 matDir = direction*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(direction, matDir);
-			float a1 = Vector3.Dot(direction, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			float discr = a1*a1 - a0*a2;
-			if (discr < 0f)
-				return false;
-			if (a0 <= 0f)
-				return true;
-
-			const float e = 0.5f;
-			if (a1 >= 0f)
-			{
-				float q = a0 + e*(-2f*a1 + a2*e);
-				if (q <= 0f)
-					return true;
-
-				float qder = a1 - a2*e;
-				if (qder < 0f)
-					return true;
-			}
-			else
-			{
-				float q = a0 + e*(2f*a1 + a2*e);
-				if (q <= 0f)
-					return true;
-
-				float qder = a1 + a2*e;
-				if (qder < 0f)
-					return true;
-			}
-
-			return false;
-		}
-
 		public readonly bool Intersects(in Plane plane)
 		{
 			Matrix3 mInverse = InverseMatrix;
@@ -314,113 +239,7 @@ namespace Foundation.Mathematics
 			return (plane.GetDistanceTo(center_) <= MathF.Sqrt(Math.Abs(discr)));
 		}
 
-		public readonly Interval? FindIntersection(in Line3 line)
-		{
-			Matrix3 m = Matrix;
-			Vector3 diff = line.Origin - center_;
-			Vector3 matDir = line.Direction*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(line.Direction, matDir);
-			float a1 = Vector3.Dot(line.Direction, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			float discr = a1*a1 - a0*a2;
-			if (discr < 0f)
-			{
-				return null;
-			}
-			else if (discr > 1e-6f)
-			{
-				float root = MathF.Sqrt(discr);
-				float inv = 1f/a2;
-				return new Interval((-a1 - root)*inv, (-a1 + root)*inv);
-			}
-			else
-			{
-				return new Interval(-a1/a2);
-			}
-		}
-
-		public readonly Interval? FindIntersection(in Ray3 ray)
-		{
-			Matrix3 m = Matrix;
-			Vector3 diff = ray.Origin - center_;
-			Vector3 matDir = ray.Direction*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(ray.Direction, matDir);
-			float a1 = Vector3.Dot(ray.Direction, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			float discr = a1*a1 - a0*a2;
-			if (discr < 0f)
-			{
-				return null;
-			}
-			else if (discr > 0f)
-			{
-				float root = MathF.Sqrt(discr);
-				float inv = 1f/a2;
-				float t0 = (-a1 - root)*inv;
-				float t1 = (-a1 + root)*inv;
-
-				if (t0 >= 0f)
-					return new Interval(t0, t1);
-				else if (t1 >= 0f)
-					return new Interval(t1);
-				else
-					return null;
-			}
-			else
-			{
-				float t0 = -a1/a2;
-				if (t0 >= 0f)
-					return new Interval(t0);
-				else
-					return null;
-			}
-		}
-
-		public readonly Interval? FindIntersection(in Segment3 segment)
-		{
-			Matrix3 m = Matrix;
-			Vector3 direction = segment.End - segment.Start;
-			Vector3 diff = segment.Center - center_;
-			Vector3 matDir = direction*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(direction, matDir);
-			float a1 = Vector3.Dot(direction, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			const float e = 0.5f;
-			float discr = a1*a1 - a0*a2;
-			if (discr < 0f)
-			{
-				return null;
-			}
-			else if (discr > 1e-6f)
-			{
-				float root = MathF.Sqrt(discr);
-				float inv = 1f/a2;
-				float t0 = (-a1 - root)*inv;
-				float t1 = (-a1 + root)*inv;
-				
-				Interval? intersection = new Interval(t0, t1).FindIntersection(new Interval(-e, e));
-				if (intersection.HasValue)
-					return new Interval(intersection.Value.Minimum + e, intersection.Value.Maximum + e);
-				else
-					return null;
-			}
-			else
-			{
-				float t0 = -a1/a2;
-				if (Math.Abs(t0) <= e)
-					return new Interval(t0 + e);
-				else
-					return null;
-			}
-		}
-
-		private readonly Matrix3 Matrix
+		internal readonly Matrix3 Matrix
 		{
 			get
 			{
@@ -431,7 +250,7 @@ namespace Foundation.Mathematics
 			}
 		}
 
-		private readonly Matrix3 InverseMatrix
+		internal readonly Matrix3 InverseMatrix
 		{
 			get
 			{

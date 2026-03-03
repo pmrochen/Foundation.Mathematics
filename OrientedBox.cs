@@ -284,21 +284,6 @@ namespace Foundation.Mathematics
 			return (-halfDims_).AllLessThanEqual(point) && halfDims_.AllGreaterThanEqual(point);
 		}
 
-		public readonly bool Intersects(in Line3 line)
-        {
-			return FindIntersection(line).HasValue;
-        }
-
-        public readonly bool Intersects(in Ray3 ray)
-        {
-			return FindIntersection(ray).HasValue;
-        }
-
-		public readonly bool Intersects(in Segment3 segment)
-		{
-			return FindIntersection(segment).HasValue;
-		}
-
 		public readonly bool Intersects(in HalfSpace halfSpace)
 		{
 			Vector3 normal = halfSpace.Normal;
@@ -349,109 +334,9 @@ namespace Foundation.Mathematics
 			return sphere.Intersects(this);
 		}
 
-		public readonly Interval? FindIntersection(in Line3 line)
+		public readonly bool Intersects(in SymmetricFrustum frustum)
 		{
-			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			Vector3 boxMin = -halfDims_;
-			Vector3 boxMax = halfDims_;
-			Vector3 pos = (line.origin_ - center_)*basisTranspose;
-			Vector3 invDir = 1f/(line.direction_*basisTranspose);
-
-			float tMin, tMax;
-			if (invDir.x_ >= 0f)
-			{
-				tMin = (boxMin.x_ - pos.x_)*invDir.x_;
-				tMax = (boxMax.x_ - pos.x_)*invDir.x_;
-			}
-			else
-			{
-				tMin = (boxMax.x_ - pos.x_)*invDir.x_;
-				tMax = (boxMin.x_ - pos.x_)*invDir.x_;
-			}
-
-			float tyMin, tyMax;
-			if (invDir.y_ >= 0f)
-			{
-				tyMin = (boxMin.y_ - pos.y_)*invDir.y_;
-				tyMax = (boxMax.y_ - pos.y_)*invDir.y_;
-			}
-			else
-			{
-				tyMin = (boxMax.y_ - pos.y_)*invDir.y_;
-				tyMax = (boxMin.y_ - pos.y_)*invDir.y_;
-			}
-
-			if ((tMin > tyMax) || (tyMin > tMax))
-				return null;
-
-			if (tyMin > tMin) 
-				tMin = tyMin;
-			if (tyMax < tMax) 
-				tMax = tyMax;
-
-			float tzMin, tzMax;
-			if (invDir.z_ >= 0f)
-			{
-				tzMin = (boxMin.z_ - pos.z_)*invDir.z_;
-				tzMax = (boxMax.z_ - pos.z_)*invDir.z_;
-			}
-			else
-			{
-				tzMin = (boxMax.z_ - pos.z_)*invDir.z_;
-				tzMax = (boxMin.z_ - pos.z_)*invDir.z_;
-			}
-
-			if ((tMin > tzMax) || (tzMin > tMax))
-				return null;
-
-			if (tzMin > tMin) 
-				tMin = tzMin;
-			if (tzMax < tMax) 
-				tMax = tzMax;
-
-			if (tMin > tMax)
-				return null;
-
-			return new Interval(tMin, tMax);
-		}
-
-		public readonly Interval? FindIntersection(in Ray3 ray)
-		{
-			Interval? intersection = FindIntersection(new Line3(ray.origin_, ray.direction_));
-
-			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
-			{
-				Interval interval = intersection.Value;
-				if (interval.Minimum != interval.Maximum)
-					interval.Minimum = Math.Max(interval.Minimum, 0f);
-
-				return interval;
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-		public readonly Interval? FindIntersection(in Segment3 segment)
-		{
-			Interval? intersection = FindIntersection(new Line3(segment.start_, segment.end_ - segment.start_));
-
-			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
-			{
-				Interval interval = intersection.Value;
-				if (interval.Minimum != interval.Maximum)
-				{
-					interval.Minimum = Math.Max(interval.Minimum, 0f);
-					interval.Maximum = Math.Min(interval.Maximum, 1f);
-				}
-
-				return interval;
-			}
-			else
-			{
-				return null;
-			}
+			return frustum.Intersects(this);
 		}
 
 		private static bool IntersectOrientedBoxOrientedBox(Vector3 centerA, in Matrix3 akA, Vector3 afEA, Vector3 centerB, 

@@ -230,6 +230,20 @@ namespace Foundation.Mathematics
 			return FindIntersection(segment).HasValue;
 		}
 
+		public readonly bool Intersects(in AxisAlignedRectangle rectangle)
+		{
+			return FindIntersection(rectangle).HasValue;
+		}
+
+		public readonly bool Intersects(in Circle2 circle)
+		{
+			Vector2 diff = origin_ - circle.center_;
+			float a = Vector2.Dot(direction_, direction_);
+			float b = 2f*Vector2.Dot(direction_, diff);
+			float c = Vector2.Dot(diff, diff) - circle.radius_*circle.radius_;
+			return !((b*b - 4f*a*c) < 0f);
+		}
+
 		public readonly float? FindIntersection(in Line2 line) 
 		{
 			float d1CrossD2 = Vector2.Cross(direction_, line.direction_);
@@ -262,11 +276,77 @@ namespace Foundation.Mathematics
 			return null;
 		}
 
-		//public readonly Vector2? FindIntersectionPoint(in Line2 line) // #TODO
+		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)
+		{
+			Vector2 invDir = 1f/direction_;
+
+			float tMin, tMax;
+			if (direction_.x_ >= 0f)
+			{
+				tMin = (rectangle.minimum_.x_ - origin_.x_)*invDir.x_;
+				tMax = (rectangle.maximum_.x_ - origin_.x_)*invDir.x_;
+			}
+			else
+			{
+				tMin = (rectangle.maximum_.x_ - origin_.x_)*invDir.x_;
+				tMax = (rectangle.minimum_.x_ - origin_.x_)*invDir.x_;
+			}
+
+			float tyMin, tyMax;
+			if (direction_.y_ >= 0f)
+			{
+				tyMin = (rectangle.minimum_.y_ - origin_.y_)*invDir.y_;
+				tyMax = (rectangle.maximum_.y_ - origin_.y_)*invDir.y_;
+			}
+			else
+			{
+				tyMin = (rectangle.maximum_.y_ - origin_.y_)*invDir.y_;
+				tyMax = (rectangle.minimum_.y_ - origin_.y_)*invDir.y_;
+			}
+
+			if ((tMin > tyMax) || (tyMin > tMax))
+				return null;
+
+			if (tyMin > tMin)
+				tMin = tyMin;
+			if (tyMax < tMax)
+				tMax = tyMax;
+
+			if (tMin > tMax)
+				return null;
+
+			return new Interval(tMin, tMax);
+		}
+
+		public readonly Interval? FindIntersection(in Circle2 circle)
+		{
+			Vector2 diff = origin_ - circle.center_;
+			float a = Vector2.Dot(direction_, direction_);
+			float b = 2f*Vector2.Dot(direction_, diff);
+			float c = Vector2.Dot(diff, diff) - circle.radius_*circle.radius_;
+			float delta = b*b - 4f*a*c;
+
+			if (delta < 0f)
+			{
+				return null;
+			}
+			else if (delta > 0f)
+			{
+				delta = MathF.Sqrt(delta);
+				a = 0.5f/a;
+				return new Interval((-b - delta)*a, (-b + delta)*a);
+			}
+			else // delta == 0
+			{
+				return new Interval(-b*0.5f/a);
+			}
+		}
+
+		//public readonly Vector2? FindIntersectionPoint(in Line2 line)
 		//{
 		//}
 
-		//public readonly Vector2? FindIntersectionPoint(in Segment2 segment) // #TODO
+		//public readonly Vector2? FindIntersectionPoint(in Segment2 segment)
 		//{
 		//}
 

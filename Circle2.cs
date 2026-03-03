@@ -164,25 +164,6 @@ namespace Foundation.Mathematics
 			return (Vector2.DistanceSquared(point, center_) <= radius_*radius_);
 		}
 
-		public readonly bool Intersects(in Line2 line)
-        {
-			Vector2 diff = line.origin_ - center_;
-			float a = Vector2.Dot(line.direction_, line.direction_);
-			float b = 2f*Vector2.Dot(line.direction_, diff);
-			float c = Vector2.Dot(diff, diff) - radius_*radius_;
-			return !((b*b - 4f*a*c) < 0f);
-        }
-
-        public readonly bool Intersects(in Ray2 ray)
-        {
-			return FindIntersection(ray).HasValue;
-        }
-
-		public readonly bool Intersects(in Segment2 segment)
-		{
-			return FindIntersection(segment).HasValue;
-		}
-
 		public readonly bool Intersects(in AxisAlignedRectangle rectangle)
         {
 			float d = 0f;
@@ -217,69 +198,6 @@ namespace Foundation.Mathematics
             float d = circle.radius_ + radius_;
             return (Vector2.DistanceSquared(circle.center_, center_) <= d*d);
         }
-
-		public readonly Interval? FindIntersection(in Line2 line)
-		{
-			Vector2 diff = line.origin_ - center_;
-			float a = Vector2.Dot(line.direction_, line.direction_);
-			float b = 2f*Vector2.Dot(line.direction_, diff);
-			float c = Vector2.Dot(diff, diff) - radius_*radius_;
-			float delta = b*b - 4f*a*c;
-
-			if (delta < 0f)
-			{
-				return null;
-			}
-			else if (delta > 0f)
-			{
-				delta = MathF.Sqrt(delta);
-				a = 0.5f/a;
-				return new Interval((-b - delta)*a, (-b + delta)*a);
-			}
-			else // delta == 0
-			{
-				return new Interval(-b*0.5f/a);
-			}
-		}
-
-		public readonly Interval? FindIntersection(in Ray2 ray)
-		{
-			Interval? intersection = FindIntersection(new Line2(ray.origin_, ray.direction_));
-
-			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
-			{
-				Interval interval = intersection.Value;
-				if (interval.Minimum != interval.Maximum)
-					interval.Minimum = Math.Max(interval.Minimum, 0f);
-
-				return interval;
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-		public readonly Interval? FindIntersection(in Segment2 segment)
-		{
-			Interval? intersection = FindIntersection(new Line2(segment.start_, segment.end_ - segment.start_));
-
-			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
-			{
-				Interval interval = intersection.Value;
-				if (interval.Minimum != interval.Maximum)
-				{
-					interval.Minimum = Math.Max(interval.Minimum, 0f);
-					interval.Maximum = Math.Min(interval.Maximum, 1f);
-				}
-
-				return interval;
-			}
-			else
-			{
-				return null;
-			}
-		}
 
 		internal Vector2 center_;
 		internal float radius_;
