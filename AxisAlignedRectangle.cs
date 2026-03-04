@@ -13,9 +13,7 @@ namespace Foundation.Mathematics
 	[TypeConverter(typeof(AxisAlignedRectangleConverter))]
 	public struct AxisAlignedRectangle : IFormattable, IEquatable<AxisAlignedRectangle>
 	{
-		public static readonly AxisAlignedRectangle Empty =
-			new AxisAlignedRectangle(new Vector2(Single.PositiveInfinity, Single.PositiveInfinity),
-				new Vector2(Single.NegativeInfinity, Single.NegativeInfinity));
+		public static readonly AxisAlignedRectangle Empty = new AxisAlignedRectangle(Vector2.PositiveInfinity, Vector2.NegativeInfinity);
 
 		public AxisAlignedRectangle(Vector2 minimum, Vector2 maximum)
 		{
@@ -166,6 +164,12 @@ namespace Foundation.Mathematics
 			}
 		}
 
+		public readonly Circle2 GetCircumscribedCircle()
+		{
+			Vector2 center = (minimum_ + maximum_)*0.5f;
+			return new Circle2(center, Vector2.Distance(center, maximum_));
+		}
+
 		public readonly IEnumerable<Vector2> GetVertices()
 		{
 			yield return minimum_;
@@ -196,6 +200,12 @@ namespace Foundation.Mathematics
 			maximum_ = Vector2.Max(maximum_, rectangle.maximum_);
 		}
 
+		public void ExtendBy(in Circle2 circle)
+		{
+			Vector2 radius = new Vector2(circle.radius_);
+			ExtendBy(new AxisAlignedRectangle(circle.center_ - radius, circle.center_ + radius));
+		}
+
 		public void Inflate(Vector2 halfDims)
 		{
 			minimum_ -= halfDims;
@@ -206,6 +216,12 @@ namespace Foundation.Mathematics
 		{
 			minimum_ += offset;
 			maximum_ += offset;
+		}
+
+		public static AxisAlignedRectangle Translate(AxisAlignedRectangle rectangle, Vector2 offset)
+		{
+			rectangle.Translate(offset);
+			return rectangle;
 		}
 
 		public readonly Vector2 GetClosestPoint(Vector2 point)
@@ -230,15 +246,8 @@ namespace Foundation.Mathematics
 
 		public readonly bool Contains(in Circle2 circle)
 		{
-			Vector2 center = circle.Center;
-#if SIMD
 			Vector2 radius = new Vector2(circle.Radius);
-			return minimum_.AllLessThanEqual(center - radius) && maximum_.AllGreaterThanEqual(center + radius);
-#else
-			float radius = circle.Radius;
-			return (minimum_.x_ <= (center.x_ - radius)) && (maximum_.x_ >= (center.x_ + radius)) &&
-				(minimum_.y_ <= (center.y_ - radius)) && (maximum_.y_ >= (center.y_ + radius));
-#endif
+			return minimum_.AllLessThanEqual(circle.Center - radius) && maximum_.AllGreaterThanEqual(circle.Center + radius);
 		}
 
 		public readonly bool Intersects(in AxisAlignedRectangle rectangle)

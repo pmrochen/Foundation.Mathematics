@@ -144,6 +144,17 @@ namespace Foundation.Mathematics
 		//	return new Circle2(ellipse.center_, Math.Max(ellipse.radii_.X, ellipse.radii_.Y));
 		//}
 
+		public void Translate(Vector2 offset)
+		{
+			center_ += offset;
+		}
+
+		public static Circle2 Translate(Circle2 circle, Vector2 offset)
+		{
+			circle.Translate(offset);
+			return circle;
+		}
+
 		//public readonly Vector2 GetClosestPoint(Vector2 point)
 		//{
 		//  // #TODO
