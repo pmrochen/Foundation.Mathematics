@@ -339,11 +339,13 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in OrientedBox box)
 		{
-			Matrix3 basisTranspose = Matrix3.Transpose(box.basis_);
+			//Matrix3 basisTranspose = Matrix3.Transpose(box.basis_);
 			Vector3 boxMin = -box.halfDims_;
 			Vector3 boxMax = box.halfDims_;
-			Vector3 pos = (origin_ - box.center_)*basisTranspose;
-			Vector3 invDir = 1f/(direction_*basisTranspose);
+			//Vector3 pos = (origin_ - box.center_)*basisTranspose;
+			//Vector3 invDir = 1f/(direction_*basisTranspose);
+			Vector3 pos = box.basis_*(origin_ - box.center_);
+			Vector3 invDir = 1f/(box.basis_*direction_);
 
 			float tMin, tMax;
 			if (invDir.x_ >= 0f)

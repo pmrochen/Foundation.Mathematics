@@ -267,8 +267,9 @@ namespace Foundation.Mathematics
 
 		public readonly Vector3 GetClosestPoint(Vector3 point)
 		{
-			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			point = (point - center_)*basisTranspose;
+			//Matrix3 basisTranspose = Matrix3.Transpose(basis_);
+			//point = (point - center_)*basisTranspose;
+			point = basis_*(point - center_);
 			return Vector3.Clamp(point, -halfDims_, halfDims_)*basis_ + center_;
 		}
 
@@ -279,8 +280,9 @@ namespace Foundation.Mathematics
 
 		public readonly bool Contains(Vector3 point)
 		{
-			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			point = (point - center_)*basisTranspose;
+			//Matrix3 basisTranspose = Matrix3.Transpose(basis_);
+			//point = (point - center_)*basisTranspose;
+			point = basis_*(point - center_);
 			return (-halfDims_).AllLessThanEqual(point) && halfDims_.AllGreaterThanEqual(point);
 		}
 
@@ -288,8 +290,9 @@ namespace Foundation.Mathematics
 		{
 			Vector3 normal = halfSpace.Normal;
 #if SIMD
-			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			float r = Vector3.Sum(Vector3.Abs(halfDims_*(normal*basisTranspose)));
+			//Matrix3 basisTranspose = Matrix3.Transpose(basis_);
+			//float r = Vector3.Sum(Vector3.Abs(halfDims_*(normal*basisTranspose)));
+			float r = Vector3.Sum(Vector3.Abs(halfDims_*(basis_*normal)));
 #else
 			float r = Math.Abs(halfDims_.x_*Vector3.Dot(normal, basis_.Row0)) +
 				Math.Abs(halfDims_.y_*Vector3.Dot(normal, basis_.Row1)) +
@@ -302,8 +305,9 @@ namespace Foundation.Mathematics
 		{
 			Vector3 normal = plane.Normal;
 #if SIMD
-			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			float r = Vector3.Sum(Vector3.Abs(halfDims_*(normal*basisTranspose)));
+			//Matrix3 basisTranspose = Matrix3.Transpose(basis_);
+			//float r = Vector3.Sum(Vector3.Abs(halfDims_*(normal*basisTranspose)));
+			float r = Vector3.Sum(Vector3.Abs(halfDims_*(basis_*normal)));
 #else
 			float r = Math.Abs(halfDims_.x_*Vector3.Dot(normal, basis_.Row0)) +
 				Math.Abs(halfDims_.y_*Vector3.Dot(normal, basis_.Row1)) +
@@ -314,9 +318,11 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Triangle3 triangle)
 		{
-			Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			return AxisAlignedBox.IntersectAxisAlignedBoxTriangle(halfDims_, (triangle.Vertex0 - center_)*basisTranspose, 
-				(triangle.Vertex1 - center_)*basisTranspose, (triangle.Vertex2 - center_)*basisTranspose);
+			//Matrix3 basisTranspose = Matrix3.Transpose(basis_);
+			//return AxisAlignedBox.IntersectAxisAlignedBoxTriangle(halfDims_, (triangle.Vertex0 - center_)*basisTranspose, 
+			//	(triangle.Vertex1 - center_)*basisTranspose, (triangle.Vertex2 - center_)*basisTranspose);
+			return AxisAlignedBox.IntersectAxisAlignedBoxTriangle(halfDims_, basis_*(triangle.Vertex0 - center_),
+				basis_*(triangle.Vertex1 - center_), basis_*(triangle.Vertex2 - center_));
 		}
 
 		public readonly bool Intersects(in AxisAlignedBox box)
