@@ -18,6 +18,8 @@ namespace Foundation.Mathematics
 	[TypeConverter(typeof(Vector3Converter))]
 	public struct Vector3 : ISerializable, IFormattable, IEquatable<Vector3>
 	{
+		public static readonly Vector3 PositiveInfinity = new Vector3(Single.PositiveInfinity);
+		public static readonly Vector3 NegativeInfinity = new Vector3(Single.NegativeInfinity);
 #if SIMD
 		public static readonly Vector3 Zero = new Vector3(System.Numerics.Vector3.Zero);
 		public static readonly Vector3 UnitX = new Vector3(System.Numerics.Vector3.UnitX);
@@ -887,6 +889,12 @@ namespace Foundation.Mathematics
 				return axis;
 			}
 		}
+
+		[Browsable(false)]
+		public readonly float MinComponent => Math.Min(Math.Min(x_, y_), z_); // #TODO SIMD
+
+		[Browsable(false)]
+		public readonly float MaxComponent => Math.Max(Math.Max(x_, y_), z_); // #TODO SIMD
 
 		public readonly override int GetHashCode()
 		{

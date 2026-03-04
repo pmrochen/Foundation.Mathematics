@@ -14,6 +14,8 @@ namespace Foundation.Mathematics
 	[TypeConverter(typeof(Vector4Converter))]
 	public struct Vector4 : ISerializable, IFormattable, IEquatable<Vector4>
 	{
+		public static readonly Vector4 PositiveInfinity = new Vector4(Single.PositiveInfinity);
+		public static readonly Vector4 NegativeInfinity = new Vector4(Single.NegativeInfinity);
 #if SIMD
 		public static readonly Vector4 Zero = new Vector4(System.Numerics.Vector4.Zero);
 		public static readonly Vector4 UnitX = new Vector4(System.Numerics.Vector4.UnitX);
@@ -879,6 +881,12 @@ namespace Foundation.Mathematics
 		{
 			get => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_) && Functions.IsFinite(w_);
 		}
+
+		[Browsable(false)]
+		public readonly float MinComponent => Math.Min(Math.Min(Math.Min(x_, y_), z_), w_); // #TODO SIMD
+
+		[Browsable(false)]
+		public readonly float MaxComponent => Math.Max(Math.Max(Math.Max(x_, y_), z_), w_); // #TODO SIMD
 
 		public readonly override int GetHashCode()
 		{

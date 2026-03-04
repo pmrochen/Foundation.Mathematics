@@ -57,6 +57,12 @@ namespace Foundation.Mathematics
 			set => y_ = value;
 		}
 
+		[Browsable(false)]
+		public readonly int MinComponent => Math.Min(x_, y_);
+
+		[Browsable(false)]
+		public readonly int MaxComponent => Math.Max(x_, y_);
+
 		public readonly override int GetHashCode()
 		{
 			int hash = x_.GetHashCode();

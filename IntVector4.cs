@@ -126,6 +126,12 @@ namespace Foundation.Mathematics
 			}
 		}
 
+		[Browsable(false)]
+		public readonly int MinComponent => Math.Min(Math.Min(Math.Min(x_, y_), z_), w_);
+
+		[Browsable(false)]
+		public readonly int MaxComponent => Math.Max(Math.Max(Math.Max(x_, y_), z_), w_);
+
 		public readonly override int GetHashCode()
 		{
 			int hash = x_.GetHashCode();

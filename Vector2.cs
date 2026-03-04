@@ -18,6 +18,8 @@ namespace Foundation.Mathematics
 	[TypeConverter(typeof(Vector2Converter))]
 	public struct Vector2 : ISerializable, IFormattable, IEquatable<Vector2>
 	{
+		public static readonly Vector2 PositiveInfinity = new Vector2(Single.PositiveInfinity);
+		public static readonly Vector2 NegativeInfinity = new Vector2(Single.NegativeInfinity);
 #if SIMD
 		public static readonly Vector2 Zero = new Vector2(System.Numerics.Vector2.Zero);
 		public static readonly Vector2 UnitX = new Vector2(System.Numerics.Vector2.UnitX);
@@ -684,6 +686,12 @@ namespace Foundation.Mathematics
 
 		[Browsable(false)]
 		public readonly Axis MajorAxis => (MathF.Abs(y_) > MathF.Abs(x_)) ? Axis.Y : Axis.X;
+
+		[Browsable(false)]
+		public readonly float MinComponent => Math.Min(x_, y_); // #TODO SIMD
+
+		[Browsable(false)]
+		public readonly float MaxComponent => Math.Max(x_, y_); // #TODO SIMD
 
 		public readonly override int GetHashCode()
 		{

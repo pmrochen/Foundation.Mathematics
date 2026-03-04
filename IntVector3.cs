@@ -92,6 +92,12 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly IntVector2 ZY => new IntVector2(z_, y_);
 
+		[Browsable(false)]
+		public readonly int MinComponent => Math.Min(Math.Min(x_, y_), z_);
+
+		[Browsable(false)]
+		public readonly int MaxComponent => Math.Max(Math.Max(x_, y_), z_);
+
 		public readonly override int GetHashCode()
 		{
 			int hash = x_.GetHashCode();
