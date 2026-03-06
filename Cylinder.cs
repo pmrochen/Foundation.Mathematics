@@ -165,7 +165,7 @@ namespace Foundation.Mathematics
         }
 
 		[Browsable(false)]
-		public readonly float Area => SingleConstants.TwoPi*radius_*(radius_ + height_);
+		public readonly float SurfaceArea => SingleConstants.TwoPi*radius_*(radius_ + height_);
 
 		[Browsable(false)]
 		public readonly float Volume => SingleConstants.Pi*radius_*radius_*height_;

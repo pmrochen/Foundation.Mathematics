@@ -201,7 +201,7 @@ namespace Foundation.Mathematics
 		public readonly float SlantHeight => MathF.Sqrt(radius_*radius_ + height_*height_);
 
 		[Browsable(false)]
-		public readonly float Area => SingleConstants.Pi*radius_*(radius_ + MathF.Sqrt(radius_*radius_ + height_*height_));
+		public readonly float SurfaceArea => SingleConstants.Pi*radius_*(radius_ + MathF.Sqrt(radius_*radius_ + height_*height_));
 
 		[Browsable(false)]
 		public readonly float Volume => SingleConstants.Pi*radius_*radius_*height_/3f;
@@ -259,8 +259,10 @@ namespace Foundation.Mathematics
 			return cone;
 		}
 
-		public readonly bool Contains(Vector3 point)
+		public readonly bool Contains(Vector3 point) // #TODO Move to Containment
 		{
+			// http://www.geometrictools.com/
+
 			Vector3 diff = point - vertex_;
 			float coneDist = Vector3.Dot(diff, axis_);
 			if ((coneDist < 0f) || (coneDist > height_))
@@ -271,8 +273,10 @@ namespace Foundation.Mathematics
 			return (orthDistSquared <= coneRadius*coneRadius);
 		}
 
-		public readonly bool Intersects(in Sphere sphere)
+		public readonly bool Intersects(in Sphere sphere) // #TODO Move to Intersections
 		{
+			// http://www.geometrictools.com/
+
 			float slantHeight = MathF.Sqrt(radius_*radius_ + height_*height_);
 			float sinAngle = radius_/slantHeight;
 			float cosAngle = height_/slantHeight;

@@ -169,7 +169,7 @@ namespace Foundation.Mathematics
 		public readonly float AspectRatio => majorRadius_/minorRadius_;
 
 		[Browsable(false)]
-		public readonly float Area => 4f*SingleConstants.PiSquared*majorRadius_*minorRadius_;
+		public readonly float SurfaceArea => 4f*SingleConstants.PiSquared*majorRadius_*minorRadius_;
 
 		[Browsable(false)]
 		public readonly float Volume => 2f*SingleConstants.PiSquared*majorRadius_*minorRadius_*minorRadius_;
