@@ -172,7 +172,7 @@ namespace Foundation.Mathematics
 		public readonly Vector3 Centroid => (vertex0_ + vertex1_ + vertex2_ + vertex3_)*0.25f;
 
 		//[Browsable(false)] // #TODO
-		//public readonly float Area;
+		//public readonly float SurfaceArea;
 
 		[Browsable(false)]
 		public readonly float Volume
@@ -194,10 +194,18 @@ namespace Foundation.Mathematics
 			vertex3_ += offset;
 		}
 
-		public static Tetrahedron Translate(Tetrahedron t, Vector3 offset)
+		public static Tetrahedron Translate(Tetrahedron tetrahedron, Vector3 offset)
 		{
-			t.Translate(offset);
-			return t;
+			tetrahedron.Translate(offset);
+			return tetrahedron;
+		}
+
+		public void Transform(in Matrix3 matrix)
+		{
+			vertex0_.Transform(matrix);
+			vertex1_.Transform(matrix);
+			vertex2_.Transform(matrix);
+			vertex3_.Transform(matrix);
 		}
 
 		public void Transform(in AffineTransform at)
@@ -208,10 +216,16 @@ namespace Foundation.Mathematics
 			vertex3_.Transform(at);
 		}
 
-		public static Tetrahedron Transform(Tetrahedron t, in AffineTransform at)
+		public static Tetrahedron Transform(Tetrahedron tetrahedron, in Matrix3 matrix)
 		{
-			t.Transform(at);
-			return t;
+			tetrahedron.Transform(matrix);
+			return tetrahedron;
+		}
+
+		public static Tetrahedron Transform(Tetrahedron tetrahedron, in AffineTransform at)
+		{
+			tetrahedron.Transform(at);
+			return tetrahedron;
 		}
 
 		public void Flip()

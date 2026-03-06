@@ -218,10 +218,18 @@ namespace Foundation.Mathematics
 			vertex3_ += offset;
 		}
 
-		public static Quadrilateral3 Translate(Quadrilateral3 q, Vector3 offset)
+		public static Quadrilateral3 Translate(Quadrilateral3 quadrilateral, Vector3 offset)
 		{
-			q.Translate(offset);
-			return q;
+			quadrilateral.Translate(offset);
+			return quadrilateral;
+		}
+
+		public void Transform(in Matrix3 matrix)
+		{
+			vertex0_.Transform(matrix);
+			vertex1_.Transform(matrix);
+			vertex2_.Transform(matrix);
+			vertex3_.Transform(matrix);
 		}
 
 		public void Transform(in AffineTransform at)
@@ -232,10 +240,16 @@ namespace Foundation.Mathematics
 			vertex3_.Transform(at);
 		}
 
-		public static Quadrilateral3 Transform(Quadrilateral3 q, in AffineTransform at)
+		public static Quadrilateral3 Transform(Quadrilateral3 quadrilateral, in Matrix3 matrix)
 		{
-			q.Transform(at);
-			return q;
+			quadrilateral.Transform(matrix);
+			return quadrilateral;
+		}
+
+		public static Quadrilateral3 Transform(Quadrilateral3 quadrilateral, in AffineTransform at)
+		{
+			quadrilateral.Transform(at);
+			return quadrilateral;
 		}
 
 		public void Flip()
