@@ -274,16 +274,12 @@ namespace Foundation.Mathematics
 
         public void Orthonormalize()
         {
-			//if (System.Numerics.Vector.IsHardwareAccelerated)
-			//{
-				halfDims_ *= new Vector2(basis_[0].Magnitude, basis_[1].Magnitude);
-			//}
-			//else
-			//{
-			//	halfDims_.X *= basis_[0].Magnitude;
-			//	halfDims_.Y *= basis_[1].Magnitude;
-			//}
-
+#if SIMD
+			halfDims_ *= new Vector2(basis_[0].Magnitude, basis_[1].Magnitude);
+#else
+			halfDims_.X *= basis_[0].Magnitude;
+			halfDims_.Y *= basis_[1].Magnitude;
+#endif
 			float zLength = basis_[2].Magnitude;
 			depthMin_ *= zLength;
 			depthMax_ *= zLength;
