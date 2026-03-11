@@ -177,31 +177,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in AxisAlignedRectangle rectangle)
         {
-			float d = 0f;
-
-			if (center_.X < rectangle.minimum_.X)
-			{
-				float s = center_.X - rectangle.minimum_.X;
-				d += s*s;
-			}
-			else if (center_.X > rectangle.maximum_.X)
-			{
-				float s = center_.X - rectangle.maximum_.X;
-				d += s*s;
-			}
-
-			if (center_.Y < rectangle.minimum_.Y)
-			{
-				float s = center_.Y - rectangle.minimum_.Y;
-				d += s*s;
-			}
-			else if (center_.Y > rectangle.maximum_.Y)
-			{
-				float s = center_.Y - rectangle.maximum_.Y;
-				d += s*s;
-			}
-
-			return (d <= radius_*radius_);
+			return Intersections.TestAxisAlignedRectangleCircle(rectangle.minimum_, rectangle.maximum_, center_, radius_);
 		}
 
 		public readonly bool Intersects(in Circle2 circle)

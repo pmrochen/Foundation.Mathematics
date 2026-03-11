@@ -257,7 +257,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Circle2 circle)
 		{
-			return circle.Intersects(this);
+			return Intersections.TestAxisAlignedRectangleCircle(minimum_, maximum_, circle.center_, circle.radius_);
 		}
 
 		internal Vector2 minimum_;

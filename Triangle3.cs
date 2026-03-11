@@ -270,10 +270,17 @@ namespace Foundation.Mathematics
 			vertex2_ += offset;
 		}
 
-		public static Triangle3 Translate(Triangle3 t, Vector3 offset)
+		public static Triangle3 Translate(Triangle3 triangle, Vector3 offset)
 		{
-			t.Translate(offset);
-			return t;
+			triangle.Translate(offset);
+			return triangle;
+		}
+
+		public void Transform(in Matrix3 matrix)
+		{
+			vertex0_.Transform(matrix);
+			vertex1_.Transform(matrix);
+			vertex2_.Transform(matrix);
 		}
 
 		public void Transform(in AffineTransform at)
@@ -283,10 +290,16 @@ namespace Foundation.Mathematics
             vertex2_.Transform(at);
         }
 
-		public static Triangle3 Transform(Triangle3 t, in AffineTransform at)
+		public static Triangle3 Transform(Triangle3 triangle, in Matrix3 matrix)
 		{
-			t.Transform(at);
-			return t;
+			triangle.Transform(matrix);
+			return triangle;
+		}
+
+		public static Triangle3 Transform(Triangle3 triangle, in AffineTransform at)
+		{
+			triangle.Transform(at);
+			return triangle;
 		}
 
 		public void Flip()
@@ -325,23 +338,21 @@ namespace Foundation.Mathematics
 		public readonly Vector3 GetClosestPoint(Vector3 point)
 		{
 			Vector3 closestPoint;
-			GetDistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint);
+			Distances.GetPointTriangleSquared(point, vertex0_, vertex1_, vertex2_, out closestPoint);
 			return closestPoint;
 		}
 
 		public readonly float GetDistanceTo(Vector3 point)
 		{
-			Vector3 closestPoint;
-			return MathF.Sqrt(GetDistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint));
+			return Distances.GetPointTriangle(point, vertex0_, vertex1_, vertex2_);
 		}
 
-		public readonly float GetDistanceSquaredTo(Vector3 point)
-		{
-			Vector3 closestPoint;
-			return GetDistanceSquaredPointTriangle(point, vertex0_, vertex1_, vertex2_, out closestPoint);
-		}
+		//public readonly float GetDistanceSquaredTo(Vector3 point)
+		//{
+		//	return Distances.GetPointTriangleSquared(point, vertex0_, vertex1_, vertex2_);
+		//}
 
-		//public readonly bool Intersects(Plane plane)
+		//public readonly bool Intersects(in Plane plane)
 		//{
 		//	// #TODO Check if all vertices are on one side
 		//	float d0 = plane.GetSignedDistanceTo(vertex0_);
@@ -354,10 +365,6 @@ namespace Foundation.Mathematics
 		{
 			return halfSpace.Contains(vertex0_) || halfSpace.Contains(vertex1_) || halfSpace.Contains(vertex2_);
 		}
-
-		//public readonly bool Intersects(in Plane plane) // #TODO Check if all vertices are on one side
-		//{
-		//}
 
 		public readonly bool Intersects(in AxisAlignedBox box)
 		{
@@ -372,234 +379,6 @@ namespace Foundation.Mathematics
 		public readonly bool Intersects(in Sphere sphere)
 		{
 			return sphere.Intersects(this);
-		}
-
-		private static float GetDistanceSquaredPointTriangle(Vector3 point, Vector3 v0, Vector3 v1, Vector3 v2, out Vector3 closestPoint)
-		{
-			// http://www.geometrictools.com/
-
-			Vector3 diff = v0 - point;
-			Vector3 edge0 = v1 - v0;
-			Vector3 edge1 = v2 - v0;
-			float a00 = edge0.LengthSquared;
-			float a01 = Vector3.Dot(edge0, edge1);
-			float a11 = edge1.LengthSquared;
-			float b0 = Vector3.Dot(diff, edge0);
-			float b1 = Vector3.Dot(diff, edge1);
-			float c = diff.LengthSquared;
-			float det = Math.Abs(a00*a11 - a01*a01);
-			float s = a01*b1 - a11*b0;
-			float t = a01*b0 - a00*b1;
-			float sqrDistance;
-
-			if (s + t <= det)
-			{
-				if (s < 0.0f)
-				{
-					if (t < 0.0f)
-					{
-						if (b0 < 0.0f)
-						{
-							t = 0.0f;
-							if (-b0 >= a00)
-							{
-								s = 1.0f;
-								sqrDistance = a00 + (2.0f)*b0 + c;
-							}
-							else
-							{
-								s = -b0/a00;
-								sqrDistance = b0*s + c;
-							}
-						}
-						else
-						{
-							s = 0.0f;
-							if (b1 >= 0.0f)
-							{
-								t = 0.0f;
-								sqrDistance = c;
-							}
-							else if (-b1 >= a11)
-							{
-								t = 1.0f;
-								sqrDistance = a11 + 2.0f*b1 + c;
-							}
-							else
-							{
-								t = -b1/a11;
-								sqrDistance = b1*t + c;
-							}
-						}
-					}
-					else
-					{
-						s = 0.0f;
-						if (b1 >= 0.0f)
-						{
-							t = 0.0f;
-							sqrDistance = c;
-						}
-						else if (-b1 >= a11)
-						{
-							t = 1.0f;
-							sqrDistance = a11 + 2.0f*b1 + c;
-						}
-						else
-						{
-							t = -b1/a11;
-							sqrDistance = b1*t + c;
-						}
-					}
-				}
-				else if (t < 0.0f)
-				{
-					t = 0.0f;
-					if (b0 >= 0.0f)
-					{
-						s = 0.0f;
-						sqrDistance = c;
-					}
-					else if (-b0 >= a00)
-					{
-						s = 1.0f;
-						sqrDistance = a00 + 2.0f*b0 + c;
-					}
-					else
-					{
-						s = -b0/a00;
-						sqrDistance = b0*s + c;
-					}
-				}
-				else
-				{
-					float invDet = 1.0f/det;
-					s *= invDet;
-					t *= invDet;
-					sqrDistance = s*(a00*s + a01*t + 2.0f*b0) + t*(a01*s + a11*t + 2.0f*b1) + c;
-				}
-			}
-			else
-			{
-				if (s < 0.0f)
-				{
-					float tmp0 = a01 + b0;
-					float tmp1 = a11 + b1;
-					if (tmp1 > tmp0)
-					{
-						float numer = tmp1 - tmp0;
-						float denom = a00 - 2.0f*a01 + a11;
-						if (numer >= denom)
-						{
-							s = 1.0f;
-							t = 0.0f;
-							sqrDistance = a00 + 2.0f*b0 + c;
-						}
-						else
-						{
-							s = numer/denom;
-							t = 1.0f - s;
-							sqrDistance = s*(a00*s + a01*t + 2.0f*b0) + t*(a01*s + a11*t + 2.0f*b1) + c;
-						}
-					}
-					else
-					{
-						s = 0.0f;
-						if (tmp1 <= 0.0f)
-						{
-							t = 1.0f;
-							sqrDistance = a11 + 2.0f*b1 + c;
-						}
-						else if (b1 >= 0.0f)
-						{
-							t = 0.0f;
-							sqrDistance = c;
-						}
-						else
-						{
-							t = -b1/a11;
-							sqrDistance = b1*t + c;
-						}
-					}
-				}
-				else if (t < 0.0f)
-				{
-					float tmp0 = a01 + b1;
-					float tmp1 = a00 + b0;
-					if (tmp1 > tmp0)
-					{
-						float numer = tmp1 - tmp0;
-						float denom = a00 - 2.0f*a01 + a11;
-						if (numer >= denom)
-						{
-							t = 1.0f;
-							s = 0.0f;
-							sqrDistance = a11 + 2.0f*b1 + c;
-						}
-						else
-						{
-							t = numer/denom;
-							s = 1.0f - t;
-							sqrDistance = s*(a00*s + a01*t + 2.0f*b0) + t*(a01*s + a11*t + 2.0f*b1) + c;
-						}
-					}
-					else
-					{
-						t = 0.0f;
-						if (tmp1 <= 0.0f)
-						{
-							s = 1.0f;
-							sqrDistance = a00 + 2.0f*b0 + c;
-						}
-						else if (b0 >= 0.0f)
-						{
-							s = 0.0f;
-							sqrDistance = c;
-						}
-						else
-						{
-							s = -b0/a00;
-							sqrDistance = b0*s + c;
-						}
-					}
-				}
-				else
-				{
-					float numer = a11 + b1 - a01 - b0;
-					if (numer <= 0.0f)
-					{
-						s = 0.0f;
-						t = 1.0f;
-						sqrDistance = a11 + 2.0f*b1 + c;
-					}
-					else
-					{
-						float denom = a00 - 2.0f*a01 + a11;
-						if (numer >= denom)
-						{
-							s = 1.0f;
-							t = 0.0f;
-							sqrDistance = a00 + 2.0f*b0 + c;
-						}
-						else
-						{
-							s = numer/denom;
-							t = 1.0f - s;
-							sqrDistance = s*(a00*s + a01*t + 2.0f*b0) + t*(a01*s + a11*t + 2.0f*b1) + c;
-						}
-					}
-				}
-			}
-
-			if (sqrDistance < 0.0f)
-				sqrDistance = 0.0f;
-
-			closestPoint = v0 + s*edge0 + t*edge1;
-			//triangleBary[1] = s;
-			//triangleBary[2] = t;
-			//triangleBary[0] = 1.0f - s - t;
-    
-			return sqrDistance;
 		}
 
 		internal Vector3 vertex0_;

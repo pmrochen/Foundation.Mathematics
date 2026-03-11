@@ -132,38 +132,50 @@ namespace Foundation.Mathematics
             set => direction_ = value;
         }
 
-        public void Normalize()
-        {
-            direction_.Normalize();
-        }
-
-		public static Line3 Normalize(Line3 l)
-		{
-			l.Normalize();
-			return l;
-		}
-
 		public void Translate(Vector3 offset)
 		{
 			origin_ += offset;
 		}
 
-		public static Line3 Translate(Line3 l, Vector3 offset)
+		public static Line3 Translate(Line3 line, Vector3 offset)
 		{
-			l.Translate(offset);
-			return l;
+			line.Translate(offset);
+			return line;
 		}
 
-		public void Transform(in AffineTransform t)
+		public void Transform(in Matrix3 matrix)
+		{
+			origin_.Transform(matrix);
+			direction_.Transform(matrix);
+		}
+
+		public void Transform(in AffineTransform at)
         {
-			origin_.Transform(t);
-			direction_.Transform(t.r_);
+			origin_.Transform(at);
+			direction_.Transform(at.r_);
         }
 
-		public static Line3 Transform(Line3 l, in AffineTransform t)
+		public static Line3 Transform(Line3 line, in Matrix3 matrix)
 		{
-			l.Transform(t);
-			return l;
+			line.Transform(matrix);
+			return line;
+		}
+
+		public static Line3 Transform(Line3 line, in AffineTransform at)
+		{
+			line.Transform(at);
+			return line;
+		}
+
+		public void Normalize()
+		{
+			direction_.Normalize();
+		}
+
+		public static Line3 Normalize(Line3 line)
+		{
+			line.Normalize();
+			return line;
 		}
 
 		public readonly Vector3 Evaluate(float t)
@@ -201,7 +213,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Plane plane)
 		{
-			return (Math.Abs(Vector3.Dot(plane.Normal, direction_)) >= 1e-6f);
+			return Intersections.TestLinePlane(direction_, plane.Normal);
 		}
 
 		public readonly bool Intersects(in Triangle3 triangle)
@@ -221,239 +233,44 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Sphere sphere)
 		{
-			Vector3 diff = origin_ - sphere.center_;
-			float a = Vector3.Dot(direction_, direction_);
-			float b = 2f*Vector3.Dot(direction_, diff);
-			float c = Vector3.Dot(diff, diff) - sphere.radius_*sphere.radius_;
-			return !((b*b - 4f*a*c) < 0f);
+			return Intersections.TestLineSphere(origin_, direction_, sphere.center_, sphere.radius_);
 		}
 
 		public readonly bool Intersects(in Ellipsoid ellipsoid)
 		{
-			Matrix3 m = ellipsoid.Matrix;
-			Vector3 diff = origin_ - ellipsoid.Center;
-			Vector3 matDir = direction_*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(direction_, matDir);
-			float a1 = Vector3.Dot(direction_, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			float discr = a1*a1 - a0*a2;
-			return (discr >= 0f);
+			return Intersections.TestLineEllipsoid(origin_, direction_, ellipsoid.Center, ellipsoid.Matrix);
 		}
 
 		public readonly float? FindIntersection(in Plane plane)
 		{
-			float nd = Vector3.Dot(plane.Normal, direction_);
-			if (Math.Abs(nd) < SingleConstants.Tolerance)
-				return null;
-			return (-plane.D - Vector3.Dot(plane.Normal, origin_))/nd;
+			return Intersections.FindLinePlane(origin_, direction_, plane.Normal, plane.D);
 		}
 
 		public readonly float? FindIntersection(in Triangle3 triangle)
 		{
-			// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
-
-			Vector3 edge1 = triangle.vertex1_ - triangle.vertex0_;
-			Vector3 edge2 = triangle.vertex2_ - triangle.vertex0_;
-			Vector3 pvec = Vector3.Cross(direction_, edge2);
-			float det = Vector3.Dot(edge1, pvec);
-			if (Math.Abs(det) < 1e-6f)
-				return null;
-
-			float invDet = 1f/det;
-			Vector3 tvec = origin_ - triangle.vertex0_;
-			float u = Vector3.Dot(tvec, pvec)*invDet;
-			if ((u < 0f) || (u > 1f))
-				return null;
-
-			Vector3 qvec = Vector3.Cross(tvec, edge1);
-			float v = Vector3.Dot(direction_, qvec)*invDet;
-			if ((v < 0f) || ((u + v) > 1f))
-				return null;
-
-			return Vector3.Dot(edge2, qvec)*invDet;
+			return Intersections.FindLineTriangle(origin_, direction_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_);
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedBox box)
 		{
-			Vector3 invDir = 1f/direction_;
-
-			float tMin, tMax;
-			if (direction_.x_ >= 0f)
-			{
-				tMin = (box.minimum_.x_ - origin_.x_)*invDir.x_;
-				tMax = (box.maximum_.x_ - origin_.x_)*invDir.x_;
-			}
-			else
-			{
-				tMin = (box.maximum_.x_ - origin_.x_)*invDir.x_;
-				tMax = (box.minimum_.x_ - origin_.x_)*invDir.x_;
-			}
-
-			float tyMin, tyMax;
-			if (direction_.y_ >= 0f)
-			{
-				tyMin = (box.minimum_.y_ - origin_.y_)*invDir.y_;
-				tyMax = (box.maximum_.y_ - origin_.y_)*invDir.y_;
-			}
-			else
-			{
-				tyMin = (box.maximum_.y_ - origin_.y_)*invDir.y_;
-				tyMax = (box.minimum_.y_ - origin_.y_)*invDir.y_;
-			}
-
-			if ((tMin > tyMax) || (tyMin > tMax))
-				return null;
-
-			if (tyMin > tMin)
-				tMin = tyMin;
-			if (tyMax < tMax)
-				tMax = tyMax;
-
-			float tzMin, tzMax;
-			if (direction_.z_ >= 0f)
-			{
-				tzMin = (box.minimum_.z_ - origin_.z_)*invDir.z_;
-				tzMax = (box.maximum_.z_ - origin_.z_)*invDir.z_;
-			}
-			else
-			{
-				tzMin = (box.maximum_.z_ - origin_.z_)*invDir.z_;
-				tzMax = (box.minimum_.z_ - origin_.z_)*invDir.z_;
-			}
-
-			if ((tMin > tzMax) || (tzMin > tMax))
-				return null;
-
-			if (tzMin > tMin)
-				tMin = tzMin;
-			if (tzMax < tMax)
-				tMax = tzMax;
-
-			if (tMin > tMax)
-				return null;
-
-			return new Interval(tMin, tMax);
+			return Intersections.FindLineAxisAlignedBox(origin_, direction_, box.minimum_, box.maximum_);
 		}
 
 		public readonly Interval? FindIntersection(in OrientedBox box)
 		{
 			//Matrix3 basisTranspose = Matrix3.Transpose(box.basis_);
-			Vector3 boxMin = -box.halfDims_;
-			Vector3 boxMax = box.halfDims_;
-			//Vector3 pos = (origin_ - box.center_)*basisTranspose;
-			//Vector3 invDir = 1f/(direction_*basisTranspose);
-			Vector3 pos = box.basis_*(origin_ - box.center_);
-			Vector3 invDir = 1f/(box.basis_*direction_);
-
-			float tMin, tMax;
-			if (invDir.x_ >= 0f)
-			{
-				tMin = (boxMin.x_ - pos.x_)*invDir.x_;
-				tMax = (boxMax.x_ - pos.x_)*invDir.x_;
-			}
-			else
-			{
-				tMin = (boxMax.x_ - pos.x_)*invDir.x_;
-				tMax = (boxMin.x_ - pos.x_)*invDir.x_;
-			}
-
-			float tyMin, tyMax;
-			if (invDir.y_ >= 0f)
-			{
-				tyMin = (boxMin.y_ - pos.y_)*invDir.y_;
-				tyMax = (boxMax.y_ - pos.y_)*invDir.y_;
-			}
-			else
-			{
-				tyMin = (boxMax.y_ - pos.y_)*invDir.y_;
-				tyMax = (boxMin.y_ - pos.y_)*invDir.y_;
-			}
-
-			if ((tMin > tyMax) || (tyMin > tMax))
-				return null;
-
-			if (tyMin > tMin)
-				tMin = tyMin;
-			if (tyMax < tMax)
-				tMax = tyMax;
-
-			float tzMin, tzMax;
-			if (invDir.z_ >= 0f)
-			{
-				tzMin = (boxMin.z_ - pos.z_)*invDir.z_;
-				tzMax = (boxMax.z_ - pos.z_)*invDir.z_;
-			}
-			else
-			{
-				tzMin = (boxMax.z_ - pos.z_)*invDir.z_;
-				tzMax = (boxMin.z_ - pos.z_)*invDir.z_;
-			}
-
-			if ((tMin > tzMax) || (tzMin > tMax))
-				return null;
-
-			if (tzMin > tMin)
-				tMin = tzMin;
-			if (tzMax < tMax)
-				tMax = tzMax;
-
-			if (tMin > tMax)
-				return null;
-
-			return new Interval(tMin, tMax);
+			return Intersections.FindLineAxisAlignedBox(box.basis_*(origin_ - box.center_)/*(origin_ - box.center_)*basisTranspose*/,
+				box.basis_*direction_/*direction_*basisTranspose*/, -box.halfDims_, box.halfDims_);
 		}
 
 		public readonly Interval? FindIntersection(in Sphere sphere)
 		{
-			Vector3 diff = origin_ - sphere.center_;
-			float a = Vector3.Dot(direction_, direction_);
-			float b = 2f*Vector3.Dot(direction_, diff);
-			float c = Vector3.Dot(diff, diff) - sphere.radius_*sphere.radius_;
-			float delta = b*b - 4f*a*c;
-
-			if (delta < 0f)
-			{
-				return null;
-			}
-			else if (delta > 0f)
-			{
-				delta = MathF.Sqrt(delta);
-				a = 0.5f/a;
-				return new Interval((-b - delta)*a, (-b + delta)*a);
-			}
-			else // delta == 0
-			{
-				return new Interval(-b*0.5f/a);
-			}
+			return Intersections.FindLineSphere(origin_, direction_, sphere.center_, sphere.radius_);
 		}
 
 		public readonly Interval? FindIntersection(in Ellipsoid ellipsoid)
 		{
-			Matrix3 m = ellipsoid.Matrix;
-			Vector3 diff = origin_ - ellipsoid.Center;
-			Vector3 matDir = direction_*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(direction_, matDir);
-			float a1 = Vector3.Dot(direction_, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			float discr = a1*a1 - a0*a2;
-			if (discr < 0f)
-			{
-				return null;
-			}
-			else if (discr > 1e-6f)
-			{
-				float root = MathF.Sqrt(discr);
-				float inv = 1f/a2;
-				return new Interval((-a1 - root)*inv, (-a1 + root)*inv);
-			}
-			else
-			{
-				return new Interval(-a1/a2);
-			}
+			return Intersections.FindLineEllipsoid(origin_, direction_, ellipsoid.Center, ellipsoid.Matrix);
 		}
 
 		//public readonly Vector2? FindIntersectionPoint(in Plane plane)

@@ -172,22 +172,34 @@ namespace Foundation.Mathematics
 			end_ += offset;
 		}
 
-		public static Segment3 Translate(Segment3 s, Vector3 offset)
+		public static Segment3 Translate(Segment3 segment, Vector3 offset)
 		{
-			s.Translate(offset);
-			return s;
+			segment.Translate(offset);
+			return segment;
 		}
 
-		public void Transform(in AffineTransform t)
+		public void Transform(in Matrix3 matrix)
+		{
+			start_.Transform(matrix);
+			end_.Transform(matrix);
+		}
+
+		public void Transform(in AffineTransform at)
         {
-			start_.Transform(t);
-			end_.Transform(t);
+			start_.Transform(at);
+			end_.Transform(at);
         }
 
-		public static Segment3 Transform(Segment3 s, in AffineTransform t)
+		public static Segment3 Transform(Segment3 segment, in Matrix3 matrix)
 		{
-			s.Transform(t);
-			return s;
+			segment.Transform(matrix);
+			return segment;
+		}
+
+		public static Segment3 Transform(Segment3 segment, in AffineTransform at)
+		{
+			segment.Transform(at);
+			return segment;
 		}
 
 		public readonly Vector3 Evaluate(float t)
@@ -238,85 +250,23 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Ellipsoid ellipsoid)
 		{
-			Matrix3 m = ellipsoid.Matrix;
-			Vector3 direction = end_ - start_;
-			Vector3 diff = Vector3.Lerp(start_, end_, 0.5f) - ellipsoid.Center;
-			Vector3 matDir = direction*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(direction, matDir);
-			float a1 = Vector3.Dot(direction, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			float discr = a1*a1 - a0*a2;
-			if (discr < 0f)
-				return false;
-			if (a0 <= 0f)
-				return true;
-
-			const float e = 0.5f;
-			if (a1 >= 0f)
-			{
-				float q = a0 + e*(-2f*a1 + a2*e);
-				if (q <= 0f)
-					return true;
-
-				float qder = a1 - a2*e;
-				if (qder < 0f)
-					return true;
-			}
-			else
-			{
-				float q = a0 + e*(2f*a1 + a2*e);
-				if (q <= 0f)
-					return true;
-
-				float qder = a1 + a2*e;
-				if (qder < 0f)
-					return true;
-			}
-
-			return false;
+			return Intersections.TestSegmentEllipsoid(start_, end_, ellipsoid.Center, ellipsoid.Matrix);
 		}
 
 		public readonly float? FindIntersection(in Plane plane)
 		{
-			float? t = new Line3(start_, end_ - start_).FindIntersection(plane);
-			return (t.HasValue && (t.Value >= 0f) && (t.Value <= 1f)) ? t : null;
+			float? result = Intersections.FindLinePlane(start_, end_ - start_, plane.Normal, plane.D);
+			return (result.HasValue && (result.Value >= 0f) && (result.Value <= 1f)) ? result : null;
 		}
 
 		public readonly float? FindIntersection(in Triangle3 triangle)
 		{
-			// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
-
-			Vector3 edge1 = triangle.vertex1_ - triangle.vertex0_;
-			Vector3 edge2 = triangle.vertex2_ - triangle.vertex0_;
-			Vector3 direction = end_ - start_;
-			Vector3 pvec = Vector3.Cross(direction, edge2);
-			float det = Vector3.Dot(edge1, pvec);
-			if (Math.Abs(det) < 1e-6f)
-				return null;
-
-			float invDet = 1f/det;
-			Vector3 tvec = start_ - triangle.vertex0_;
-			float u = Vector3.Dot(tvec, pvec)*invDet;
-			if ((u < 0f) || (u > 1f))
-				return null;
-
-			Vector3 qvec = Vector3.Cross(tvec, edge1);
-			float v = Vector3.Dot(direction, qvec)*invDet;
-			if ((v < 0f) || ((u + v) > 1f))
-				return null;
-
-			float t = Vector3.Dot(edge2, qvec)*invDet;
-			if ((t >= 0f) && (t <= 1f))
-				return t;
-			else
-				return null;
+			return Intersections.FindSegmentTriangle(start_, end_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_);
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedBox box)
 		{
-			Interval? intersection = new Line3(start_, end_ - start_).FindIntersection(box);
+			Interval? intersection = Intersections.FindLineAxisAlignedBox(start_, end_ - start_, box.minimum_, box.maximum_);
 
 			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
 			{
@@ -337,7 +287,9 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in OrientedBox box)
 		{
-			Interval? intersection = new Line3(start_, end_ - start_).FindIntersection(box);
+			//Matrix3 basisTranspose = Matrix3.Transpose(box.basis_);
+			Interval? intersection = Intersections.FindLineAxisAlignedBox(box.basis_*(start_ - box.center_)/*(start_ - box.center_)*basisTranspose*/,
+				box.basis_*(end_ - start_)/*(end_ - start_)*basisTranspose*/, -box.halfDims_, box.halfDims_);
 
 			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
 			{
@@ -358,7 +310,7 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in Sphere sphere)
 		{
-			Interval? intersection = new Line3(start_, end_ - start_).FindIntersection(sphere);
+			Interval? intersection = Intersections.FindLineSphere(start_, end_ - start_, sphere.center_, sphere.radius_);
 
 			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
 			{
@@ -379,42 +331,7 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in Ellipsoid ellipsoid)
 		{
-			Matrix3 m = ellipsoid.Matrix;
-			Vector3 direction = end_ - start_;
-			Vector3 diff = Vector3.Lerp(start_, end_, 0.5f) - ellipsoid.Center;
-			Vector3 matDir = direction*m;
-			Vector3 matDiff = diff*m;
-			float a2 = Vector3.Dot(direction, matDir);
-			float a1 = Vector3.Dot(direction, matDiff);
-			float a0 = Vector3.Dot(diff, matDiff) - 1f;
-
-			const float e = 0.5f;
-			float discr = a1*a1 - a0*a2;
-			if (discr < 0f)
-			{
-				return null;
-			}
-			else if (discr > 1e-6f)
-			{
-				float root = MathF.Sqrt(discr);
-				float inv = 1f/a2;
-				float t0 = (-a1 - root)*inv;
-				float t1 = (-a1 + root)*inv;
-
-				Interval? intersection = new Interval(t0, t1).FindIntersection(new Interval(-e, e));
-				if (intersection.HasValue)
-					return new Interval(intersection.Value.Minimum + e, intersection.Value.Maximum + e);
-				else
-					return null;
-			}
-			else
-			{
-				float t0 = -a1/a2;
-				if (Math.Abs(t0) <= e)
-					return new Interval(t0 + e);
-				else
-					return null;
-			}
+			return Intersections.FindSegmentEllipsoid(start_, end_, ellipsoid.Center, ellipsoid.Matrix);
 		}
 
 		//public readonly Vector2? FindIntersectionPoint(in Plane plane)

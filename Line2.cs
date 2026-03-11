@@ -144,15 +144,26 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly float InclinationAngle => (float)Math.Atan2(direction_.Y, direction_.X);
 
-        public void Normalize()
+		public void Translate(Vector2 offset)
+		{
+			origin_ += offset;
+		}
+
+		public static Line2 Translate(Line2 line, Vector2 offset)
+		{
+			line.Translate(offset);
+			return line;
+		}
+
+		public void Normalize()
         {
             direction_.Normalize();
         }
 
-		public static Line2 Normalize(Line2 l)
+		public static Line2 Normalize(Line2 line)
 		{
-			l.Normalize();
-			return l;
+			line.Normalize();
+			return line;
 		}
 
 		public readonly Vector2 Evaluate(float t)
@@ -225,6 +236,11 @@ namespace Foundation.Mathematics
 				(Math.Abs(Vector2.Cross(Vector2.Normalize(line.origin_ - origin_), direction_)) < SingleConstants.Tolerance);
 		}
 
+		public readonly bool Intersects(in Ray2 ray)
+		{
+			return FindIntersection(ray).HasValue;
+		}
+
 		public readonly bool Intersects(in Segment2 segment) 
 		{
 			return FindIntersection(segment).HasValue;
@@ -237,109 +253,32 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Circle2 circle)
 		{
-			Vector2 diff = origin_ - circle.center_;
-			float a = Vector2.Dot(direction_, direction_);
-			float b = 2f*Vector2.Dot(direction_, diff);
-			float c = Vector2.Dot(diff, diff) - circle.radius_*circle.radius_;
-			return !((b*b - 4f*a*c) < 0f);
+			return Intersections.TestLineCircle(origin_, direction_, circle.center_, circle.radius_);
 		}
 
-		public readonly float? FindIntersection(in Line2 line) 
+		public readonly float? FindIntersection(in Line2 line)
 		{
-			float d1CrossD2 = Vector2.Cross(direction_, line.direction_);
-			if (Math.Abs(d1CrossD2) < SingleConstants.Tolerance)
-			{
-				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(line.origin_ - origin_), direction_)) < SingleConstants.Tolerance))
-					return null;
-				return 0f; // collinear
-			}
+			return Intersections.FindLineLine(origin_, direction_, line.origin_, line.direction_);
+		}
 
-			float t = Vector2.Cross(line.origin_ - origin_, line.direction_)/d1CrossD2;
-			//float u = Vector2.Cross(line.origin_ - origin_, direction_)/d1CrossD2;
-			return t;
+		public readonly float? FindIntersection(in Ray2 ray)
+		{
+			return Intersections.FindLineRay(origin_, direction_, ray.origin_, ray.direction_);
 		}
 
 		public readonly float? FindIntersection(in Segment2 segment)
 		{
-			float d1CrossD2 = Vector2.Cross(direction_, segment.end_ - segment.start_);
-			if (Math.Abs(d1CrossD2) < SingleConstants.Tolerance)
-			{
-				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(segment.start_ - origin_), direction_)) < SingleConstants.Tolerance))
-					return null;
-				return 0f; // collinear
-			}
-
-			//float t = Vector2.Cross(segment.start_ - origin_, segment.end_ - segment.start_)/d1CrossD2;
-			float u = Vector2.Cross(segment.start_ - origin_, direction_)/d1CrossD2;
-			if ((u >= 0f) && (u <= 1f))
-				return /*t*/Vector2.Cross(segment.start_ - origin_, segment.end_ - segment.start_)/d1CrossD2;
-			return null;
+			return Intersections.FindLineSegment(origin_, direction_, segment.start_, segment.end_);
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)
 		{
-			Vector2 invDir = 1f/direction_;
-
-			float tMin, tMax;
-			if (direction_.x_ >= 0f)
-			{
-				tMin = (rectangle.minimum_.x_ - origin_.x_)*invDir.x_;
-				tMax = (rectangle.maximum_.x_ - origin_.x_)*invDir.x_;
-			}
-			else
-			{
-				tMin = (rectangle.maximum_.x_ - origin_.x_)*invDir.x_;
-				tMax = (rectangle.minimum_.x_ - origin_.x_)*invDir.x_;
-			}
-
-			float tyMin, tyMax;
-			if (direction_.y_ >= 0f)
-			{
-				tyMin = (rectangle.minimum_.y_ - origin_.y_)*invDir.y_;
-				tyMax = (rectangle.maximum_.y_ - origin_.y_)*invDir.y_;
-			}
-			else
-			{
-				tyMin = (rectangle.maximum_.y_ - origin_.y_)*invDir.y_;
-				tyMax = (rectangle.minimum_.y_ - origin_.y_)*invDir.y_;
-			}
-
-			if ((tMin > tyMax) || (tyMin > tMax))
-				return null;
-
-			if (tyMin > tMin)
-				tMin = tyMin;
-			if (tyMax < tMax)
-				tMax = tyMax;
-
-			if (tMin > tMax)
-				return null;
-
-			return new Interval(tMin, tMax);
+			return Intersections.FindLineAxisAlignedRectangle(origin_, direction_, rectangle.minimum_, rectangle.maximum_);
 		}
 
 		public readonly Interval? FindIntersection(in Circle2 circle)
 		{
-			Vector2 diff = origin_ - circle.center_;
-			float a = Vector2.Dot(direction_, direction_);
-			float b = 2f*Vector2.Dot(direction_, diff);
-			float c = Vector2.Dot(diff, diff) - circle.radius_*circle.radius_;
-			float delta = b*b - 4f*a*c;
-
-			if (delta < 0f)
-			{
-				return null;
-			}
-			else if (delta > 0f)
-			{
-				delta = MathF.Sqrt(delta);
-				a = 0.5f/a;
-				return new Interval((-b - delta)*a, (-b + delta)*a);
-			}
-			else // delta == 0
-			{
-				return new Interval(-b*0.5f/a);
-			}
+			return Intersections.FindLineCircle(origin_, direction_, circle.center_, circle.radius_);
 		}
 
 		//public readonly Vector2? FindIntersectionPoint(in Line2 line)

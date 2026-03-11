@@ -118,9 +118,25 @@ namespace Foundation.Mathematics
 								 new Vector3(Single.Parse(m[12], provider), Single.Parse(m[13], provider), Single.Parse(m[14], provider)));
 		}
 
-		public static Ellipsoid FromSphere(in Sphere s)
+		public static Ellipsoid FromSphere(in Sphere sphere)
 		{
-			return new Ellipsoid(s.Center, Matrix3.Identity, new Vector3(s.radius_, s.radius_, s.radius_));
+			return new Ellipsoid(sphere.Center, Matrix3.Identity, new Vector3(sphere.Radius));
+		}
+
+		public static Ellipsoid FromSphere(in Sphere sphere, in Matrix3 matrix, bool orthogonal = false)
+		{
+			Ellipsoid ellipsoid = new Ellipsoid(Vector3.Transform(sphere.Center, matrix), matrix, new Vector3(sphere.Radius));
+			if (!orthogonal)
+				ellipsoid.Orthonormalize();
+			return ellipsoid;
+		}
+
+		public static Ellipsoid FromSphere(in Sphere sphere, in AffineTransform at, bool orthogonal = false)
+		{
+			Ellipsoid ellipsoid = new Ellipsoid(Vector3.Transform(sphere.Center, at), at.r_, new Vector3(sphere.Radius));
+			if (!orthogonal)
+				ellipsoid.Orthonormalize();
+			return ellipsoid;
 		}
 
 		//public static implicit operator Ellipsoid(Sphere s)
@@ -157,7 +173,7 @@ namespace Foundation.Mathematics
 		}
 
 		//[Browsable(false)]
-		//public readonly float Area; // #TODO
+		//public readonly float SurfaceArea; // #TODO
 
 		[Browsable(false)]
 		public readonly float Volume => 4f*SingleConstants.Pi*radii_.X*radii_.Y*radii_.Z/3f;
@@ -169,17 +185,13 @@ namespace Foundation.Mathematics
 
 		public void Orthonormalize()
 		{
-			//if (System.Numerics.Vector.IsHardwareAccelerated)
-			//{
-				radii_ *= new Vector3(basis_[0].Magnitude, basis_[1].Magnitude, basis_[2].Magnitude);
-			//}
-			//else
-			//{
-			//	radii_.X *= basis_[0].Magnitude;
-			//	radii_.Y *= basis_[1].Magnitude;
-			//	radii_.Z *= basis_[2].Magnitude;
-			//}
-
+#if SIMD
+			radii_ *= new Vector3(basis_[0].Magnitude, basis_[1].Magnitude, basis_[2].Magnitude);
+#else
+			radii_.X *= basis_[0].Magnitude;
+			radii_.Y *= basis_[1].Magnitude;
+			radii_.Z *= basis_[2].Magnitude;
+#endif
 			basis_.Orthonormalize();
 		}
 
@@ -200,16 +212,31 @@ namespace Foundation.Mathematics
 			return ellipsoid;
 		}
 
-		public void Transform(in AffineTransform at)
+		public void Transform(in Matrix3 matrix, bool orthogonal = false)
+		{
+			basis_.Concat(matrix);
+			center_.Transform(matrix);
+			if (!orthogonal)
+				Orthonormalize();
+		}
+
+		public void Transform(in AffineTransform at, bool orthogonal = false)
 		{
 			basis_.Concat(at.r_);
 			center_.Transform(at);
-			Orthonormalize();
+			if (!orthogonal)
+				Orthonormalize();
 		}
 
-		public static Ellipsoid Transform(Ellipsoid ellipsoid, in AffineTransform at)
+		public static Ellipsoid Transform(Ellipsoid ellipsoid, in Matrix3 matrix, bool orthogonal = false)
 		{
-			ellipsoid.Transform(at);
+			ellipsoid.Transform(matrix, orthogonal);
+			return ellipsoid;
+		}
+
+		public static Ellipsoid Transform(Ellipsoid ellipsoid, in AffineTransform at, bool orthogonal = false)
+		{
+			ellipsoid.Transform(at, orthogonal);
 			return ellipsoid;
 		}
 
@@ -234,9 +261,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Plane plane)
 		{
-			Matrix3 mInverse = InverseMatrix;
-			float discr = Vector3.Dot(plane.Normal, plane.Normal*mInverse);
-			return (plane.GetDistanceTo(center_) <= MathF.Sqrt(Math.Abs(discr)));
+			return Intersections.TestEllipsoidPlane(Center, InverseMatrix, plane.Normal, plane.D);
 		}
 
 		internal readonly Matrix3 Matrix

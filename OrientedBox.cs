@@ -121,9 +121,20 @@ namespace Foundation.Mathematics
 			return new OrientedBox(b.Center, Matrix3.Identity, b.HalfDimensions);
 		}
 
-		public static OrientedBox FromAxisAlignedBox(in AxisAlignedBox b, in AffineTransform at)
+		public static OrientedBox FromAxisAlignedBox(in AxisAlignedBox b, in Matrix3 matrix, bool orthogonal = false)
 		{
-			return OrientedBox.Orthonormalize(new OrientedBox(Vector3.Transform(b.Center, at), at.r_, b.HalfDimensions));
+			OrientedBox box = new OrientedBox(Vector3.Transform(b.Center, matrix), matrix, b.HalfDimensions);
+			if (!orthogonal)
+				box.Orthonormalize();
+			return box;
+		}
+
+		public static OrientedBox FromAxisAlignedBox(in AxisAlignedBox b, in AffineTransform at, bool orthogonal = false)
+		{
+			OrientedBox box = new OrientedBox(Vector3.Transform(b.Center, at), at.r_, b.HalfDimensions);
+			if (!orthogonal)
+				box.Orthonormalize();
+			return box;
 		}
 
 		//public static implicit operator OrientedBox(AxisAlignedBox b)
@@ -163,7 +174,7 @@ namespace Foundation.Mathematics
 		public readonly float Diagonal => halfDims_.Magnitude*2f;
 
 		[Browsable(false)]
-		public readonly float Area
+		public readonly float SurfaceArea
 		{
 			get
 			{
@@ -235,10 +246,10 @@ namespace Foundation.Mathematics
 			basis_.Orthonormalize();
 		}
 
-		public static OrientedBox Orthonormalize(OrientedBox b)
+		public static OrientedBox Orthonormalize(OrientedBox box)
 		{
-			b.Orthonormalize();
-			return b;
+			box.Orthonormalize();
+			return box;
 		}
 
 		public void Translate(Vector3 offset)
@@ -246,23 +257,38 @@ namespace Foundation.Mathematics
 			center_ += offset;
 		}
 
-		public static OrientedBox Translate(OrientedBox b, Vector3 offset)
+		public static OrientedBox Translate(OrientedBox box, Vector3 offset)
 		{
-			b.Translate(offset);
-			return b;
+			box.Translate(offset);
+			return box;
 		}
 
-		public void Transform(in AffineTransform at)
+		public void Transform(in Matrix3 matrix, bool orthogonal = false)
+		{
+			basis_.Concat(matrix);
+			center_.Transform(matrix);
+			if (!orthogonal)
+				Orthonormalize();
+		}
+
+		public void Transform(in AffineTransform at, bool orthogonal = false)
 		{
 			basis_.Concat(at.r_);
 			center_.Transform(at);
-			Orthonormalize();
+			if (!orthogonal)
+				Orthonormalize();
 		}
 
-		public static OrientedBox Transform(OrientedBox b, in AffineTransform at)
+		public static OrientedBox Transform(OrientedBox box, in Matrix3 matrix, bool orthogonal = false)
 		{
-			b.Transform(at);
-			return b;
+			box.Transform(matrix, orthogonal);
+			return box;
+		}
+
+		public static OrientedBox Transform(OrientedBox box, in AffineTransform at, bool orthogonal = false)
+		{
+			box.Transform(at, orthogonal);
+			return box;
 		}
 
 		public readonly Vector3 GetClosestPoint(Vector3 point)
@@ -288,51 +314,28 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in HalfSpace halfSpace)
 		{
-			Vector3 normal = halfSpace.Normal;
-#if SIMD
-			//Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			//float r = Vector3.Sum(Vector3.Abs(halfDims_*(normal*basisTranspose)));
-			float r = Vector3.Sum(Vector3.Abs(halfDims_*(basis_*normal)));
-#else
-			float r = Math.Abs(halfDims_.x_*Vector3.Dot(normal, basis_.Row0)) +
-				Math.Abs(halfDims_.y_*Vector3.Dot(normal, basis_.Row1)) +
-				Math.Abs(halfDims_.z_*Vector3.Dot(normal, basis_.Row2));
-#endif
-			return ((Vector3.Dot(normal, center_) + halfSpace.D) <= r);
+			return Intersections.TestOrientedBoxHalfSpace(center_, basis_, halfDims_, halfSpace.Normal, halfSpace.D);
 		}
 
 		public readonly bool Intersects(in Plane plane)
 		{
-			Vector3 normal = plane.Normal;
-#if SIMD
-			//Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			//float r = Vector3.Sum(Vector3.Abs(halfDims_*(normal*basisTranspose)));
-			float r = Vector3.Sum(Vector3.Abs(halfDims_*(basis_*normal)));
-#else
-			float r = Math.Abs(halfDims_.x_*Vector3.Dot(normal, basis_.Row0)) +
-				Math.Abs(halfDims_.y_*Vector3.Dot(normal, basis_.Row1)) +
-				Math.Abs(halfDims_.z_*Vector3.Dot(normal, basis_.Row2));
-#endif
-			return (Math.Abs(Vector3.Dot(normal, center_) + plane.D) <= r);
+			return Intersections.TestOrientedBoxPlane(center_, basis_, halfDims_, plane.Normal, plane.D);
 		}
 
 		public readonly bool Intersects(in Triangle3 triangle)
 		{
-			//Matrix3 basisTranspose = Matrix3.Transpose(basis_);
-			//return AxisAlignedBox.IntersectAxisAlignedBoxTriangle(halfDims_, (triangle.Vertex0 - center_)*basisTranspose, 
-			//	(triangle.Vertex1 - center_)*basisTranspose, (triangle.Vertex2 - center_)*basisTranspose);
-			return AxisAlignedBox.IntersectAxisAlignedBoxTriangle(halfDims_, basis_*(triangle.Vertex0 - center_),
-				basis_*(triangle.Vertex1 - center_), basis_*(triangle.Vertex2 - center_));
+			return Intersections.TestOrientedBoxTriangle(center_, basis_, halfDims_, triangle.Vertex0, triangle.Vertex1, 
+				triangle.Vertex2);
 		}
 
 		public readonly bool Intersects(in AxisAlignedBox box)
 		{
-			return IntersectOrientedBoxOrientedBox(center_, basis_, halfDims_, box.Center, Matrix3.Identity, box.HalfDimensions);
+			return Intersections.TestOrientedBoxOrientedBox(center_, basis_, halfDims_, box.Center, Matrix3.Identity, box.HalfDimensions);
 		}
 
 		public readonly bool Intersects(in OrientedBox box)
 		{
-			return IntersectOrientedBoxOrientedBox(center_, basis_, halfDims_, box.center_, box.basis_, box.halfDims_);
+			return Intersections.TestOrientedBoxOrientedBox(center_, basis_, halfDims_, box.center_, box.basis_, box.halfDims_);
 		}
 
 		public readonly bool Intersects(in Sphere sphere)
@@ -343,154 +346,6 @@ namespace Foundation.Mathematics
 		public readonly bool Intersects(in SymmetricFrustum frustum)
 		{
 			return frustum.Intersects(this);
-		}
-
-		private static bool IntersectOrientedBoxOrientedBox(Vector3 centerA, in Matrix3 akA, Vector3 afEA, Vector3 centerB, 
-			in Matrix3 akB, Vector3 afEB)
-		{
-			// https://www.geometrictools.com/
-
-			const float cutoff = 1f - 1e-6f;
-			bool existsParallelPair = false;
-			Vector3 kD = centerB - centerA;
-			Vector3 aafC0 = Vector3.Zero;
-			Vector3 aafC1 = Vector3.Zero;
-			Vector3 aafC2 = Vector3.Zero;
-			Vector3 aafAbsC0 = Vector3.Zero;
-			Vector3 aafAbsC1 = Vector3.Zero;
-			Vector3 aafAbsC2 = Vector3.Zero;
-			Vector3 afAD = Vector3.Zero;
-
-			for (int i = 0; i < 3; i++)
-			{
-				aafC0[i] = Vector3.Dot(akA[0], akB[i]);
-				aafAbsC0[i] = Math.Abs(aafC0[i]);
-				if (aafAbsC0[i] > cutoff)
-					existsParallelPair = true;
-			}
-
-			afAD.X = Vector3.Dot(akA[0], kD);
-			float fR = Math.Abs(afAD.x_);
-			float fR1 = afEB.x_*aafAbsC0.x_ + afEB.y_*aafAbsC0.y_ + afEB.z_*aafAbsC0.z_;
-			float fR01 = afEA.x_ + fR1;
-			if (fR > fR01)
-				return false;
-
-			for (int i = 0; i < 3; i++)
-			{
-				aafC1[i] = Vector3.Dot(akA[1], akB[i]);
-				aafAbsC1[i] = Math.Abs(aafC1[i]);
-				if (aafAbsC1[i] > cutoff)
-					existsParallelPair = true;
-			}
-
-			afAD.Y = Vector3.Dot(akA[1], kD);
-			fR = Math.Abs(afAD.y_);
-			fR1 = afEB.x_*aafAbsC1.x_ + afEB.y_*aafAbsC1.y_ + afEB.z_*aafAbsC1.z_;
-			fR01 = afEA.y_ + fR1;
-			if (fR > fR01)
-				return false;
-
-			for (int i = 0; i < 3; i++)
-			{
-				aafC2[i] = Vector3.Dot(akA[2], akB[i]);
-				aafAbsC2[i] = Math.Abs(aafC2[i]);
-				if (aafAbsC2[i] > cutoff)
-					existsParallelPair = true;
-			}
-
-			afAD.Z = Vector3.Dot(akA[2], kD);
-			fR = Math.Abs(afAD.z_);
-			fR1 = afEB.x_*aafAbsC2.x_ + afEB.y_*aafAbsC2.y_ + afEB.z_*aafAbsC2.z_;
-			fR01 = afEA.z_ + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(Vector3.Dot(akB[0], kD));
-			float fR0 = afEA.x_*aafAbsC0.x_ + afEA.y_*aafAbsC1.x_ + afEA.z_*aafAbsC2.x_;
-			fR01 = fR0 + afEB.x_;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(Vector3.Dot(akB[1], kD));
-			fR0 = afEA.x_*aafAbsC0.y_ + afEA.y_*aafAbsC1.y_ + afEA.z_*aafAbsC2.y_;
-			fR01 = fR0 + afEB.y_;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(Vector3.Dot(akB[2], kD));
-			fR0 = afEA.x_*aafAbsC0.z_ + afEA.y_*aafAbsC1.z_ + afEA.z_*aafAbsC2.z_;
-			fR01 = fR0 + afEB.z_;
-			if (fR > fR01)
-				return false;
-
-			if (existsParallelPair)
-				return true;
-
-			fR = Math.Abs(afAD.z_*aafC1.x_ - afAD.y_*aafC2.x_);
-			fR0 = afEA.y_*aafAbsC2.x_ + afEA.z_*aafAbsC1.x_;
-			fR1 = afEB.y_*aafAbsC0.z_ + afEB.z_*aafAbsC0.y_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(afAD.z_*aafC1.y_ - afAD.y_*aafC2.y_);
-			fR0 = afEA.y_*aafAbsC2.y_ + afEA.z_*aafAbsC1.y_;
-			fR1 = afEB.x_*aafAbsC0.z_ + afEB.z_*aafAbsC0.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(afAD.z_*aafC1.z_ - afAD.y_*aafC2.z_);
-			fR0 = afEA.y_*aafAbsC2.z_ + afEA.z_*aafAbsC1.z_;
-			fR1 = afEB.x_*aafAbsC0.y_ + afEB.y_*aafAbsC0.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(afAD.x_*aafC2.x_ - afAD.z_*aafC0.x_);
-			fR0 = afEA.x_*aafAbsC2.x_ + afEA.z_*aafAbsC0.x_;
-			fR1 = afEB.y_*aafAbsC1.z_ + afEB.z_*aafAbsC1.y_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(afAD.x_*aafC2.y_ - afAD.z_*aafC0.y_);
-			fR0 = afEA.x_*aafAbsC2.y_ + afEA.z_*aafAbsC0.y_;
-			fR1 = afEB.x_*aafAbsC1.z_ + afEB.z_*aafAbsC1.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(afAD.x_*aafC2.z_ - afAD.z_*aafC0.z_);
-			fR0 = afEA.x_*aafAbsC2.z_ + afEA.z_*aafAbsC0.z_;
-			fR1 = afEB.x_*aafAbsC1.y_ + afEB.y_*aafAbsC1.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(afAD.y_*aafC0.x_ - afAD.x_*aafC1.x_);
-			fR0 = afEA.x_*aafAbsC1.x_ + afEA.y_*aafAbsC0.x_;
-			fR1 = afEB.y_*aafAbsC2.z_ + afEB.z_*aafAbsC2.y_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(afAD.y_*aafC0.y_ - afAD.x_*aafC1.y_);
-			fR0 = afEA.x_*aafAbsC1.y_ + afEA.y_*aafAbsC0.y_;
-			fR1 = afEB.x_*aafAbsC2.z_ + afEB.z_*aafAbsC2.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			fR = Math.Abs(afAD.y_*aafC0.z_ - afAD.x_*aafC1.z_);
-			fR0 = afEA.x_*aafAbsC1.z_ + afEA.y_*aafAbsC0.z_;
-			fR1 = afEB.x_*aafAbsC2.y_ + afEB.y_*aafAbsC2.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
-				return false;
-
-			return true;
 		}
 
 		internal Vector3 center_;

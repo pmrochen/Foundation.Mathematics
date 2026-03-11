@@ -167,6 +167,18 @@ namespace Foundation.Mathematics
 			yield return end_;
 		}
 
+		public void Translate(Vector2 offset)
+		{
+			start_ += offset;
+			end_ += offset;
+		}
+
+		public static Segment2 Translate(Segment2 segment, Vector2 offset)
+		{
+			segment.Translate(offset);
+			return segment;
+		}
+
 		public readonly Vector2 Evaluate(float t)
 		{
 			return Vector2.Lerp(start_, end_, t);
@@ -203,58 +215,20 @@ namespace Foundation.Mathematics
 			return FindIntersection(circle).HasValue;
 		}
 
-		public readonly float? FindIntersection(in Line2 line) 
+		public readonly float? FindIntersection(in Line2 line)
 		{
-			Vector2 direction = end_ - start_;
-			float d1CrossD2 = Vector2.Cross(direction, line.direction_);
-			if (Math.Abs(d1CrossD2) < SingleConstants.Tolerance)
-			{
-				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(line.origin_ - start_), direction)) < SingleConstants.Tolerance))
-					return null;
-				return 0f; // collinear
-			}
-
-			float t = Vector2.Cross(line.origin_ - start_, line.direction_)/d1CrossD2;
-			if ((t >= 0f) && (t <= 1f))
-				return t;
-			return null;
+			return Intersections.FindLineSegment(line.origin_, line.direction_, start_, end_);
 		}
 
-		public readonly float? FindIntersection(in Segment2 segment) 
+		public readonly float? FindIntersection(in Segment2 segment)
 		{
-			Vector2 direction = end_ - start_;
-			float d1CrossD2 = Vector2.Cross(direction, segment.end_ - segment.start_);
-			if (Math.Abs(d1CrossD2) < SingleConstants.Tolerance)
-			{
-				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(segment.start_ - start_), direction)) < SingleConstants.Tolerance))
-					return null;
-
-				float d1DotD1 = Vector2.Dot(direction, direction);
-				float d1DotD2 = Vector2.Dot(direction, segment.end_ - segment.start_);
-				float t0 = Vector2.Dot(segment.start_ - start_, direction)/d1DotD1;
-				float t1 = t0 + d1DotD2/d1DotD1;
-				if (d1DotD2 < 0f)
-				{
-					float s = t0;
-					t0 = t1;
-					t1 = s;
-				}
-
-				if ((t0 <= 1f) && (t1 >= 0f))
-					return Math.Max(t0, 0f);
-				return null;
-			}
-
-			float t = Vector2.Cross(segment.start_ - start_, segment.end_ - segment.start_)/d1CrossD2;
-			float u = Vector2.Cross(segment.start_ - start_, direction)/d1CrossD2;
-			if ((t >= 0f) && (t <= 1f) && (u >= 0f) && (u <= 1f))
-				return t;
-			return null;
+			return Intersections.FindSegmentSegment(start_, end_, segment.start_, segment.end_);
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)
 		{
-			Interval? intersection = new Line2(start_, end_ - start_).FindIntersection(rectangle);
+			Interval? intersection = Intersections.FindLineAxisAlignedRectangle(start_, end_ - start_, 
+				rectangle.minimum_, rectangle.maximum_);
 
 			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
 			{
@@ -275,7 +249,7 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in Circle2 circle)
 		{
-			Interval? intersection = new Line2(start_, end_ - start_).FindIntersection(circle);
+			Interval? intersection = Intersections.FindLineCircle(start_, end_ - start_, circle.center_, circle.radius_);
 
 			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
 			{

@@ -138,15 +138,26 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly float InclinationAngle => (float)Math.Atan2(direction_.Y, direction_.X);
 
+		public void Translate(Vector2 offset)
+		{
+			origin_ += offset;
+		}
+
+		public static Ray2 Translate(Ray2 ray, Vector2 offset)
+		{
+			ray.Translate(offset);
+			return ray;
+		}
+
 		public void Normalize()
         {
             direction_.Normalize();
         }
 
-		public static Ray2 Normalize(Ray2 r)
+		public static Ray2 Normalize(Ray2 ray)
 		{
-			r.Normalize();
-			return r;
+			ray.Normalize();
+			return ray;
 		}
 
 		public readonly Vector2 Evaluate(float t)
@@ -191,25 +202,15 @@ namespace Foundation.Mathematics
 			return FindIntersection(circle).HasValue;
 		}
 
-		public readonly float? FindIntersection(in Line2 line) 
+		public readonly float? FindIntersection(in Line2 line)
 		{
-			float d1CrossD2 = Vector2.Cross(direction_, line.direction_);
-			if (Math.Abs(d1CrossD2) < SingleConstants.Tolerance)
-			{
-				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(line.origin_ - origin_), direction_)) < SingleConstants.Tolerance))
-					return null;
-				return 0f; // collinear
-			}
-
-			float t = Vector2.Cross(line.origin_ - origin_, line.direction_)/d1CrossD2;
-			if (t >= 0f) 
-				return t;
-			return null;
+			return Intersections.FindLineRay(line.origin_, line.direction_, origin_, direction_);
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)
 		{
-			Interval? intersection = new Line2(origin_, direction_).FindIntersection(rectangle);
+			Interval? intersection = Intersections.FindLineAxisAlignedRectangle(origin_, direction_, 
+				rectangle.minimum_, rectangle.maximum_);
 
 			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
 			{
@@ -227,7 +228,7 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in Circle2 circle)
 		{
-			Interval? intersection = new Line2(origin_, direction_).FindIntersection(circle);
+			Interval? intersection = Intersections.FindLineCircle(origin_, direction_, circle.center_, circle.radius_);
 
 			if (intersection.HasValue && (intersection.Value.Maximum >= 0f))
 			{

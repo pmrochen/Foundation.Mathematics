@@ -127,26 +127,26 @@ namespace Foundation.Mathematics
         }
 
 		[Browsable(false)]
-		public readonly float Area => 4f*SingleConstants.Pi*radius_*radius_;
+		public readonly float SurfaceArea => 4f*SingleConstants.Pi*radius_*radius_;
 
 		[Browsable(false)]
 		public readonly float Volume => 4f*SingleConstants.Pi*radius_*radius_*radius_/3f;
 
 		public readonly AxisAlignedBox GetCircumscribedBox()
 		{
-			Vector3 h = new Vector3(radius_, radius_, radius_);
-			return new AxisAlignedBox(center_ - h, center_ + h);
+			Vector3 halfDims = new Vector3(radius_);
+			return new AxisAlignedBox(center_ - halfDims, center_ + halfDims);
 		}
 
 		//public readonly OrientedBox GetCircumscribedBox()
 		//{
-		//	Vector3 h = new Vector3(radius_, radius_, radius_);
-		//	return new OrientedBox(center_, Matrix3.Identity, h);
+		//	Vector3 halfDims = new Vector3(radius_);
+		//	return new OrientedBox(center_, Matrix3.Identity, halfDims);
 		//}
 
 		public static Sphere FromEllipsoid(in Ellipsoid ellipsoid)
 		{
-			return new Sphere(ellipsoid.center_, Math.Max(Math.Max(ellipsoid.radii_.X, ellipsoid.radii_.Y), ellipsoid.radii_.Z));
+			return new Sphere(ellipsoid.center_, ellipsoid.radii_.MaxComponent);
 		}
 
 		public void Translate(Vector3 offset)
@@ -158,6 +158,36 @@ namespace Foundation.Mathematics
 		{
 			sphere.Translate(offset);
 			return sphere;
+		}
+
+		public void Transform(in Matrix3 matrix, bool orthogonal = false)
+		{
+			if (!orthogonal)
+				this = Sphere.FromEllipsoid(Ellipsoid.FromSphere(this, matrix, orthogonal));
+		}
+
+		public void Transform(in AffineTransform at, bool orthogonal = false)
+		{
+			if (orthogonal)
+				center_.Transform(at);
+			else
+				this = Sphere.FromEllipsoid(Ellipsoid.FromSphere(this, at, orthogonal));
+		}
+
+		public static Sphere Transform(in Sphere sphere, in Matrix3 matrix, bool orthogonal = false)
+		{
+			if (orthogonal)
+				return sphere;
+			else
+				return Sphere.FromEllipsoid(Ellipsoid.FromSphere(sphere, matrix, orthogonal));
+		}
+
+		public static Sphere Transform(in Sphere sphere, in AffineTransform at, bool orthogonal = false)
+		{
+			if (orthogonal)
+				return new Sphere(Vector3.Transform(sphere.center_, at), sphere.radius_);
+			else
+				return Sphere.FromEllipsoid(Ellipsoid.FromSphere(sphere, at, orthogonal));
 		}
 
 		//public readonly Vector3 GetClosestPoint(Vector3 point)
@@ -192,54 +222,19 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Triangle3 triangle)
 		{
-			return (triangle.GetDistanceSquaredTo(center_) <= radius_*radius_);
+			return (Distances.GetPointTriangleSquared(center_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_) <= radius_*radius_);
 		}
 
 		public readonly bool Intersects(in AxisAlignedBox box)
         {
-	        float d = 0f;
-
-			if (center_.X < box.minimum_.X)
-			{
-				float s = center_.X - box.minimum_.X;
-				d += s*s;
-			}
-			else if (center_.X > box.maximum_.X)
-			{
-				float s = center_.X - box.maximum_.X;
-				d += s*s;
-			}
-
-			if (center_.Y < box.minimum_.Y)
-			{
-				float s = center_.Y - box.minimum_.Y;
-				d += s*s;
-			}
-			else if (center_.Y > box.maximum_.Y)
-			{
-				float s = center_.Y - box.maximum_.Y;
-				d += s*s;
-			}
-
-			if (center_.Z < box.minimum_.Z)
-			{
-				float s = center_.Z - box.minimum_.Z;
-				d += s*s;
-			}
-			else if (center_.Z > box.maximum_.Z)
-			{
-				float s = center_.Z - box.maximum_.Z;
-				d += s*s;
-			}
-
-	        return (d <= radius_*radius_);
-        }
+			return Intersections.TestAxisAlignedBoxSphere(box.minimum_, box.maximum_, center_, radius_);
+		}
 
 		public readonly bool Intersects(in OrientedBox box)
 		{
-			Matrix3 boxBasisT = Matrix3.Transpose(box.basis_);
-			Sphere sphere = new Sphere((center_ - box.center_)*boxBasisT, radius_);
-			return sphere.Intersects(new AxisAlignedBox(-box.halfDims_, box.halfDims_));
+			//Matrix3 boxBasisT = Matrix3.Transpose(box.basis_);
+			return Intersections.TestAxisAlignedBoxSphere(-box.halfDims_, box.halfDims_,
+				box.basis_*(center_ - box.center_)/*(center_ - box.center_)*boxBasisT*/, radius_);
 		}
 
         public readonly bool Intersects(in Sphere sphere)

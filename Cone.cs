@@ -259,54 +259,14 @@ namespace Foundation.Mathematics
 			return cone;
 		}
 
-		public readonly bool Contains(Vector3 point) // #TODO Move to Containment
+		public readonly bool Contains(Vector3 point)
 		{
-			// http://www.geometrictools.com/
-
-			Vector3 diff = point - vertex_;
-			float coneDist = Vector3.Dot(diff, axis_);
-			if ((coneDist < 0f) || (coneDist > height_))
-				return false;
-
-			float coneRadius = coneDist*radius_/height_;
-			float orthDistSquared = (diff - coneDist*axis_).LengthSquared;
-			return (orthDistSquared <= coneRadius*coneRadius);
+			return Containment.TestConePoint(vertex_, axis_, height_, radius_, point);
 		}
 
-		public readonly bool Intersects(in Sphere sphere) // #TODO Move to Intersections
+		public readonly bool Intersects(in Sphere sphere)
 		{
-			// http://www.geometrictools.com/
-
-			float slantHeight = MathF.Sqrt(radius_*radius_ + height_*height_);
-			float sinAngle = radius_/slantHeight;
-			float cosAngle = height_/slantHeight;
-
-			float invSin = slantHeight/radius_; //1f/sinAngle;
-			float cosSqr = cosAngle*cosAngle;
-
-			Vector3 cmV = sphere.center_ - vertex_;
-			Vector3 d = cmV + (sphere.radius_*invSin)*axis_;
-			float dSqrLen = d.MagnitudeSquared;
-			float e = Vector3.Dot(d, axis_);
-			if ((e > 0f) && (e*e >= dSqrLen*cosSqr))
-			{
-				float sinSqr = sinAngle*sinAngle;
-				dSqrLen = cmV.MagnitudeSquared;
-				e = -Vector3.Dot(cmV, axis_);
-				if ((e > 0f) && (e*e >= dSqrLen*sinSqr))
-				{
-					float rSqr = sphere.radius_*sphere.radius_;
-					if (dSqrLen > rSqr)
-						return false;
-				}
-
-				if (/*(height < Single.MaxValue) &&*/ !sphere.Intersects(new HalfSpace(axis_, vertex_ + height_*axis_)))
-					return false;
-
-				return true;
-			}
-
-			return false;
+			return Intersections.TestConeSphere(vertex_, axis_, height_, radius_, sphere.center_, sphere.radius_);
 		}
 
 		internal Vector3 vertex_;

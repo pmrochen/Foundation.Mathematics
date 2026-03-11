@@ -389,42 +389,73 @@ namespace Foundation.Mathematics
 			return new HalfSpace(Vector3.Normalize(Vector3.Cross(v1 - v0, v2 - v0)), v0);
 		}
 
-		public static HalfSpace Translate(HalfSpace hs, Vector3 offset)
-		{
-			hs.Translate(offset);
-			return hs;
-		}
-
-		//public static HalfSpace Transform(HalfSpace hs, in AffineTransform t)
-		//{
-		//    hs.Transform(t);
-		//    return hs;
-		//}
-
 		public void Translate(Vector3 offset)
 		{
 			Vector3 n = Normal;
-			Vector3 p = -Constant*n;
-			Constant = -Vector3.Dot(n, p + offset);
+			Constant = -Vector3.Dot(n, n*(-Constant) + offset);
 		}
 
-		//public void Transform(in AffineTransform t) // #TODO
-		//{
-		//}
+		public static HalfSpace Translate(HalfSpace halfSpace, Vector3 offset)
+		{
+			halfSpace.Translate(offset);
+			return halfSpace;
+		}
+
+		public void Transform(in Matrix3 matrix, bool orthogonal = false)
+		{
+			Vector3 n = Normal;
+			if (orthogonal)
+			{
+				this = new HalfSpace(n*matrix,
+					-Vector3.Dot(n, (n*(-Constant))*matrix));
+			}
+			else
+			{
+				this = new HalfSpace(Vector3.Normalize(n*Matrix3.InverseTranspose(matrix)),
+					-Vector3.Dot(n, (n*(-Constant))*matrix));
+			}
+		}
+
+		public void Transform(in AffineTransform at, bool orthogonal = false)
+		{
+			Vector3 n = Normal;
+			if (orthogonal)
+			{
+				this = new HalfSpace(n*at.r_,
+					-Vector3.Dot(n, Vector3.Transform(n*(-Constant), at)));
+			}
+			else
+			{
+				this = new HalfSpace(Vector3.Normalize(n*Matrix3.InverseTranspose(at.r_)),
+					-Vector3.Dot(n, Vector3.Transform(n*(-Constant), at)));
+			}
+		}
+
+		public static Plane Transform(HalfSpace halfSpace, in Matrix3 matrix, bool orthogonal = false)
+		{
+			halfSpace.Transform(matrix, orthogonal);
+			return halfSpace;
+		}
+
+		public static HalfSpace Transform(HalfSpace halfSpace, in AffineTransform at, bool orthogonal = false)
+		{
+			halfSpace.Transform(at, orthogonal);
+			return halfSpace;
+		}
 
 		/// <summary>
 		/// Returns distance from a point to normalized half space.
 		/// </summary>
 		public readonly float GetDistanceTo(Vector3 point)
 		{
-			return Math.Max((Vector3.Dot(Normal, point) + d_), 0f);
+			return Distances.GetPointNormalizedHalfSpace(point, Normal, D);
 		}
 
 		public readonly float GetDistanceTo(Vector3 point, bool normalized)
 		{
 			return normalized ?
-				Math.Max((Vector3.Dot(Normal, point) + d_), 0f) :
-				Math.Max((Vector3.Dot(Normal, point) + d_)/Normal.Magnitude, 0f);
+				Distances.GetPointNormalizedHalfSpace(point, Normal, D) :
+				Distances.GetPointHalfSpace(point, Normal, D);
 		}
 
 		/// <summary>
@@ -432,14 +463,14 @@ namespace Foundation.Mathematics
 		/// </summary>
 		public readonly float GetSignedDistanceTo(Vector3 point)
 		{
-			return (Vector3.Dot(Normal, point) + d_);
+			return Distances.GetPointNormalizedPlaneSigned(point, Normal, D);
 		}
 
 		public readonly float GetSignedDistanceTo(Vector3 point, bool normalized)
 		{
-			return normalized ? 
-				(Vector3.Dot(Normal, point) + d_) :
-				(Vector3.Dot(Normal, point) + d_)/Normal.Magnitude;
+			return normalized ?
+				Distances.GetPointNormalizedPlaneSigned(point, Normal, D) :
+				Distances.GetPointPlaneSigned(point, Normal, D);
 		}
 
 		public readonly bool Contains(Vector3 point)
