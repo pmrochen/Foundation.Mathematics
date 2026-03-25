@@ -493,12 +493,12 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in AxisAlignedBox box)
 		{
-			return box.Intersects(this);
+			return Intersections.TestAxisAlignedBoxPlane(box.Center, box.HalfDimensions, Normal, D);
 		}
 
 		public readonly bool Intersects(in OrientedBox box)
 		{
-			return box.Intersects(this);
+			return Intersections.TestOrientedBoxPlane(box.center_, box.basis_, box.halfDims_, Normal, D);
 		}
 
 		public readonly bool Intersects(in Sphere sphere)

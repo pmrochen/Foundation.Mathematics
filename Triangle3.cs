@@ -160,10 +160,8 @@ namespace Foundation.Mathematics
 		{
 			get
 			{
-				Vector3 v1 = Vector3.Cross(vertex0_, vertex1_);
-				Vector3 v2 = Vector3.Cross(vertex1_, vertex2_);
-				Vector3 v3 = Vector3.Cross(vertex2_, vertex0_);
-				return (v1 + v2 + v3).Magnitude*0.5f;
+				return (Vector3.Cross(vertex0_, vertex1_) + Vector3.Cross(vertex1_, vertex2_) + 
+					Vector3.Cross(vertex2_, vertex0_)).Magnitude*0.5f;
 			}
 		}
 
@@ -181,12 +179,10 @@ namespace Foundation.Mathematics
 			float d1 = Vector3.Dot(vertex2_ - vertex0_, vertex1_ - vertex0_);
 			float d2 = Vector3.Dot(vertex2_ - vertex1_, vertex0_ - vertex1_);
 			float d3 = Vector3.Dot(vertex0_ - vertex2_, vertex1_ - vertex2_);
-
 			float c1 = d2*d3;
 			float c2 = d3*d1;
 			float c3 = d1*d2;
 			float invC = 1f/(c1 + c2 + c3);
-
 			return new Sphere((vertex0_*(c2 + c3) + vertex1_*(c3 + c1) + vertex2_*(c1 + c2))*invC*0.5f,
 				0.5f*MathF.Sqrt((d1 + d2)*(d2 + d3)*(d3 + d1)*invC));
 		}
@@ -198,8 +194,6 @@ namespace Foundation.Mathematics
 
 		public readonly Matrix3 GetTangentSpaceBasis(Vector2 uv0, Vector2 uv1, Vector2 uv2, bool weightedByArea)
 		{
-			Vector3 tangent, bitangent;
-
 			Vector3 e1 = vertex1_ - vertex0_;
 			Vector3 e2 = vertex2_ - vertex0_;
 			Vector3 normal = Vector3.Normalize(Vector3.Cross(e1, e2));
@@ -208,6 +202,7 @@ namespace Foundation.Mathematics
 			Vector2 delta2 = uv2 - uv0;
 			float d = Vector2.Cross(delta1, delta2);
 
+			Vector3 tangent, bitangent;
 			if (/*!Single.IsNaN(d) &&*/ (d != 0f))
 			{
 				tangent = Vector3.Normalize(e1*(delta2.Y/d) + e2*(-delta1.Y/d));
@@ -232,8 +227,6 @@ namespace Foundation.Mathematics
 		public static Matrix3 ComputeTangentSpaceBasis(Vector3 vertex0, Vector3 vertex1, Vector3 vertex2,
 			Vector2 uv0, Vector2 uv1, Vector2 uv2, bool weightedByArea)
 		{
-			Vector3 tangent, bitangent;
-
 			Vector3 e1 = vertex1 - vertex0;
 			Vector3 e2 = vertex2 - vertex0;
 			Vector3 normal = Vector3.Normalize(Vector3.Cross(e1, e2));
@@ -242,6 +235,7 @@ namespace Foundation.Mathematics
 			Vector2 delta2 = uv2 - uv0;
 			float d = Vector2.Cross(delta1, delta2);
 
+			Vector3 tangent, bitangent;
 			if (/*!Single.IsNaN(d) &&*/ (d != 0f))
 			{
 				tangent = Vector3.Normalize(e1*(delta2.Y/d) + e2*(-delta1.Y/d));
@@ -352,28 +346,27 @@ namespace Foundation.Mathematics
 		//	return Distances.GetPointTriangleSquared(point, vertex0_, vertex1_, vertex2_);
 		//}
 
-		//public readonly bool Intersects(in Plane plane)
+		public readonly bool Intersects(in HalfSpace halfSpace)
+		{
+			return halfSpace.Contains(vertex0_) || halfSpace.Contains(vertex1_) || halfSpace.Contains(vertex2_);
+		}
+
+		//public readonly bool Intersects(in Plane plane) // #TODO Check if all vertices are on one side
 		//{
-		//	// #TODO Check if all vertices are on one side
 		//	float d0 = plane.GetSignedDistanceTo(vertex0_);
 		//	float d1 = plane.GetSignedDistanceTo(vertex1_);
 		//	float d2 = plane.GetSignedDistanceTo(vertex2_);
 		//	return !(((d0 < 0f) && (d1 < 0f) && (d2 < 0f)) || ((d0 > 0f) && (d1 > 0f) && (d2 > 0f)));
 		//}
 
-		public readonly bool Intersects(in HalfSpace halfSpace)
-		{
-			return halfSpace.Contains(vertex0_) || halfSpace.Contains(vertex1_) || halfSpace.Contains(vertex2_);
-		}
-
 		public readonly bool Intersects(in AxisAlignedBox box)
 		{
-			return box.Intersects(this);
+			return Intersections.TestAxisAlignedBoxTriangle(box.Center, box.HalfDimensions, vertex0_, vertex1_, vertex2_);
 		}
 
 		public readonly bool Intersects(in OrientedBox box)
 		{
-			return box.Intersects(this);
+			return Intersections.TestOrientedBoxTriangle(box.center_, box.basis_, box.halfDims_, vertex0_, vertex1_, vertex2_);
 		}
 
 		public readonly bool Intersects(in Sphere sphere)

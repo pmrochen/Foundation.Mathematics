@@ -261,7 +261,9 @@ namespace Foundation.Mathematics
 
 		public readonly float? FindIntersection(in Triangle3 triangle)
 		{
-			return Intersections.FindSegmentTriangle(start_, end_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_);
+			//return Intersections.FindSegmentTriangle(start_, end_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_);
+			float? result = Intersections.FindLineTriangle(start_, end_ - start_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_);
+			return (result.HasValue && (result.Value >= 0f) && (result.Value <= 1f)) ? result : null;
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedBox box)
@@ -287,9 +289,7 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in OrientedBox box)
 		{
-			//Matrix3 basisTranspose = Matrix3.Transpose(box.basis_);
-			Interval? intersection = Intersections.FindLineAxisAlignedBox(box.basis_*(start_ - box.center_)/*(start_ - box.center_)*basisTranspose*/,
-				box.basis_*(end_ - start_)/*(end_ - start_)*basisTranspose*/, -box.halfDims_, box.halfDims_);
+			Interval? intersection = Intersections.FindLineOrientedBox(start_, end_ - start_, box.center_, box.basis_, box.halfDims_);
 
 			if (intersection.HasValue && (intersection.Value.Maximum >= 0f) && (intersection.Value.Minimum <= 1f))
 			{

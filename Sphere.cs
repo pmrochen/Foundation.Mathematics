@@ -232,9 +232,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in OrientedBox box)
 		{
-			//Matrix3 boxBasisT = Matrix3.Transpose(box.basis_);
-			return Intersections.TestAxisAlignedBoxSphere(-box.halfDims_, box.halfDims_,
-				box.basis_*(center_ - box.center_)/*(center_ - box.center_)*boxBasisT*/, radius_);
+			return Intersections.TestOrientedBoxSphere(box.center_, box.basis_, box.halfDims_, center_, radius_);
 		}
 
         public readonly bool Intersects(in Sphere sphere)
@@ -245,7 +243,7 @@ namespace Foundation.Mathematics
 		
 		public readonly bool Intersects(in Cone cone)
 		{
-			return cone.Intersects(this);
+			return Intersections.TestConeSphere(cone.vertex_, cone.axis_, cone.height_, cone.radius_, center_, radius_);
 		}
 
 		//public readonly bool Intersects(in OpenCone cone)

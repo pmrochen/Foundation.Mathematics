@@ -258,9 +258,7 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in OrientedBox box)
 		{
-			//Matrix3 basisTranspose = Matrix3.Transpose(box.basis_);
-			return Intersections.FindLineAxisAlignedBox(box.basis_*(origin_ - box.center_)/*(origin_ - box.center_)*basisTranspose*/,
-				box.basis_*direction_/*direction_*basisTranspose*/, -box.halfDims_, box.halfDims_);
+			return Intersections.FindLineOrientedBox(origin_, direction_, box.center_, box.basis_, box.halfDims_);
 		}
 
 		public readonly Interval? FindIntersection(in Sphere sphere)

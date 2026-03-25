@@ -293,20 +293,18 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in HalfSpace halfSpace)
 		{
-			return Intersections.TestAxisAlignedBoxHalfSpace((minimum_ + maximum_)*0.5f, (maximum_ - minimum_)*0.5f, 
-				halfSpace.Normal, halfSpace.D);
+			return Intersections.TestAxisAlignedBoxHalfSpace(Center, HalfDimensions, halfSpace.Normal, halfSpace.D);
 		}
 
 		public readonly bool Intersects(in Plane plane)
 		{
-			return Intersections.TestAxisAlignedBoxPlane((minimum_ + maximum_)*0.5f, (maximum_ - minimum_)*0.5f, 
-				plane.Normal, plane.D);
+			return Intersections.TestAxisAlignedBoxPlane(Center, HalfDimensions, plane.Normal, plane.D);
 		}
 
 		public readonly bool Intersects(in Triangle3 triangle)
 		{
-			return Intersections.TestAxisAlignedBoxTriangle((minimum_ + maximum_)*0.5f, (maximum_ - minimum_)*0.5f,
-				triangle.Vertex0, triangle.Vertex1, triangle.Vertex2);
+			return Intersections.TestAxisAlignedBoxTriangle(Center, HalfDimensions, triangle.vertex0_, triangle.vertex1_, 
+				triangle.vertex2_);
 		}
 
 		public readonly bool Intersects(in AxisAlignedBox box)
@@ -316,7 +314,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in OrientedBox box)
 		{
-			return box.Intersects(this);
+			return Intersections.TestOrientedBoxAxisAlignedBox(box.center_, box.basis_, box.halfDims_, Center, HalfDimensions);
 		}
 
 		public readonly bool Intersects(in Sphere sphere)

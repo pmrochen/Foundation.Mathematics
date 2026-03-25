@@ -324,13 +324,13 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Triangle3 triangle)
 		{
-			return Intersections.TestOrientedBoxTriangle(center_, basis_, halfDims_, triangle.Vertex0, triangle.Vertex1, 
-				triangle.Vertex2);
+			return Intersections.TestOrientedBoxTriangle(center_, basis_, halfDims_, triangle.vertex0_, triangle.vertex1_, 
+				triangle.vertex2_);
 		}
 
 		public readonly bool Intersects(in AxisAlignedBox box)
 		{
-			return Intersections.TestOrientedBoxOrientedBox(center_, basis_, halfDims_, box.Center, Matrix3.Identity, box.HalfDimensions);
+			return Intersections.TestOrientedBoxAxisAlignedBox(center_, basis_, halfDims_, box.Center, box.HalfDimensions);
 		}
 
 		public readonly bool Intersects(in OrientedBox box)
@@ -340,7 +340,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Sphere sphere)
 		{
-			return sphere.Intersects(this);
+			return Intersections.TestOrientedBoxSphere(center_, basis_, halfDims_, sphere.center_, sphere.radius_);
 		}
 
 		public readonly bool Intersects(in SymmetricFrustum frustum)

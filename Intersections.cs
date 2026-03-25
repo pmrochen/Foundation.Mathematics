@@ -4,7 +4,6 @@
  */
 
 using System;
-using System.Numerics;
 
 namespace Foundation.Mathematics
 {
@@ -127,83 +126,83 @@ namespace Foundation.Mathematics
 
 			Vector3 edge1 = vertex1 - vertex0;
 			Vector3 edge2 = vertex2 - vertex0;
-			Vector3 pvec = Vector3.Cross(direction, edge2);
-			float det = Vector3.Dot(edge1, pvec);
+			Vector3 pVec = Vector3.Cross(direction, edge2);
+			float det = Vector3.Dot(edge1, pVec);
 			if (Math.Abs(det) < 1e-6f)
 				return null;
 
 			float invDet = 1f/det;
-			Vector3 tvec = origin - vertex0;
-			float u = Vector3.Dot(tvec, pvec)*invDet;
+			Vector3 tVec = origin - vertex0;
+			float u = Vector3.Dot(tVec, pVec)*invDet;
 			if ((u < 0f) || (u > 1f))
 				return null;
 
-			Vector3 qvec = Vector3.Cross(tvec, edge1);
-			float v = Vector3.Dot(direction, qvec)*invDet;
+			Vector3 qVec = Vector3.Cross(tVec, edge1);
+			float v = Vector3.Dot(direction, qVec)*invDet;
 			if ((v < 0f) || ((u + v) > 1f))
 				return null;
 
-			return Vector3.Dot(edge2, qvec)*invDet;
+			return Vector3.Dot(edge2, qVec)*invDet;
 		}
 
-		public static float? FindRayTriangle(Vector3 origin, Vector3 direction, Vector3 vertex0, Vector3 vertex1, Vector3 vertex2)
-		{
-			// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
+		//public static float? FindRayTriangle(Vector3 origin, Vector3 direction, Vector3 vertex0, Vector3 vertex1, Vector3 vertex2)
+		//{
+		//	// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
 
-			Vector3 edge1 = vertex1 - vertex0;
-			Vector3 edge2 = vertex2 - vertex0;
-			Vector3 pvec = Vector3.Cross(direction, edge2);
-			float det = Vector3.Dot(edge1, pvec);
-			if (Math.Abs(det) < 1e-6f)
-				return null;
+		//	Vector3 edge1 = vertex1 - vertex0;
+		//	Vector3 edge2 = vertex2 - vertex0;
+		//	Vector3 pVec = Vector3.Cross(direction, edge2);
+		//	float det = Vector3.Dot(edge1, pVec);
+		//	if (Math.Abs(det) < 1e-6f)
+		//		return null;
 
-			float invDet = 1f/det;
-			Vector3 tvec = origin - vertex0;
-			float u = Vector3.Dot(tvec, pvec)*invDet;
-			if ((u < 0f) || (u > 1f))
-				return null;
+		//	float invDet = 1f/det;
+		//	Vector3 tVec = origin - vertex0;
+		//	float u = Vector3.Dot(tVec, pVec)*invDet;
+		//	if ((u < 0f) || (u > 1f))
+		//		return null;
 
-			Vector3 qvec = Vector3.Cross(tvec, edge1);
-			float v = Vector3.Dot(direction, qvec)*invDet;
-			if ((v < 0f) || ((u + v) > 1f))
-				return null;
+		//	Vector3 qVec = Vector3.Cross(tVec, edge1);
+		//	float v = Vector3.Dot(direction, qVec)*invDet;
+		//	if ((v < 0f) || ((u + v) > 1f))
+		//		return null;
 
-			float t = Vector3.Dot(edge2, qvec)*invDet;
-			if (t >= 0f)
-				return t;
-			else
-				return null;
-		}
+		//	float t = Vector3.Dot(edge2, qVec)*invDet;
+		//	if (t >= 0f)
+		//		return t;
+		//	else
+		//		return null;
+		//}
 
-		public static float? FindSegmentTriangle(Vector3 start, Vector3 end, Vector3 vertex0, Vector3 vertex1, Vector3 vertex2)
-		{
-			// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
+		//public static float? FindSegmentTriangle(Vector3 start, Vector3 end, Vector3 vertex0, Vector3 vertex1, Vector3 vertex2)
+		//{
+		//	// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
 
-			Vector3 edge1 = vertex1 - vertex0;
-			Vector3 edge2 = vertex2 - vertex0;
-			Vector3 direction = end - start;
-			Vector3 pvec = Vector3.Cross(direction, edge2);
-			float det = Vector3.Dot(edge1, pvec);
-			if (Math.Abs(det) < 1e-6f)
-				return null;
+		//	Vector3 edge1 = vertex1 - vertex0;
+		//	Vector3 edge2 = vertex2 - vertex0;
+		//	Vector3 direction = end - start;
+		//	Vector3 pVec = Vector3.Cross(direction, edge2);
+		//	float det = Vector3.Dot(edge1, pVec);
+		//	if (Math.Abs(det) < 1e-6f)
+		//		return null;
 
-			float invDet = 1f/det;
-			Vector3 tvec = start - vertex0;
-			float u = Vector3.Dot(tvec, pvec)*invDet;
-			if ((u < 0f) || (u > 1f))
-				return null;
+		//	float invDet = 1f/det;
+		//	Vector3 tVec = start - vertex0;
+		//	float u = Vector3.Dot(tVec, pVec)*invDet;
+		//	if ((u < 0f) || (u > 1f))
+		//		return null;
 
-			Vector3 qvec = Vector3.Cross(tvec, edge1);
-			float v = Vector3.Dot(direction, qvec)*invDet;
-			if ((v < 0f) || ((u + v) > 1f))
-				return null;
+		//	Vector3 qVec = Vector3.Cross(tVec, edge1);
+		//	float v = Vector3.Dot(direction, qVec)*invDet;
+		//	if ((v < 0f) || ((u + v) > 1f))
+		//		return null;
 
-			float t = Vector3.Dot(edge2, qvec)*invDet;
-			if ((t >= 0f) && (t <= 1f))
-				return t;
-			else
-				return null;
-		}
+		//	float t = Vector3.Dot(edge2, qVec)*invDet;
+		//	if ((t >= 0f) && (t <= 1f))
+		//		return t;
+		//	else
+		//		return null;
+		//}
 
 		public static Interval? FindLineAxisAlignedRectangle(Vector2 origin, Vector2 direction, Vector2 minimum, Vector2 maximum) // #TODO SIMD
 		{
@@ -307,6 +306,14 @@ namespace Foundation.Mathematics
 				return null;
 			else
 				return new Interval(tMin, tMax);
+		}
+
+		public static Interval? FindLineOrientedBox(Vector3 origin, Vector3 direction, Vector3 center, in Matrix3 basis, 
+			Vector3 halfDims)
+		{
+			//Matrix3 basisTranspose = Matrix3.Transpose(basis);
+			return FindLineAxisAlignedBox(basis*(origin - center)/*(origin - center)*basisTranspose*/,
+				basis*direction/*direction*basisTranspose*/, -halfDims, halfDims);
 		}
 
 		public static bool TestLineCircle(Vector2 origin, Vector2 direction, Vector2 center, float radius)
@@ -765,6 +772,12 @@ namespace Foundation.Mathematics
 			return (d <= radius*radius);
 		}
 
+		public static bool TestOrientedBoxAxisAlignedBox(Vector3 centerA, in Matrix3 basisA, Vector3 halfDimsA,
+			Vector3 centerB, Vector3 halfDimsB)
+		{
+			return TestOrientedBoxOrientedBox(centerA, basisA, halfDimsA, centerB, Matrix3.Identity, halfDimsB);
+		}
+
 		public static bool TestOrientedBoxOrientedBox(Vector3 centerA, in Matrix3 basisA, Vector3 halfDimsA, Vector3 centerB,
 			in Matrix3 basisB, Vector3 halfDimsB)
 		{
@@ -911,6 +924,13 @@ namespace Foundation.Mathematics
 				return false;
 
 			return true;
+		}
+
+		public static bool TestOrientedBoxSphere(Vector3 centerA, in Matrix3 basisA, Vector3 halfDimsA, Vector3 centerB, float radiusB)
+		{
+			//Matrix3 boxBasisT = Matrix3.Transpose(basisA);
+			return TestAxisAlignedBoxSphere(-halfDimsA, halfDimsA,
+				basisA*(centerB - centerA)/*(centerB - centerA)*boxBasisT*/, radiusB);
 		}
 
 		public static bool TestEllipsoidPlane(Vector3 center, in Matrix3 inverseMatrix, Vector3 normal, float constant)
