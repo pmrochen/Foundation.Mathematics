@@ -155,12 +155,7 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly Vector3 Center => Vector3.Lerp(start_, end_, 0.5f);
 
-		//public Vector3[] GetEndPoints()
-		//{
-		//    return new Vector3[2] { start_, end_ };
-		//}
-
-		public readonly IEnumerable<Vector3> GetEndPoints()
+		public readonly IEnumerable<Vector3> GetEndpoints()
 		{
 			yield return start_;
 			yield return end_;

@@ -161,7 +161,7 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly float InclinationAngle => (float)Math.Atan2(end_.Y - start_.Y, end_.X - start_.X);
 
-		public readonly IEnumerable<Vector2> GetEndPoints()
+		public readonly IEnumerable<Vector2> GetEndpoints()
 		{
 			yield return start_;
 			yield return end_;
