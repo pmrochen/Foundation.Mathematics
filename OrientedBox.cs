@@ -197,12 +197,12 @@ namespace Foundation.Mathematics
 			}
 		}
 
-		//public readonly AxisAlignedBox GetCircumscribedBox()
-		//{
-		//	Vector3 h = Vector3.Abs(halfDims_.x_*basis_.Row0) + Vector3.Abs(halfDims_.y_*basis_.Row1) + 
-		//		Vector3.Abs(halfDims_.z_*basis_.Row2);
-		//	return new AxisAlignedBox(center_ - h, center_ + h);
-		//}
+		public readonly AxisAlignedBox GetCircumscribedBox()
+		{
+			Vector3 halfDims = Vector3.Abs(halfDims_.x_*basis_.Row0) + Vector3.Abs(halfDims_.y_*basis_.Row1) +
+				Vector3.Abs(halfDims_.z_*basis_.Row2);
+			return new AxisAlignedBox(center_ - halfDims, center_ + halfDims);
+		}
 
 		public readonly Sphere GetCircumscribedSphere()
 		{
