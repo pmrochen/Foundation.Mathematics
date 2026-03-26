@@ -804,7 +804,7 @@ namespace Foundation.Mathematics
 
 			afAD.X = Vector3.Dot(basisA[0], kD);
 			float fR = Math.Abs(afAD.x_);
-			float fR1 = halfDimsB.x_*aafAbsC0.x_ + halfDimsB.y_*aafAbsC0.y_ + halfDimsB.z_*aafAbsC0.z_;
+			float fR1 = Vector3.Dot(halfDimsB, aafAbsC0);
 			float fR01 = halfDimsA.x_ + fR1;
 			if (fR > fR01)
 				return false;
@@ -819,7 +819,7 @@ namespace Foundation.Mathematics
 
 			afAD.Y = Vector3.Dot(basisA[1], kD);
 			fR = Math.Abs(afAD.y_);
-			fR1 = halfDimsB.x_*aafAbsC1.x_ + halfDimsB.y_*aafAbsC1.y_ + halfDimsB.z_*aafAbsC1.z_;
+			fR1 = Vector3.Dot(halfDimsB, aafAbsC1);
 			fR01 = halfDimsA.y_ + fR1;
 			if (fR > fR01)
 				return false;
@@ -834,7 +834,7 @@ namespace Foundation.Mathematics
 
 			afAD.Z = Vector3.Dot(basisA[2], kD);
 			fR = Math.Abs(afAD.z_);
-			fR1 = halfDimsB.x_*aafAbsC2.x_ + halfDimsB.y_*aafAbsC2.y_ + halfDimsB.z_*aafAbsC2.z_;
+			fR1 = Vector3.Dot(halfDimsB, aafAbsC2);
 			fR01 = halfDimsA.z_ + fR1;
 			if (fR > fR01)
 				return false;
