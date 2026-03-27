@@ -28,11 +28,11 @@ namespace Foundation.Mathematics
 			radius_ = radius;
 		}
 
-		public Cylinder(Vector3 p0, Vector3 p1, float radius)
+		public Cylinder(Vector3 point0, Vector3 point1, float radius)
 		{
-			center_ = (p0 + p1)*0.5f;
-			axis_ = Vector3.Normalize(p1 - p0);
-			height_ = (p1 - p0).Magnitude;
+			center_ = (point0 + point1)*0.5f;
+			axis_ = Vector3.Normalize(point1 - point0);
+			height_ = Vector3.Distance(point0, point1);
 			radius_ = radius;
 		}
 
@@ -170,16 +170,10 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly float Volume => SingleConstants.Pi*radius_*radius_*height_;
 
-		//public Vector3[] GetEndPoints()
-		//{
-		//    Vector3 h = (height_*0.5f)*axis_;
-		//    return new Vector3[2] { center_ - h, center_ + h };
-		//}
-
 		public readonly OrientedBox GetCircumscribedBox()
 		{
-			Matrix3 m = Matrix3.FromForward(axis_);
-			return new OrientedBox(Center, new Matrix3(m[0], m[2], -m[1]), new Vector3(radius_, height_*0.5f, radius_));
+			Matrix3 matrix = Matrix3.FromForward(axis_);
+			return new OrientedBox(Center, new Matrix3(matrix[0], matrix[2], -matrix[1]), new Vector3(radius_, height_*0.5f, radius_));
 		}
 
         public void Normalize()
@@ -211,18 +205,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Contains(Vector3 point)
 		{
-			Vector3 pd = point - (center_ - (height_*0.5f)*axis_);
-			float d = Vector3.Dot(pd, height_*axis_);
-
-			float lengthSq = height_*height_;
-			if ((d < 0f) || (d > lengthSq))
-				return false;
-
-			float dsq = Vector3.Dot(pd, pd) - d*d/lengthSq;
-			if (dsq > radius_*radius_)
-				return false;
-
-			return true;
+			return Containment.TestCylinderPoint(center_, axis_, height_, radius_, point);
 		}
 
 		internal Vector3 center_;
