@@ -180,7 +180,7 @@ namespace Foundation.Mathematics
 
 		public readonly Sphere GetCircumscribedSphere()
 		{
-			return new Sphere(center_, Math.Max(Math.Max(radii_.X, radii_.Y), radii_.Z));
+			return new Sphere(center_, radii_.MaxComponent);
 		}
 
 		public void Orthonormalize()

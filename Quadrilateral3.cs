@@ -178,15 +178,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly float Area
-		{
-			get
-			{
-				Vector3 p = vertex2_ - vertex0_;
-				Vector3 q = vertex3_ - vertex1_;
-				return Vector3.Cross(p, q).Magnitude*0.5f;
-			}
-		}
+		public readonly float Area => Vector3.Cross(vertex2_ - vertex0_, vertex3_ - vertex1_).Magnitude*0.5f;
 
 		[Browsable(false)]
 		public readonly Vector3 Normal

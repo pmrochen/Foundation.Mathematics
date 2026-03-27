@@ -32,7 +32,7 @@ namespace Foundation.Mathematics
 		{
 			vertex_ = vertex;
 			axis_ = Vector3.Normalize(baseCenter - vertex);
-			height_ = (baseCenter - vertex).Magnitude;
+			height_ = Vector3.Distance(vertex, baseCenter);
 			radius_ = radius;
 		}
 
@@ -170,7 +170,7 @@ namespace Foundation.Mathematics
 			set
 			{
 				axis_ = Vector3.Normalize(value - vertex_);
-				height_ = Vector3.Distance(value, vertex_);
+				height_ = Vector3.Distance(vertex_, value);
 			}
 		}
 
@@ -206,16 +206,11 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly float Volume => SingleConstants.Pi*radius_*radius_*height_/3f;
 
-		//public Vector3[] GetEndPoints()
-		//{
-		//    return new Vector3[2] { vertex_, vertex_ + height_*axis_ };
-		//}
-
 		public readonly OrientedBox GetCircumscribedBox()
 		{
-			Matrix3 m = Matrix3.FromForward(-axis_);
+			Matrix3 matrix = Matrix3.FromForward(-axis_);
 			Vector3 center = vertex_ + (height_*0.5f)*axis_;
-			return new OrientedBox(center, new Matrix3(m[0], m[2], -m[1]), new Vector3(radius_, height_*0.5f, radius_));
+			return new OrientedBox(center, new Matrix3(matrix[0], matrix[2], -matrix[1]), new Vector3(radius_, height_*0.5f, radius_));
 		}
 
 		public readonly Sphere GetCircumscribedSphere()

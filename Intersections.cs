@@ -393,7 +393,7 @@ namespace Foundation.Mathematics
 			float a1 = Vector3.Dot(direction, matDiff);
 			float a0 = Vector3.Dot(diff, matDiff) - 1f;
 
-			float discr = a1*a1 - a0*a2;
+			float discr = (a1*a1 - a0*a2);
 			return (discr >= 0f);
 		}
 
@@ -506,22 +506,12 @@ namespace Foundation.Mathematics
 			const float e = 0.5f;
 			if (a1 >= 0f)
 			{
-				float q = a0 + e*(-2f*a1 + a2*e);
-				if (q <= 0f)
-					return true;
-
-				float qder = a1 - a2*e;
-				if (qder < 0f)
+				if (((a0 + e*(-2f*a1 + a2*e)) <= 0f) || ((a1 - a2*e) < 0f))
 					return true;
 			}
 			else
 			{
-				float q = a0 + e*(2f*a1 + a2*e);
-				if (q <= 0f)
-					return true;
-
-				float qder = a1 + a2*e;
-				if (qder < 0f)
+				if (((a0 + e*(2f*a1 + a2*e)) <= 0f) || ((a1 + a2*e) < 0f))
 					return true;
 			}
 
@@ -945,14 +935,13 @@ namespace Foundation.Mathematics
 			float slantHeight = MathF.Sqrt(baseRadius*baseRadius + height*height);
 			float sinAngle = baseRadius/slantHeight;
 			float cosAngle = height/slantHeight;
-
-			float invSin = slantHeight/baseRadius; //1f/sinAngle;
+			float invSin = slantHeight/baseRadius; // 1f/sinAngle;
 			float cosSqr = cosAngle*cosAngle;
-
 			Vector3 cmV = center - vertex;
 			Vector3 d = cmV + (radius*invSin)*axis;
 			float dSqrLen = d.LengthSquared;
 			float e = Vector3.Dot(d, axis);
+
 			if ((e > 0f) && (e*e >= dSqrLen*cosSqr))
 			{
 				float sinSqr = sinAngle*sinAngle;
