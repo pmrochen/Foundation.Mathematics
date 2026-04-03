@@ -64,9 +64,9 @@ namespace Foundation.Mathematics
 			{
 				Euler e = (Euler)obj;
 				if ((context != null) && (context.GetType().Name == "PropertyDescriptorGridEntry"))
-					return String.Format(culture, "{0:0.##} {1:0.##} {2:0.##} {3}", Functions.Degrees((double)e.x_), Functions.Degrees((double)e.y_), Functions.Degrees((double)e.z_), e.order_.ToString());
+					return String.Format(culture, "{0:0.##} {1:0.##} {2:0.##} {3}", Scalar.Degrees((double)e.x_), Scalar.Degrees((double)e.y_), Scalar.Degrees((double)e.z_), e.order_.ToString());
 				else
-					return String.Format(culture, "{0} {1} {2} {3}", Functions.Degrees((double)e.x_), Functions.Degrees((double)e.y_), Functions.Degrees((double)e.z_), e.order_.ToString());
+					return String.Format(culture, "{0} {1} {2} {3}", Scalar.Degrees((double)e.x_), Scalar.Degrees((double)e.y_), Scalar.Degrees((double)e.z_), e.order_.ToString());
 			}
 
 			return base.ConvertTo(context, culture, obj, type);

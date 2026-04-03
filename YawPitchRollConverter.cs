@@ -63,9 +63,9 @@ namespace Foundation.Mathematics
 			{
 				YawPitchRoll ypr = (YawPitchRoll)obj;
 				if ((context != null) && (context.GetType().Name == "PropertyDescriptorGridEntry"))
-					return String.Format(culture, "{0:0.##} {1:0.##} {2:0.##}", Functions.Degrees((double)ypr.yaw_), Functions.Degrees((double)ypr.pitch_), Functions.Degrees((double)ypr.roll_));
+					return String.Format(culture, "{0:0.##} {1:0.##} {2:0.##}", Scalar.Degrees((double)ypr.yaw_), Scalar.Degrees((double)ypr.pitch_), Scalar.Degrees((double)ypr.roll_));
 				else
-					return String.Format(culture, "{0} {1} {2}", Functions.Degrees((double)ypr.yaw_), Functions.Degrees((double)ypr.pitch_), Functions.Degrees((double)ypr.roll_));
+					return String.Format(culture, "{0} {1} {2}", Scalar.Degrees((double)ypr.yaw_), Scalar.Degrees((double)ypr.pitch_), Scalar.Degrees((double)ypr.roll_));
 			}
 
 			return base.ConvertTo(context, culture, obj, type);

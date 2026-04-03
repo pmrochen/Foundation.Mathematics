@@ -1826,10 +1826,10 @@ namespace Foundation.Mathematics
 		{
 			get
 			{
-				return Functions.IsFinite(m00_) && Functions.IsFinite(m01_) && Functions.IsFinite(m02_) && Functions.IsFinite(m03_) &&
-					Functions.IsFinite(m10_) && Functions.IsFinite(m11_) && Functions.IsFinite(m12_) && Functions.IsFinite(m13_) &&
-					Functions.IsFinite(m20_) && Functions.IsFinite(m21_) && Functions.IsFinite(m22_) && Functions.IsFinite(m23_) &&
-					Functions.IsFinite(m30_) && Functions.IsFinite(m31_) && Functions.IsFinite(m32_) && Functions.IsFinite(m33_);
+				return Scalar.IsFinite(m00_) && Scalar.IsFinite(m01_) && Scalar.IsFinite(m02_) && Scalar.IsFinite(m03_) &&
+					Scalar.IsFinite(m10_) && Scalar.IsFinite(m11_) && Scalar.IsFinite(m12_) && Scalar.IsFinite(m13_) &&
+					Scalar.IsFinite(m20_) && Scalar.IsFinite(m21_) && Scalar.IsFinite(m22_) && Scalar.IsFinite(m23_) &&
+					Scalar.IsFinite(m30_) && Scalar.IsFinite(m31_) && Scalar.IsFinite(m32_) && Scalar.IsFinite(m33_);
 			}
 		}
 

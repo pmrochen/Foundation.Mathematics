@@ -30,7 +30,7 @@ namespace Foundation.Mathematics
 				string str = (string)obj;
 				Type objType = context.PropertyDescriptor.PropertyType;
 				double val = (str.Length > 0) ? 
-					Functions.Radians(Double.Parse(SingleConverter.CorrectDecimalSeparator(str, culture), culture)) :
+					Scalar.Radians(Double.Parse(SingleConverter.CorrectDecimalSeparator(str, culture), culture)) :
 					0.0;
 				if (objType == typeof(float))
 					return (float)val;
@@ -56,16 +56,16 @@ namespace Foundation.Mathematics
 				if (obj is float)
 				{
 					if ((context != null) && (context.GetType().Name == "PropertyDescriptorGridEntry"))
-						return Functions.Degrees((double)(float)obj).ToString("0.##", culture);
+						return Scalar.Degrees((double)(float)obj).ToString("0.##", culture);
 					else
-						return Functions.Degrees((double)(float)obj).ToString(culture);
+						return Scalar.Degrees((double)(float)obj).ToString(culture);
 				}
 				else if (obj is double)
 				{
 					if ((context != null) && (context.GetType().Name == "PropertyDescriptorGridEntry"))
-						return Functions.Degrees((double)obj).ToString("0.##", culture);
+						return Scalar.Degrees((double)obj).ToString("0.##", culture);
 					else
-						return Functions.Degrees((double)obj).ToString(culture);
+						return Scalar.Degrees((double)obj).ToString(culture);
 				}
 				else
 				{

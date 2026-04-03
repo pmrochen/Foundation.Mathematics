@@ -608,7 +608,11 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly bool IsFinite
 		{
-			get => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_) && Functions.IsFinite(w_);
+			get
+			{
+				return Mathematics.Scalar.IsFinite(x_) && Mathematics.Scalar.IsFinite(y_) && Mathematics.Scalar.IsFinite(z_) &&
+					Mathematics.Scalar.IsFinite(w_);
+			}
 		}
 
 		public readonly override int GetHashCode()

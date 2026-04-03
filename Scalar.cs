@@ -1,5 +1,5 @@
 /*
- *  Name: Functions
+ *  Name: Scalar
  *  Author: Pawel Mrochen
  */
 
@@ -7,7 +7,7 @@ using System;
 
 namespace Foundation.Mathematics
 {
-	public static class Functions
+	public static class Scalar
 	{
 		public static bool IsFinite(float x) { return !Single.IsInfinity(x) && !Single.IsNaN(x); }
 		public static bool IsFinite(double x) { return !Double.IsInfinity(x) && !Double.IsNaN(x); }

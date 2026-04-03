@@ -132,7 +132,7 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly bool IsFinite
 		{
-			get => center_.IsFinite && axis_.IsFinite && Functions.IsFinite(majorRadius_) && Functions.IsFinite(minorRadius_);
+			get => center_.IsFinite && axis_.IsFinite && Scalar.IsFinite(majorRadius_) && Scalar.IsFinite(minorRadius_);
 		}
 
 		public Vector3 Center

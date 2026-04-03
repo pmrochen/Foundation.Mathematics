@@ -141,8 +141,8 @@ namespace Foundation.Mathematics
 		{
 			get
 			{
-				return origin_.IsFinite && basis_.IsFinite && halfDims_.IsFinite && Functions.IsFinite(depthMin_) &&
-					Functions.IsFinite(depthMax_);
+				return origin_.IsFinite && basis_.IsFinite && halfDims_.IsFinite && Scalar.IsFinite(depthMin_) &&
+					Scalar.IsFinite(depthMax_);
 			}
 		}
 

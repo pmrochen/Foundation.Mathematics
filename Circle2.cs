@@ -106,7 +106,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly bool IsFinite => center_.IsFinite && Functions.IsFinite(radius_);
+		public readonly bool IsFinite => center_.IsFinite && Scalar.IsFinite(radius_);
 
 		public Vector2 Center
         {

@@ -120,7 +120,7 @@ namespace Foundation.Mathematics
 			//if (min >= max)
 			//	return min;
 
-			return Math.Clamp(Functions.Round(min - 0.5 + (max - min + 1.0)*GetNextDouble01()), min, max);
+			return Math.Clamp(Scalar.Round(min - 0.5 + (max - min + 1.0)*GetNextDouble01()), min, max);
 		}
 
 		public float GetNext(float min, float max)

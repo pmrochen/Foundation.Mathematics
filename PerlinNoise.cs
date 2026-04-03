@@ -21,7 +21,7 @@ namespace Foundation.Mathematics
 			int b = perm_[ix + 1];
 			int ba = perm_[b];
 
-			return Functions.Lerp(Grad(perm_[aa], x, 0f, 0f), Grad(perm_[ba], x - 1f, 0f, 0f), u);
+			return Scalar.Lerp(Grad(perm_[aa], x, 0f, 0f), Grad(perm_[ba], x - 1f, 0f, 0f), u);
 		}
 
 		public static double Get(double x)
@@ -36,7 +36,7 @@ namespace Foundation.Mathematics
 			int b = perm_[ix + 1];
 			int ba = perm_[b];
 
-			return Functions.Lerp(Grad(perm_[aa], x, 0.0, 0.0), Grad(perm_[ba], x - 1.0, 0.0, 0.0), u);
+			return Scalar.Lerp(Grad(perm_[aa], x, 0.0, 0.0), Grad(perm_[ba], x - 1.0, 0.0, 0.0), u);
 		}
 
 		public static float Get(float x, float y)
@@ -57,8 +57,8 @@ namespace Foundation.Mathematics
 			int ba = perm_[b];
 			int bb = perm_[b + 1];
 
-			return Functions.Lerp(Functions.Lerp(Grad(perm_[aa], x, y, 0f), Grad(perm_[ba], x - 1f, y, 0f), u),
-						Functions.Lerp(Grad(perm_[ab], x, y - 1f, 0f), Grad(perm_[bb], x - 1f, y - 1f, 0f), u), v);
+			return Scalar.Lerp(Scalar.Lerp(Grad(perm_[aa], x, y, 0f), Grad(perm_[ba], x - 1f, y, 0f), u),
+						Scalar.Lerp(Grad(perm_[ab], x, y - 1f, 0f), Grad(perm_[bb], x - 1f, y - 1f, 0f), u), v);
 		}
 
 		public static double Get(double x, double y)
@@ -79,8 +79,8 @@ namespace Foundation.Mathematics
 			int ba = perm_[b];
 			int bb = perm_[b + 1];
 
-			return Functions.Lerp(Functions.Lerp(Grad(perm_[aa], x, y, 0.0), Grad(perm_[ba], x - 1.0, y, 0.0), u),
-						Functions.Lerp(Grad(perm_[ab], x, y - 1.0, 0.0), Grad(perm_[bb], x - 1.0, y - 1.0, 0.0), u), v);
+			return Scalar.Lerp(Scalar.Lerp(Grad(perm_[aa], x, y, 0.0), Grad(perm_[ba], x - 1.0, y, 0.0), u),
+						Scalar.Lerp(Grad(perm_[ab], x, y - 1.0, 0.0), Grad(perm_[bb], x - 1.0, y - 1.0, 0.0), u), v);
 		}
 
 		public static float Get(float x, float y, float z)
@@ -105,10 +105,10 @@ namespace Foundation.Mathematics
 			int ba = perm_[b] + iz;
 			int bb = perm_[b + 1] + iz;
 
-			return Functions.Lerp(Functions.Lerp(Functions.Lerp(Grad(perm_[aa], x, y, z), Grad(perm_[ba], x - 1f, y, z), u),
-							 Functions.Lerp(Grad(perm_[ab], x, y - 1f, z), Grad(perm_[bb], x - 1f, y - 1f, z), u), v),
-						Functions.Lerp(Functions.Lerp(Grad(perm_[aa + 1], x, y, z - 1f), Grad(perm_[ba + 1], x - 1f, y, z - 1f), u),
-							 Functions.Lerp(Grad(perm_[ab + 1], x, y - 1f, z - 1f), Grad(perm_[bb + 1], x - 1f, y - 1f, z - 1f), u), v), w);
+			return Scalar.Lerp(Scalar.Lerp(Scalar.Lerp(Grad(perm_[aa], x, y, z), Grad(perm_[ba], x - 1f, y, z), u),
+							 Scalar.Lerp(Grad(perm_[ab], x, y - 1f, z), Grad(perm_[bb], x - 1f, y - 1f, z), u), v),
+						Scalar.Lerp(Scalar.Lerp(Grad(perm_[aa + 1], x, y, z - 1f), Grad(perm_[ba + 1], x - 1f, y, z - 1f), u),
+							 Scalar.Lerp(Grad(perm_[ab + 1], x, y - 1f, z - 1f), Grad(perm_[bb + 1], x - 1f, y - 1f, z - 1f), u), v), w);
 		}
 
 		public static double Get(double x, double y, double z)
@@ -133,10 +133,10 @@ namespace Foundation.Mathematics
 			int ba = perm_[b] + iz;
 			int bb = perm_[b + 1] + iz;
 
-			return Functions.Lerp(Functions.Lerp(Functions.Lerp(Grad(perm_[aa], x, y, z), Grad(perm_[ba], x - 1.0, y, z), u),
-							 Functions.Lerp(Grad(perm_[ab], x, y - 1.0, z), Grad(perm_[bb], x - 1.0, y - 1.0, z), u), v),
-						Functions.Lerp(Functions.Lerp(Grad(perm_[aa + 1], x, y, z - 1.0), Grad(perm_[ba + 1], x - 1.0, y, z - 1.0), u),
-							 Functions.Lerp(Grad(perm_[ab + 1], x, y - 1.0, z - 1.0), Grad(perm_[bb + 1], x - 1.0, y - 1.0, z - 1.0), u), v), w);
+			return Scalar.Lerp(Scalar.Lerp(Scalar.Lerp(Grad(perm_[aa], x, y, z), Grad(perm_[ba], x - 1.0, y, z), u),
+							 Scalar.Lerp(Grad(perm_[ab], x, y - 1.0, z), Grad(perm_[bb], x - 1.0, y - 1.0, z), u), v),
+						Scalar.Lerp(Scalar.Lerp(Grad(perm_[aa + 1], x, y, z - 1.0), Grad(perm_[ba + 1], x - 1.0, y, z - 1.0), u),
+							 Scalar.Lerp(Grad(perm_[ab + 1], x, y - 1.0, z - 1.0), Grad(perm_[bb + 1], x - 1.0, y - 1.0, z - 1.0), u), v), w);
 		}
 
 		private static float Fade(float t) 

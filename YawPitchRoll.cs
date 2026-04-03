@@ -58,7 +58,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly bool IsFinite => Functions.IsFinite(yaw_) && Functions.IsFinite(pitch_) && Functions.IsFinite(roll_);
+		public readonly bool IsFinite => Scalar.IsFinite(yaw_) && Scalar.IsFinite(pitch_) && Scalar.IsFinite(roll_);
 
 		public readonly override int GetHashCode()
 		{
@@ -99,7 +99,7 @@ namespace Foundation.Mathematics
 		public readonly string ToString(bool degrees)
 		{
 			if (degrees)
-				return String.Format("{0} {1} {2}", Functions.Degrees(yaw_), Functions.Degrees(pitch_), Functions.Degrees(roll_));
+				return String.Format("{0} {1} {2}", Scalar.Degrees(yaw_), Scalar.Degrees(pitch_), Scalar.Degrees(roll_));
 			else
 				return String.Format("{0} {1} {2}", yaw_, pitch_, roll_);
 		}
@@ -144,8 +144,8 @@ namespace Foundation.Mathematics
 
 			if (degrees)
 			{
-				return new YawPitchRoll(Functions.Radians(Single.Parse(m[0])), Functions.Radians(Single.Parse(m[1])),
-					Functions.Radians(Single.Parse(m[2])));
+				return new YawPitchRoll(Scalar.Radians(Single.Parse(m[0])), Scalar.Radians(Single.Parse(m[1])),
+					Scalar.Radians(Single.Parse(m[2])));
 			}
 			else
 			{
@@ -177,8 +177,8 @@ namespace Foundation.Mathematics
 
 			if (degrees)
 			{
-				return new YawPitchRoll(Functions.Radians(Single.Parse(m[0], provider)), Functions.Radians(Single.Parse(m[1], provider)),
-					Functions.Radians(Single.Parse(m[2], provider)));
+				return new YawPitchRoll(Scalar.Radians(Single.Parse(m[0], provider)), Scalar.Radians(Single.Parse(m[1], provider)),
+					Scalar.Radians(Single.Parse(m[2], provider)));
 			}
 			else
 			{

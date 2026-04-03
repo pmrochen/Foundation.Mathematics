@@ -134,7 +134,7 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly bool IsFinite
 		{
-			get => vertex_.IsFinite && axis_.IsFinite && Functions.IsFinite(height_) && Functions.IsFinite(radius_);
+			get => vertex_.IsFinite && axis_.IsFinite && Scalar.IsFinite(height_) && Scalar.IsFinite(radius_);
 		}
 
 		public Vector3 Vertex

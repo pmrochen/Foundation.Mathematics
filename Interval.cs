@@ -112,7 +112,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly bool IsFinite => Functions.IsFinite(minimum_) && Functions.IsFinite(maximum_);
+		public readonly bool IsFinite => Scalar.IsFinite(minimum_) && Scalar.IsFinite(maximum_);
 
 		[Browsable(false)]
 		public readonly bool IsEmpty => (minimum_ > maximum_);

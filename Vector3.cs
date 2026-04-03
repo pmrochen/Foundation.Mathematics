@@ -874,7 +874,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly bool IsFinite => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_);
+		public readonly bool IsFinite => Scalar.IsFinite(x_) && Scalar.IsFinite(y_) && Scalar.IsFinite(z_);
 
 		[Browsable(false)]
 		public readonly Axis MajorAxis

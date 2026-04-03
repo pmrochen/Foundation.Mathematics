@@ -97,7 +97,7 @@ namespace Foundation.Mathematics
 		}
 
 		[Browsable(false)]
-		public readonly bool IsFinite => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_);
+		public readonly bool IsFinite => Scalar.IsFinite(x_) && Scalar.IsFinite(y_) && Scalar.IsFinite(z_);
 
 		public readonly override int GetHashCode()
 		{
@@ -144,7 +144,7 @@ namespace Foundation.Mathematics
 		public readonly string ToString(bool degrees)
 		{
 			if (degrees)
-				return String.Format("{0} {1} {2} {3}", Functions.Degrees(x_), Functions.Degrees(y_), Functions.Degrees(z_), order_.ToString());
+				return String.Format("{0} {1} {2} {3}", Scalar.Degrees(x_), Scalar.Degrees(y_), Scalar.Degrees(z_), order_.ToString());
 			else
 				return String.Format("{0} {1} {2} {3}", x_, y_, z_, order_.ToString());
 		}
@@ -190,8 +190,8 @@ namespace Foundation.Mathematics
 
 			if (degrees)
 			{
-				return new Euler(Functions.Radians(Single.Parse(m[0])), Functions.Radians(Single.Parse(m[1])),
-					Functions.Radians(Single.Parse(m[2])), (EulerOrder)Enum.Parse(typeof(EulerOrder), m[3], true));
+				return new Euler(Scalar.Radians(Single.Parse(m[0])), Scalar.Radians(Single.Parse(m[1])),
+					Scalar.Radians(Single.Parse(m[2])), (EulerOrder)Enum.Parse(typeof(EulerOrder), m[3], true));
 			}
 			else
 			{
@@ -224,8 +224,8 @@ namespace Foundation.Mathematics
 
 			if (degrees)
 			{
-				return new Euler(Functions.Radians(Single.Parse(m[0], provider)), Functions.Radians(Single.Parse(m[1], provider)),
-					Functions.Radians(Single.Parse(m[2], provider)), (EulerOrder)Enum.Parse(typeof(EulerOrder), m[3], true));
+				return new Euler(Scalar.Radians(Single.Parse(m[0], provider)), Scalar.Radians(Single.Parse(m[1], provider)),
+					Scalar.Radians(Single.Parse(m[2], provider)), (EulerOrder)Enum.Parse(typeof(EulerOrder), m[3], true));
 			}
 			else
 			{

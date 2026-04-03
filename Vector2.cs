@@ -682,7 +682,7 @@ namespace Foundation.Mathematics
 		public readonly Vector2 YX => new Vector2(y_, x_);
 
 		[Browsable(false)]
-		public readonly bool IsFinite => Functions.IsFinite(x_) && Functions.IsFinite(y_);
+		public readonly bool IsFinite => Scalar.IsFinite(x_) && Scalar.IsFinite(y_);
 
 		[Browsable(false)]
 		public readonly Axis MajorAxis => (MathF.Abs(y_) > MathF.Abs(x_)) ? Axis.Y : Axis.X;

@@ -879,7 +879,7 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public readonly bool IsFinite
 		{
-			get => Functions.IsFinite(x_) && Functions.IsFinite(y_) && Functions.IsFinite(z_) && Functions.IsFinite(w_);
+			get => Scalar.IsFinite(x_) && Scalar.IsFinite(y_) && Scalar.IsFinite(z_) && Scalar.IsFinite(w_);
 		}
 
 		[Browsable(false)]
