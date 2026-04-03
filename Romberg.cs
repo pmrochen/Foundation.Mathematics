@@ -12,7 +12,7 @@ namespace Foundation.Mathematics
 
 	public static class Romberg
 	{
-		public static float Integrate(float a, float b, SingleFunctionDelegate f, int order)
+		public static float Estimate(float a, float b, SingleFunctionDelegate f, int order)
 		{
 			float h = b - a;
 			float[,] rom = new float[2, order];
@@ -34,7 +34,7 @@ namespace Foundation.Mathematics
 			return rom[0, order - 1];
 		}
 
-		public static double Integrate(double a, double b, DoubleFunctionDelegate f, int order)
+		public static double Estimate(double a, double b, DoubleFunctionDelegate f, int order)
 		{
 			double h = b - a;
 			double[,] rom = new double[2, order];
