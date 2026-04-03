@@ -13,10 +13,9 @@ namespace Foundation.Mathematics
 	/// </summary>
 	public sealed class MersenneTwister
 	{
-		public static MersenneTwister Default = new MersenneTwister(new int[4] { 0x123, 0x234, 0x345, 0x456 });
-
 		public MersenneTwister()
 		{
+			Init(new int[4] { 0x123, 0x234, 0x345, 0x456 });
 		}
 
 		public MersenneTwister(int seed)
@@ -27,6 +26,71 @@ namespace Foundation.Mathematics
 		public MersenneTwister(int[] key)
 		{
 			Init(key);
+		}
+
+		public int GetNext(int min, int max)
+		{
+			//if (min >= max)
+			//	return min;
+
+			return Math.Clamp(Scalar.Round(min - 0.5 + (max - min + 1.0)*GetNextDouble01()), min, max);
+		}
+
+		public float GetNext(float min, float max)
+		{
+			//if (min >= max)
+			//	return min;
+			
+			return (float)(min + (max - min)*GetNextDouble01());
+		}
+
+		public double GetNext(double min, double max)
+		{
+			//if (min >= max)
+			//	return min;
+			
+			return (min + (max - min)*GetNextDouble01());
+		}
+
+		public float GetNextRightOpen(float min, float max)
+		{
+			//if (min >= max)
+			//	return min;
+
+			return (float)(min + (max - min)*GetNextDouble01RightOpen());
+		}
+
+		public double GetNextRightOpen(double min, double max)
+		{
+			//if (min >= max)
+			//	return min;
+
+			return (min + (max - min)*GetNextDouble01RightOpen());
+		}
+
+		public int GetNextInt32()
+		{
+			return (int)GetUInt32();
+		}
+
+		public float GetNextSingle01()
+		{
+			return (float)GetNextDouble01();
+		}
+
+		public float GetNextSingle01RightOpen()
+		{
+			return (float)GetNextDouble01RightOpen();
+		}
+
+		public double GetNextDouble01()
+		{
+			return GetUInt32()*(1.0/4294967295.0);
+		}
+
+		public double GetNextDouble01RightOpen()
+		{
+			return GetUInt32()*(1.0/4294967296.0);
 		}
 
 		private void Init(int seed)
@@ -113,71 +177,6 @@ namespace Foundation.Mathematics
 			y ^= (y << 15) & 0xefc60000u;
 			y ^= (y >> 18);
 			return y;
-		}
-
-		public int GetNext(int min, int max)
-		{
-			//if (min >= max)
-			//	return min;
-
-			return Math.Clamp(Scalar.Round(min - 0.5 + (max - min + 1.0)*GetNextDouble01()), min, max);
-		}
-
-		public float GetNext(float min, float max)
-		{
-			//if (min >= max)
-			//	return min;
-			
-			return (float)(min + (max - min)*GetNextDouble01());
-		}
-
-		public double GetNext(double min, double max)
-		{
-			//if (min >= max)
-			//	return min;
-			
-			return (min + (max - min)*GetNextDouble01());
-		}
-
-		public float GetNextRightOpen(float min, float max)
-		{
-			//if (min >= max)
-			//	return min;
-
-			return (float)(min + (max - min)*GetNextDouble01RightOpen());
-		}
-
-		public double GetNextRightOpen(double min, double max)
-		{
-			//if (min >= max)
-			//	return min;
-
-			return (min + (max - min)*GetNextDouble01RightOpen());
-		}
-
-		public int GetNextInt32()
-		{
-			return (int)GetUInt32();
-		}
-
-		public float GetNextSingle01()
-		{
-			return (float)GetNextDouble01();
-		}
-
-		public float GetNextSingle01RightOpen()
-		{
-			return (float)GetNextDouble01RightOpen();
-		}
-
-		public double GetNextDouble01()
-		{
-			return GetUInt32()*(1.0/4294967295.0);
-		}
-
-		public double GetNextDouble01RightOpen()
-		{
-			return GetUInt32()*(1.0/4294967296.0);
 		}
 
 		private const int n_ = 624;

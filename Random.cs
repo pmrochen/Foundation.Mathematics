@@ -9,19 +9,21 @@ namespace Foundation.Mathematics
 {
 	public static class Random
 	{
+		public static MersenneTwister Generator = new MersenneTwister();
+
 		public static int GetNextInt32(int min, int max)
 		{
-			return MersenneTwister.Default.GetNext(min, max);
+			return Generator.GetNext(min, max);
 		}
 
 		public static float GetNextSingle(float min, float max)
 		{
-			return MersenneTwister.Default.GetNext(min, max);
+			return Generator.GetNext(min, max);
 		}
 
 		public static double GetNextDouble(double min, double max)
 		{
-			return MersenneTwister.Default.GetNext(min, max);
+			return Generator.GetNext(min, max);
 		}
 
 		public static Vector2 GetNextVectorOnUnitCircle()
