@@ -1,5 +1,5 @@
 /*
- *  Name: PerlinNoise
+ *  Name: Perlin
  *  Author: Pawel Mrochen
  */
 
@@ -7,9 +7,9 @@ using System;
 
 namespace Foundation.Mathematics
 {
-	public static class PerlinNoise
+	public static class Perlin
 	{
-		public static float Get(float x)
+		public static float Noise(float x)
 		{
 			float fx = MathF.Floor(x);
 			int ix = (int)fx & 255;
@@ -24,7 +24,7 @@ namespace Foundation.Mathematics
 			return Scalar.Lerp(Grad(perm_[aa], x, 0f, 0f), Grad(perm_[ba], x - 1f, 0f, 0f), u);
 		}
 
-		public static double Get(double x)
+		public static double Noise(double x)
 		{
 			double fx = Math.Floor(x);
 			int ix = (int)fx & 255;
@@ -39,7 +39,7 @@ namespace Foundation.Mathematics
 			return Scalar.Lerp(Grad(perm_[aa], x, 0.0, 0.0), Grad(perm_[ba], x - 1.0, 0.0, 0.0), u);
 		}
 
-		public static float Get(float x, float y)
+		public static float Noise(float x, float y)
 		{
 			float fx = MathF.Floor(x);
 			float fy = MathF.Floor(y);
@@ -61,7 +61,7 @@ namespace Foundation.Mathematics
 						Scalar.Lerp(Grad(perm_[ab], x, y - 1f, 0f), Grad(perm_[bb], x - 1f, y - 1f, 0f), u), v);
 		}
 
-		public static double Get(double x, double y)
+		public static double Noise(double x, double y)
 		{
 			double fx = Math.Floor(x);
 			double fy = Math.Floor(y);
@@ -83,7 +83,7 @@ namespace Foundation.Mathematics
 						Scalar.Lerp(Grad(perm_[ab], x, y - 1.0, 0.0), Grad(perm_[bb], x - 1.0, y - 1.0, 0.0), u), v);
 		}
 
-		public static float Get(float x, float y, float z)
+		public static float Noise(float x, float y, float z)
 		{
 			float fx = MathF.Floor(x);
 			float fy = MathF.Floor(y);
@@ -111,7 +111,7 @@ namespace Foundation.Mathematics
 							 Scalar.Lerp(Grad(perm_[ab + 1], x, y - 1f, z - 1f), Grad(perm_[bb + 1], x - 1f, y - 1f, z - 1f), u), v), w);
 		}
 
-		public static double Get(double x, double y, double z)
+		public static double Noise(double x, double y, double z)
 		{
 			double fx = Math.Floor(x);
 			double fy = Math.Floor(y);
@@ -137,6 +137,16 @@ namespace Foundation.Mathematics
 							 Scalar.Lerp(Grad(perm_[ab], x, y - 1.0, z), Grad(perm_[bb], x - 1.0, y - 1.0, z), u), v),
 						Scalar.Lerp(Scalar.Lerp(Grad(perm_[aa + 1], x, y, z - 1.0), Grad(perm_[ba + 1], x - 1.0, y, z - 1.0), u),
 							 Scalar.Lerp(Grad(perm_[ab + 1], x, y - 1.0, z - 1.0), Grad(perm_[bb + 1], x - 1.0, y - 1.0, z - 1.0), u), v), w);
+		}
+
+		public static float Noise(Vector2 v)
+		{
+			return Noise(v.x_, v.y_);
+		}
+
+		public static float Noise(Vector3 v)
+		{
+			return Noise(v.x_, v.y_, v.z_);
 		}
 
 		private static float Fade(float t) 
