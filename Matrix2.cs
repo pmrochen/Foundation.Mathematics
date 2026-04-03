@@ -715,11 +715,6 @@ namespace Foundation.Mathematics
 			return Identity;
 		}
 
-		//public void Rotate(float angle)
-		//{
-		//	this *= Rotation(angle);
-		//}
-
 		public static Matrix2 Scaling(Vector2 v)
 		{
 			return new Matrix2(v.x_, 0f, 0f, v.y_);
@@ -741,11 +736,6 @@ namespace Foundation.Mathematics
 		{
 			return new Matrix2(1f, xy, yx, 1f);
 		}
-
-		//public void Shear(float xy, float yx)
-		//{
-		//	this *= new Matrix2(1f, xy, yx, 1f);
-		//}
 
 		public static Matrix2 Adjoint(in Matrix2 m)
 		{

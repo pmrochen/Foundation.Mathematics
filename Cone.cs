@@ -131,11 +131,6 @@ namespace Foundation.Mathematics
 				Single.Parse(m[6], provider), Single.Parse(m[7], provider));
 		}
 
-		//public static Cone FromOpenCone(in OpenCone cone)
-		//{
-		//	return new Cone(cone.Vertex, cone.Axis, cone.Height, cone.Height*(float)Math.Tan(cone.HalfAngle));
-		//}
-
 		[Browsable(false)]
 		public readonly bool IsFinite
 		{

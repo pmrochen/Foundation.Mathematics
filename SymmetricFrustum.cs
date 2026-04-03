@@ -265,13 +265,6 @@ namespace Foundation.Mathematics
 			return new Cone(origin_, basis_[2], depthMax_, coneRadius);
 		}
 
-		//public readonly OpenCone GetCircumscribedOpenCone()
-		//{
-		//	Vector2 baseHalfDims = halfDims_*(depthMax_/depthMin_);
-		//	float coneRadius = baseHalfDims.Magnitude;
-		//	return new OpenCone(origin_, basis_[2], depthMax_, (float)Math.Atan(coneRadius/depthMax_));
-		//}
-
         public void Orthonormalize()
         {
 #if SIMD

@@ -138,12 +138,6 @@ namespace Foundation.Mathematics
 			return new AxisAlignedBox(center_ - halfDims, center_ + halfDims);
 		}
 
-		//public readonly OrientedBox GetCircumscribedBox()
-		//{
-		//	Vector3 halfDims = new Vector3(radius_);
-		//	return new OrientedBox(center_, Matrix3.Identity, halfDims);
-		//}
-
 		public static Sphere FromEllipsoid(in Ellipsoid ellipsoid)
 		{
 			return new Sphere(ellipsoid.center_, ellipsoid.radii_.MaxComponent);
@@ -190,9 +184,8 @@ namespace Foundation.Mathematics
 				return Sphere.FromEllipsoid(Ellipsoid.FromSphere(sphere, at, orthogonal));
 		}
 
-		//public readonly Vector3 GetClosestPoint(Vector3 point)
+		//public readonly Vector3 GetClosestPoint(Vector3 point) // #TODO
 		//{
-		//  // #TODO
 		//}
 
 		public readonly float GetDistanceTo(Vector3 point)
@@ -245,11 +238,6 @@ namespace Foundation.Mathematics
 		{
 			return Intersections.TestConeSphere(cone.vertex_, cone.axis_, cone.height_, cone.radius_, center_, radius_);
 		}
-
-		//public readonly bool Intersects(in OpenCone cone)
-		//{
-		//	return cone.Intersects(this);
-		//}
 
 		public readonly bool Intersects(in SymmetricFrustum frustum)
 		{

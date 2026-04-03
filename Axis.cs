@@ -3,8 +3,6 @@
  *  Author: Pawel Mrochen
  */
 
-using System;
-
 namespace Foundation.Mathematics
 {
 	public enum Axis

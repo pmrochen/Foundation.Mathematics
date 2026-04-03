@@ -1188,20 +1188,5 @@ namespace Foundation.Mathematics
 		{
 			this = Vector3.Rotate(this, q);
 		}
-
-		//public void Reflect(Vector3 n)
-		//{
-		//	this = Vector3.Reflect(this, n);
-		//}
-
-		//public void Refract(Vector3 n, float etaRatio)
-		//{
-		//	this = Vector3.Refract(this, n, etaRatio);
-		//}
-
-		//public void Project(Vector3 v)
-		//{
-		//	this = Vector3.Project(this, v);
-		//}
 	}
 }

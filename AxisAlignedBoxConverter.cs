@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace Foundation.Mathematics
 {
-	public class AxisAlignedBoxConverter : ValueTypeConverter<AxisAlignedBox> //ExpandableObjectConverter
+	public class AxisAlignedBoxConverter : ValueTypeConverter<AxisAlignedBox>
 	{
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
 		{
@@ -18,7 +18,7 @@ namespace Foundation.Mathematics
 
 		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
 		{
-			return new StandardValuesCollection(new object[] { AxisAlignedBox.Empty/*, new AxisAlignedBox(Vector3.Zero, Vector3.Zero)*/ });
+			return new StandardValuesCollection(new object[] { AxisAlignedBox.Empty });
 		}
 
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type type)

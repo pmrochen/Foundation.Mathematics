@@ -891,10 +891,5 @@ namespace Foundation.Mathematics
 			if (angle != 0f)
 				this = Vector2.Rotate(this, angle);
 		}
-
-		//public void Project(Vector2 v)
-		//{
-		//	this = Vector2.Project(this, v);
-		//}
 	}
 }

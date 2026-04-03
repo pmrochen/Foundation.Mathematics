@@ -596,7 +596,7 @@ namespace Foundation.Mathematics
 					return Vector3.Zero;
 				float m = MathF.Sqrt(cosI);
 				if (m > 0f)
-					return /*Imaginary*/Vector/m;
+					return Vector/m;
 				else
 					return Vector3.Zero;
 			}

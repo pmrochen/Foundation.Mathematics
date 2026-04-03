@@ -155,9 +155,8 @@ namespace Foundation.Mathematics
 			return circle;
 		}
 
-		//public readonly Vector2 GetClosestPoint(Vector2 point)
+		//public readonly Vector2 GetClosestPoint(Vector2 point) // #TODO
 		//{
-		//  // #TODO
 		//}
 
 		public readonly float GetDistanceTo(Vector2 point)

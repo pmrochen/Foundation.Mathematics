@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace Foundation.Mathematics
 {
-	public class IntervalConverter : ValueTypeConverter<Interval> //ExpandableObjectConverter
+	public class IntervalConverter : ValueTypeConverter<Interval>
 	{
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
 		{

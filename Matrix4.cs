@@ -1355,50 +1355,25 @@ namespace Foundation.Mathematics
 			return (Matrix4)Matrix3.Rotation(axis, angle);
 		}
 
-		//public void Rotate(Axis axis, float angle)
-		//{
-		//	this *= (Matrix4)Matrix3.Rotation(axis, angle);
-		//}
-
 		public static Matrix4 Rotation(Vector3 axis, float angle)
 		{
 			return (Matrix4)Matrix3.Rotation(axis, angle);
 		}
-
-		//public void Rotate(Vector3 axis, float angle)
-		//{
-		//	this *= (Matrix4)Matrix3.Rotation(axis, angle);
-		//}
 
 		public static Matrix4 Rotation(YawPitchRoll ypr)
 		{
 			return (Matrix4)Matrix3.Rotation(ypr);
 		}
 
-		//public void Rotate(YawPitchRoll ypr)
-		//{
-		//	this *= (Matrix4)Matrix3.Rotation(ypr);
-		//}
-
 		public static Matrix4 Rotation(Euler e)
 		{
 			return (Matrix4)Matrix3.Rotation(e);
 		}
 
-		//public void Rotate(Euler e)
-		//{
-		//	this *= (Matrix4)Matrix3.Rotation(e);
-		//}
-
 		public static Matrix4 Rotation(Quaternion q)
 		{
 			return (Matrix4)Matrix3.Rotation(q);
 		}
-
-		//public void Rotate(Quaternion q)
-		//{
-		//	this *= (Matrix4)Matrix3.Rotation(q);
-		//}
 
 		public static Matrix4 Scaling(Vector3 v)
 		{
@@ -1554,11 +1529,6 @@ namespace Foundation.Mathematics
 		{
 			return new Matrix4(1f, xy, xz, 0f, yx, 1f, yz, 0f, zx, zy, 1f, 0f, 0f, 0f, 0f, 1f);
 		}
-
-		//public void Shear(float xy, float xz, float yx, float yz, float zx, float zy)
-		//{
-		//	this *= new Matrix4(1f, xy, xz, 0f, yx, 1f, yz, 0f, zx, zy, 1f, 0f, 0f, 0f, 0f, 1f);
-		//}
 
 		public static Matrix4 Reflection(in Plane plane)
 		{

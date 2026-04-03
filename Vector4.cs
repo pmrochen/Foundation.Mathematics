@@ -1048,10 +1048,5 @@ namespace Foundation.Mathematics
 			if (vecLengthSquared > maxLengthSquared)
 				this *= (maxLength/MathF.Sqrt(vecLengthSquared));
 		}
-
-		//public void Project(Vector4 v)
-		//{
-		//	this = Vector4.Project(this, v);
-		//}
 	}
 }

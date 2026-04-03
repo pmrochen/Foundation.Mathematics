@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace Foundation.Mathematics
 {
-	public class AxisAlignedRectangleConverter : ValueTypeConverter<AxisAlignedRectangle> //ExpandableObjectConverter
+	public class AxisAlignedRectangleConverter : ValueTypeConverter<AxisAlignedRectangle>
 	{
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
 		{

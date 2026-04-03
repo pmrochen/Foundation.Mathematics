@@ -1076,7 +1076,7 @@ namespace Foundation.Mathematics
 			return Matrix3.Rotation(e);
 		}
 
-		public static Matrix3 FromQuaternion(Quaternion q) // Input quaternion must be normalized
+		public static Matrix3 FromQuaternion(Quaternion q) // Assume the input quaternion is normalized
 		{
 			if (q != Quaternion.Identity)
 			{
@@ -1157,11 +1157,6 @@ namespace Foundation.Mathematics
 			return Identity;
 		}
 
-		//public void Rotate(Axis axis, float angle)
-		//{
-		//	this *= Rotation(axis, angle);
-		//}
-
 		public static Matrix3 Rotation(Vector3 axis, float angle)
 		{
 			float m = axis.Magnitude;
@@ -1182,11 +1177,6 @@ namespace Foundation.Mathematics
 			return Identity;
 		}
 
-		//public void Rotate(Vector3 axis, float angle)
-		//{
-		//	this *= Rotation(axis, angle);
-		//}
-
 		public static Matrix3 Rotation(YawPitchRoll ypr)
 		{
 			if ((ypr.yaw_ != 0f) || (ypr.pitch_ != 0f) || (ypr.roll_ != 0f))
@@ -1206,11 +1196,6 @@ namespace Foundation.Mathematics
 
 			return Matrix3.Identity;
 		}
-
-		//public void Rotate(YawPitchRoll ypr)
-		//{
-		//	this *= Rotation(ypr);
-		//}
 
 		public static Matrix3 Rotation(Euler e)
 		{
@@ -1274,11 +1259,6 @@ namespace Foundation.Mathematics
 			return Matrix3.Identity;
 		}
 
-		//public void Rotate(Euler e)
-		//{
-		//	this *= Rotation(e);
-		//}
-
 		public static Matrix3 Rotation(Quaternion q) // #TODO SIMD
 		{
 			if (q != Quaternion.Identity)
@@ -1296,11 +1276,6 @@ namespace Foundation.Mathematics
 
 			return Matrix3.Identity;
 		}
-
-		//public void Rotate(Quaternion q)
-		//{
-		//	this *= Rotation(q);
-		//}
 
 		public static Matrix3 Scaling(Vector3 v)
 		{
@@ -1351,11 +1326,6 @@ namespace Foundation.Mathematics
 		{
 			return new Matrix3(1f, xy, xz, yx, 1f, yz, zx, zy, 1f);
 		}
-
-		//public void Shear(float xy, float xz, float yx, float yz, float zx, float zy)
-		//{
-		//	this *= new Matrix3(1f, xy, xz, yx, 1f, yz, zx, zy, 1f);
-		//}
 
 		public static Matrix3 Adjoint(in Matrix3 m)
 		{
