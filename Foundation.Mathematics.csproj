@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Platforms>x64;ARM64</Platforms>
+    <Product>Foundation.Mathematics</Product>
+    <AssemblyTitle>Foundation.Mathematics</AssemblyTitle>
+    <VersionMajor>$([MSBuild]::Modulo($([System.DateTime]::get_Now().get_Year()), 100))</VersionMajor>
+    <VersionMinor>$([System.DateTime]::get_Now().get_Month())</VersionMinor>
+    <Build>$([MSBuild]::Add($([MSBuild]::Multiply($([System.DateTime]::get_Now().get_Day()), 100)), $([System.DateTime]::get_Now().get_Hour())))</Build>
+    <VersionPrefix>$(VersionMajor).$(VersionMinor).$(Build)</VersionPrefix>
+    <Authors>Pawel Mrochen</Authors>
+    <Copyright>Copyright © 2008-2026 Pawel Mrochen</Copyright>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <DefineConstants>SIMD</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591;1701;1702</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DefineConstants>SIMD</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591;1701;1702</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <DefineConstants>TRACE;DEBUG;SIMD</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591;1701;1702</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DefineConstants>TRACE;DEBUG;SIMD</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591;1701;1702</NoWarn>
+  </PropertyGroup>
+</Project>
