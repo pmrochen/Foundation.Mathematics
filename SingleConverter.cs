@@ -54,6 +54,37 @@ namespace Foundation.Mathematics
 			return base.ConvertTo(context, culture, obj, type);
 		}
 
+		public static float Parse(string str)
+		{
+			CultureInfo culture = System.Threading.Thread.CurrentThread.CurrentCulture;
+			NumberFormatInfo nfi = culture.NumberFormat;
+			string s = str.Trim();
+
+			if (s == nfi.PositiveInfinitySymbol)
+				return Single.PositiveInfinity;
+			else if (s == nfi.NegativeInfinitySymbol)
+				return Single.NegativeInfinity;
+			else if (s == nfi.NaNSymbol)
+				return Single.NaN;
+			else
+				return Single.Parse(str, culture);
+		}
+
+		public static float Parse(string str, IFormatProvider provider)
+		{
+			NumberFormatInfo nfi = (NumberFormatInfo)provider.GetFormat(typeof(NumberFormatInfo));
+			string s = str.Trim();
+
+			if (s == nfi.PositiveInfinitySymbol)
+				return Single.PositiveInfinity;
+			else if (s == nfi.NegativeInfinitySymbol)
+				return Single.NegativeInfinity;
+			else if (s == nfi.NaNSymbol)
+				return Single.NaN;
+			else
+				return Single.Parse(str, provider);
+		}
+
 		internal static string CorrectDecimalSeparator(string str, CultureInfo culture)
 		{
 			if (String.IsNullOrEmpty(str))

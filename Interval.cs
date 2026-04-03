@@ -96,7 +96,7 @@ namespace Foundation.Mathematics
 			if (m.Length != 2)
 				throw new FormatException();
 
-			return new Interval(Functions.ParseSingle(m[0]), Functions.ParseSingle(m[1]));
+			return new Interval(SingleConverter.Parse(m[0]), SingleConverter.Parse(m[1]));
 		}
 
 		public static Interval Parse(string str, IFormatProvider provider)
@@ -108,7 +108,7 @@ namespace Foundation.Mathematics
 			if (m.Length != 2)
 				throw new FormatException();
 
-			return new Interval(Functions.ParseSingle(m[0], provider), Functions.ParseSingle(m[1], provider));
+			return new Interval(SingleConverter.Parse(m[0], provider), SingleConverter.Parse(m[1], provider));
 		}
 
 		[Browsable(false)]

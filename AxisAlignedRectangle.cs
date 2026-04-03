@@ -97,8 +97,8 @@ namespace Foundation.Mathematics
 			if (m.Length != 4)
 				throw new FormatException();
 
-			return new AxisAlignedRectangle(new Vector2(Functions.ParseSingle(m[0]), Functions.ParseSingle(m[1])),
-				new Vector2(Functions.ParseSingle(m[2]), Functions.ParseSingle(m[3])));
+			return new AxisAlignedRectangle(new Vector2(SingleConverter.Parse(m[0]), SingleConverter.Parse(m[1])),
+				new Vector2(SingleConverter.Parse(m[2]), SingleConverter.Parse(m[3])));
 		}
 
 		public static AxisAlignedRectangle Parse(string str, IFormatProvider provider)
@@ -110,8 +110,8 @@ namespace Foundation.Mathematics
 			if (m.Length != 4)
 				throw new FormatException();
 
-			return new AxisAlignedRectangle(new Vector2(Functions.ParseSingle(m[0], provider), Functions.ParseSingle(m[1], provider)),
-				new Vector2(Functions.ParseSingle(m[2], provider), Functions.ParseSingle(m[3], provider)));
+			return new AxisAlignedRectangle(new Vector2(SingleConverter.Parse(m[0], provider), SingleConverter.Parse(m[1], provider)),
+				new Vector2(SingleConverter.Parse(m[2], provider), SingleConverter.Parse(m[3], provider)));
 		}
 
 		[Browsable(false)]

@@ -97,8 +97,8 @@ namespace Foundation.Mathematics
 			if (m.Length != 6)
 				throw new FormatException();
 
-			return new AxisAlignedBox(new Vector3(Functions.ParseSingle(m[0]), Functions.ParseSingle(m[1]), Functions.ParseSingle(m[2])),
-				new Vector3(Functions.ParseSingle(m[3]), Functions.ParseSingle(m[4]), Functions.ParseSingle(m[5])));
+			return new AxisAlignedBox(new Vector3(SingleConverter.Parse(m[0]), SingleConverter.Parse(m[1]), SingleConverter.Parse(m[2])),
+				new Vector3(SingleConverter.Parse(m[3]), SingleConverter.Parse(m[4]), SingleConverter.Parse(m[5])));
 		}
 
 		public static AxisAlignedBox Parse(string str, IFormatProvider provider)
@@ -110,8 +110,8 @@ namespace Foundation.Mathematics
 			if (m.Length != 6)
 				throw new FormatException();
 
-			return new AxisAlignedBox(new Vector3(Functions.ParseSingle(m[0], provider), Functions.ParseSingle(m[1], provider), Functions.ParseSingle(m[2], provider)),
-				new Vector3(Functions.ParseSingle(m[3], provider), Functions.ParseSingle(m[4], provider), Functions.ParseSingle(m[5], provider)));
+			return new AxisAlignedBox(new Vector3(SingleConverter.Parse(m[0], provider), SingleConverter.Parse(m[1], provider), SingleConverter.Parse(m[2], provider)),
+				new Vector3(SingleConverter.Parse(m[3], provider), SingleConverter.Parse(m[4], provider), SingleConverter.Parse(m[5], provider)));
 		}
 
 		public static AxisAlignedBox FromOrientedBox(in OrientedBox box)
