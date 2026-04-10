@@ -215,7 +215,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Triangle3 triangle)
 		{
-			return (Distances.GetPointTriangleSquared(center_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_) <= radius_*radius_);
+			return triangle.Intersects(this);
 		}
 
 		public readonly bool Intersects(in AxisAlignedBox box)

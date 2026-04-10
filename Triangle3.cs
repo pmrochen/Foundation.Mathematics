@@ -371,7 +371,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Sphere sphere)
 		{
-			return sphere.Intersects(this);
+			return (Distances.GetPointTriangleSquared(sphere.center_, vertex0_, vertex1_, vertex2_) <= sphere.radius_*sphere.radius_);
 		}
 
 		internal Vector3 vertex0_;
