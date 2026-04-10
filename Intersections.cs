@@ -775,142 +775,142 @@ namespace Foundation.Mathematics
 
 			const float cutoff = 1f - 1e-6f;
 			bool existsParallelPair = false;
-			Vector3 kD = centerB - centerA;
-			Vector3 aafC0 = Vector3.Zero;
-			Vector3 aafC1 = Vector3.Zero;
-			Vector3 aafC2 = Vector3.Zero;
-			Vector3 aafAbsC0 = Vector3.Zero;
-			Vector3 aafAbsC1 = Vector3.Zero;
-			Vector3 aafAbsC2 = Vector3.Zero;
-			Vector3 afAD = Vector3.Zero;
+			Vector3 d = centerB - centerA;
+			Vector3 c0 = Vector3.Zero;
+			Vector3 c1 = Vector3.Zero;
+			Vector3 c2 = Vector3.Zero;
+			Vector3 absC0 = Vector3.Zero;
+			Vector3 absC1 = Vector3.Zero;
+			Vector3 absC2 = Vector3.Zero;
+			Vector3 aD = Vector3.Zero;
 
 			for (int i = 0; i < 3; i++)
 			{
-				aafC0[i] = Vector3.Dot(basisA[0], basisB[i]);
-				aafAbsC0[i] = Math.Abs(aafC0[i]);
-				if (aafAbsC0[i] > cutoff)
+				c0[i] = Vector3.Dot(basisA[0], basisB[i]);
+				absC0[i] = Math.Abs(c0[i]);
+				if (absC0[i] > cutoff)
 					existsParallelPair = true;
 			}
 
-			afAD.X = Vector3.Dot(basisA[0], kD);
-			float fR = Math.Abs(afAD.x_);
-			float fR1 = Vector3.Dot(halfDimsB, aafAbsC0);
-			float fR01 = halfDimsA.x_ + fR1;
-			if (fR > fR01)
-				return false;
-
-			for (int i = 0; i < 3; i++)
-			{
-				aafC1[i] = Vector3.Dot(basisA[1], basisB[i]);
-				aafAbsC1[i] = Math.Abs(aafC1[i]);
-				if (aafAbsC1[i] > cutoff)
-					existsParallelPair = true;
-			}
-
-			afAD.Y = Vector3.Dot(basisA[1], kD);
-			fR = Math.Abs(afAD.y_);
-			fR1 = Vector3.Dot(halfDimsB, aafAbsC1);
-			fR01 = halfDimsA.y_ + fR1;
-			if (fR > fR01)
+			aD.X = Vector3.Dot(basisA[0], d);
+			float r = Math.Abs(aD.x_);
+			float r1 = Vector3.Dot(halfDimsB, absC0);
+			float r01 = halfDimsA.x_ + r1;
+			if (r > r01)
 				return false;
 
 			for (int i = 0; i < 3; i++)
 			{
-				aafC2[i] = Vector3.Dot(basisA[2], basisB[i]);
-				aafAbsC2[i] = Math.Abs(aafC2[i]);
-				if (aafAbsC2[i] > cutoff)
+				c1[i] = Vector3.Dot(basisA[1], basisB[i]);
+				absC1[i] = Math.Abs(c1[i]);
+				if (absC1[i] > cutoff)
 					existsParallelPair = true;
 			}
 
-			afAD.Z = Vector3.Dot(basisA[2], kD);
-			fR = Math.Abs(afAD.z_);
-			fR1 = Vector3.Dot(halfDimsB, aafAbsC2);
-			fR01 = halfDimsA.z_ + fR1;
-			if (fR > fR01)
+			aD.Y = Vector3.Dot(basisA[1], d);
+			r = Math.Abs(aD.y_);
+			r1 = Vector3.Dot(halfDimsB, absC1);
+			r01 = halfDimsA.y_ + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(Vector3.Dot(basisB[0], kD));
-			float fR0 = halfDimsA.x_*aafAbsC0.x_ + halfDimsA.y_*aafAbsC1.x_ + halfDimsA.z_*aafAbsC2.x_;
-			fR01 = fR0 + halfDimsB.x_;
-			if (fR > fR01)
+			for (int i = 0; i < 3; i++)
+			{
+				c2[i] = Vector3.Dot(basisA[2], basisB[i]);
+				absC2[i] = Math.Abs(c2[i]);
+				if (absC2[i] > cutoff)
+					existsParallelPair = true;
+			}
+
+			aD.Z = Vector3.Dot(basisA[2], d);
+			r = Math.Abs(aD.z_);
+			r1 = Vector3.Dot(halfDimsB, absC2);
+			r01 = halfDimsA.z_ + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(Vector3.Dot(basisB[1], kD));
-			fR0 = halfDimsA.x_*aafAbsC0.y_ + halfDimsA.y_*aafAbsC1.y_ + halfDimsA.z_*aafAbsC2.y_;
-			fR01 = fR0 + halfDimsB.y_;
-			if (fR > fR01)
+			r = Math.Abs(Vector3.Dot(basisB[0], d));
+			float r0 = halfDimsA.x_*absC0.x_ + halfDimsA.y_*absC1.x_ + halfDimsA.z_*absC2.x_;
+			r01 = r0 + halfDimsB.x_;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(Vector3.Dot(basisB[2], kD));
-			fR0 = halfDimsA.x_*aafAbsC0.z_ + halfDimsA.y_*aafAbsC1.z_ + halfDimsA.z_*aafAbsC2.z_;
-			fR01 = fR0 + halfDimsB.z_;
-			if (fR > fR01)
+			r = Math.Abs(Vector3.Dot(basisB[1], d));
+			r0 = halfDimsA.x_*absC0.y_ + halfDimsA.y_*absC1.y_ + halfDimsA.z_*absC2.y_;
+			r01 = r0 + halfDimsB.y_;
+			if (r > r01)
+				return false;
+
+			r = Math.Abs(Vector3.Dot(basisB[2], d));
+			r0 = halfDimsA.x_*absC0.z_ + halfDimsA.y_*absC1.z_ + halfDimsA.z_*absC2.z_;
+			r01 = r0 + halfDimsB.z_;
+			if (r > r01)
 				return false;
 
 			if (existsParallelPair)
 				return true;
 
-			fR = Math.Abs(afAD.z_*aafC1.x_ - afAD.y_*aafC2.x_);
-			fR0 = halfDimsA.y_*aafAbsC2.x_ + halfDimsA.z_*aafAbsC1.x_;
-			fR1 = halfDimsB.y_*aafAbsC0.z_ + halfDimsB.z_*aafAbsC0.y_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.z_*c1.x_ - aD.y_*c2.x_);
+			r0 = halfDimsA.y_*absC2.x_ + halfDimsA.z_*absC1.x_;
+			r1 = halfDimsB.y_*absC0.z_ + halfDimsB.z_*absC0.y_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(afAD.z_*aafC1.y_ - afAD.y_*aafC2.y_);
-			fR0 = halfDimsA.y_*aafAbsC2.y_ + halfDimsA.z_*aafAbsC1.y_;
-			fR1 = halfDimsB.x_*aafAbsC0.z_ + halfDimsB.z_*aafAbsC0.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.z_*c1.y_ - aD.y_*c2.y_);
+			r0 = halfDimsA.y_*absC2.y_ + halfDimsA.z_*absC1.y_;
+			r1 = halfDimsB.x_*absC0.z_ + halfDimsB.z_*absC0.x_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(afAD.z_*aafC1.z_ - afAD.y_*aafC2.z_);
-			fR0 = halfDimsA.y_*aafAbsC2.z_ + halfDimsA.z_*aafAbsC1.z_;
-			fR1 = halfDimsB.x_*aafAbsC0.y_ + halfDimsB.y_*aafAbsC0.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.z_*c1.z_ - aD.y_*c2.z_);
+			r0 = halfDimsA.y_*absC2.z_ + halfDimsA.z_*absC1.z_;
+			r1 = halfDimsB.x_*absC0.y_ + halfDimsB.y_*absC0.x_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(afAD.x_*aafC2.x_ - afAD.z_*aafC0.x_);
-			fR0 = halfDimsA.x_*aafAbsC2.x_ + halfDimsA.z_*aafAbsC0.x_;
-			fR1 = halfDimsB.y_*aafAbsC1.z_ + halfDimsB.z_*aafAbsC1.y_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.x_*c2.x_ - aD.z_*c0.x_);
+			r0 = halfDimsA.x_*absC2.x_ + halfDimsA.z_*absC0.x_;
+			r1 = halfDimsB.y_*absC1.z_ + halfDimsB.z_*absC1.y_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(afAD.x_*aafC2.y_ - afAD.z_*aafC0.y_);
-			fR0 = halfDimsA.x_*aafAbsC2.y_ + halfDimsA.z_*aafAbsC0.y_;
-			fR1 = halfDimsB.x_*aafAbsC1.z_ + halfDimsB.z_*aafAbsC1.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.x_*c2.y_ - aD.z_*c0.y_);
+			r0 = halfDimsA.x_*absC2.y_ + halfDimsA.z_*absC0.y_;
+			r1 = halfDimsB.x_*absC1.z_ + halfDimsB.z_*absC1.x_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(afAD.x_*aafC2.z_ - afAD.z_*aafC0.z_);
-			fR0 = halfDimsA.x_*aafAbsC2.z_ + halfDimsA.z_*aafAbsC0.z_;
-			fR1 = halfDimsB.x_*aafAbsC1.y_ + halfDimsB.y_*aafAbsC1.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.x_*c2.z_ - aD.z_*c0.z_);
+			r0 = halfDimsA.x_*absC2.z_ + halfDimsA.z_*absC0.z_;
+			r1 = halfDimsB.x_*absC1.y_ + halfDimsB.y_*absC1.x_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(afAD.y_*aafC0.x_ - afAD.x_*aafC1.x_);
-			fR0 = halfDimsA.x_*aafAbsC1.x_ + halfDimsA.y_*aafAbsC0.x_;
-			fR1 = halfDimsB.y_*aafAbsC2.z_ + halfDimsB.z_*aafAbsC2.y_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.y_*c0.x_ - aD.x_*c1.x_);
+			r0 = halfDimsA.x_*absC1.x_ + halfDimsA.y_*absC0.x_;
+			r1 = halfDimsB.y_*absC2.z_ + halfDimsB.z_*absC2.y_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(afAD.y_*aafC0.y_ - afAD.x_*aafC1.y_);
-			fR0 = halfDimsA.x_*aafAbsC1.y_ + halfDimsA.y_*aafAbsC0.y_;
-			fR1 = halfDimsB.x_*aafAbsC2.z_ + halfDimsB.z_*aafAbsC2.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.y_*c0.y_ - aD.x_*c1.y_);
+			r0 = halfDimsA.x_*absC1.y_ + halfDimsA.y_*absC0.y_;
+			r1 = halfDimsB.x_*absC2.z_ + halfDimsB.z_*absC2.x_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
-			fR = Math.Abs(afAD.y_*aafC0.z_ - afAD.x_*aafC1.z_);
-			fR0 = halfDimsA.x_*aafAbsC1.z_ + halfDimsA.y_*aafAbsC0.z_;
-			fR1 = halfDimsB.x_*aafAbsC2.y_ + halfDimsB.y_*aafAbsC2.x_;
-			fR01 = fR0 + fR1;
-			if (fR > fR01)
+			r = Math.Abs(aD.y_*c0.z_ - aD.x_*c1.z_);
+			r0 = halfDimsA.x_*absC1.z_ + halfDimsA.y_*absC0.z_;
+			r1 = halfDimsB.x_*absC2.y_ + halfDimsB.y_*absC2.x_;
+			r01 = r0 + r1;
+			if (r > r01)
 				return false;
 
 			return true;
