@@ -13,25 +13,32 @@ namespace Foundation.Mathematics
 	[TypeConverter(typeof(ValueTypeConverter))]
 	public struct SymmetricFrustum : IFormattable, IEquatable<SymmetricFrustum>
 	{
-        public SymmetricFrustum(Vector3 origin, Matrix3 basis, Vector2 halfDims, float depthMin, float depthMax)
+		public SymmetricFrustum(Vector3 origin, Matrix3 basis, Vector2 halfDims, Interval depthRange)
+		{
+			origin_ = origin;
+			basis_ = basis;
+			halfDims_ = halfDims;
+			depthRange_ = depthRange;
+		}
+
+		public SymmetricFrustum(Vector3 origin, Matrix3 basis, Vector2 halfDims, float depthMin, float depthMax)
         {
 			origin_ = origin;
 			basis_ = basis;
 			halfDims_ = halfDims;
-			depthMin_ = depthMin;
-			depthMax_ = depthMax;
+			depthRange_ = new Interval(depthMin, depthMax);
         }
 
 		public static bool operator ==(SymmetricFrustum lhs, SymmetricFrustum rhs)
 		{
 			return (lhs.origin_ == rhs.origin_) && (lhs.basis_ == rhs.basis_) && (lhs.halfDims_ == rhs.halfDims_) &&
-				(lhs.depthMin_ == rhs.depthMin_) && (lhs.depthMax_ == rhs.depthMax_);
+				(lhs.depthRange_ == rhs.depthRange_);
 		}
 
 		public static bool operator !=(SymmetricFrustum lhs, SymmetricFrustum rhs)
 		{
 			return (lhs.origin_ != rhs.origin_) || (lhs.basis_ != rhs.basis_) || (lhs.halfDims_ != rhs.halfDims_) ||
-				(lhs.depthMin_ != rhs.depthMin_) || (lhs.depthMax_ != rhs.depthMax_);
+				(lhs.depthRange_ != rhs.depthRange_);
 		}
 
 		public readonly override bool Equals(object other)
@@ -39,7 +46,7 @@ namespace Foundation.Mathematics
 			if (other is SymmetricFrustum rhs)
 			{
 				return (origin_ == rhs.origin_) && (basis_ == rhs.basis_) && (halfDims_ == rhs.halfDims_) &&
-					(depthMin_ == rhs.depthMin_) && (depthMax_ == rhs.depthMax_);
+					(depthRange_ == rhs.depthRange_);
 			}
 
 			return false;
@@ -48,7 +55,7 @@ namespace Foundation.Mathematics
 		public readonly bool Equals(SymmetricFrustum other)
 		{
 			return (origin_ == other.origin_) && (basis_ == other.basis_) && (halfDims_ == other.halfDims_) &&
-				(depthMin_ == other.depthMin_) && (depthMax_ == other.depthMax_);
+				(depthRange_ == other.depthRange_);
 		}
 
 		public readonly override int GetHashCode()
@@ -56,8 +63,7 @@ namespace Foundation.Mathematics
 			int hash = origin_.GetHashCode();
 			hash = ((hash << 5) + hash) ^ basis_.GetHashCode();
 			hash = ((hash << 5) + hash) ^ halfDims_.GetHashCode();
-			hash = ((hash << 5) + hash) ^ depthMin_.GetHashCode();
-			return ((hash << 5) + hash) ^ depthMax_.GetHashCode();
+			return ((hash << 5) + hash) ^ depthRange_.GetHashCode();
 		}
 
 		public readonly bool ApproxEquals(in SymmetricFrustum other, float tolerance)
@@ -65,8 +71,7 @@ namespace Foundation.Mathematics
 			return origin_.ApproxEquals(other.origin_, tolerance) &&
 				basis_.ApproxEquals(other.basis_, tolerance) &&
 				halfDims_.ApproxEquals(other.halfDims_, tolerance) &&
-				(Math.Abs(other.depthMin_ - depthMin_) < tolerance) &&
-				(Math.Abs(other.depthMax_ - depthMax_) < tolerance);
+				depthRange_.ApproxEquals(other.depthRange_, tolerance);
 		}
 
 		public readonly bool ApproxEquals(in SymmetricFrustum other)
@@ -74,32 +79,31 @@ namespace Foundation.Mathematics
 			return origin_.ApproxEquals(other.origin_) &&
 				basis_.ApproxEquals(other.basis_) &&
 				halfDims_.ApproxEquals(other.halfDims_) &&
-				(Math.Abs(other.depthMin_ - depthMin_) < 1e-6f) &&
-				(Math.Abs(other.depthMax_ - depthMax_) < 1e-6f);
+				depthRange_.ApproxEquals(other.depthRange_);
 		}
 
 		public readonly override string ToString()
 		{
 			return String.Concat(origin_.ToString(), " ", basis_.ToString(), " ", halfDims_.ToString(), " ",
-				depthMin_.ToString(), " ", depthMax_.ToString());
+				depthRange_.ToString());
 		}
 
 		public readonly string ToString(IFormatProvider provider)
 		{
 			return String.Concat(origin_.ToString(provider), " ", basis_.ToString(provider), " ", halfDims_.ToString(provider), " ",
-				depthMin_.ToString(provider), " ", depthMax_.ToString(provider));
+				depthRange_.ToString(provider));
 		}
 
 		public readonly string ToString(string format)
 		{
 			return String.Concat(origin_.ToString(format), " ", basis_.ToString(format), " ", halfDims_.ToString(format), " ",
-				depthMin_.ToString(format), " ", depthMax_.ToString(format));
+				depthRange_.ToString(format));
 		}
 
 		public readonly string ToString(string format, IFormatProvider provider)
 		{
 			return String.Concat(origin_.ToString(format, provider), " ", basis_.ToString(format, provider), " ", halfDims_.ToString(format, provider), " ",
-				depthMin_.ToString(format, provider), " ", depthMax_.ToString(format, provider));
+				depthRange_.ToString(format, provider));
 		}
 
 		public static SymmetricFrustum Parse(string str)
@@ -116,7 +120,7 @@ namespace Foundation.Mathematics
 										   Single.Parse(m[6]), Single.Parse(m[7]), Single.Parse(m[8]),
 										   Single.Parse(m[9]), Single.Parse(m[10]), Single.Parse(m[11])),
 							   new Vector2(Single.Parse(m[12]), Single.Parse(m[13])),
-							   Single.Parse(m[14]), Single.Parse(m[15]));
+							   new Interval(Single.Parse(m[14]), Single.Parse(m[15])));
 		}
 
 		public static SymmetricFrustum Parse(string str, IFormatProvider provider)
@@ -133,7 +137,7 @@ namespace Foundation.Mathematics
 										   Single.Parse(m[6], provider), Single.Parse(m[7], provider), Single.Parse(m[8], provider),
 										   Single.Parse(m[9], provider), Single.Parse(m[10], provider), Single.Parse(m[11], provider)),
 							   new Vector2(Single.Parse(m[12], provider), Single.Parse(m[13], provider)),
-							   Single.Parse(m[14], provider), Single.Parse(m[15], provider));
+							   new Interval(Single.Parse(m[14], provider), Single.Parse(m[15], provider)));
 		}
 
 		[Browsable(false)]
@@ -141,13 +145,12 @@ namespace Foundation.Mathematics
 		{
 			get
 			{
-				return origin_.IsFinite && basis_.IsFinite && halfDims_.IsFinite && Scalar.IsFinite(depthMin_) &&
-					Scalar.IsFinite(depthMax_);
+				return origin_.IsFinite && basis_.IsFinite && halfDims_.IsFinite && depthRange_.IsFinite;
 			}
 		}
 
-		[Browsable(false)]
-		public readonly bool IsEmpty => (halfDims_.x_ <= 0f) || (halfDims_.y_ <= 0f) || (depthMin_ >= depthMax_);
+		//[Browsable(false)]
+		//public readonly bool IsEmpty => halfDims_.AnyLessThanEqual(Vector2.Zero) || (depthRange_.minimum_ >= depthRange_.maximum_);
 
 		public Vector3 Origin
 		{
@@ -177,50 +180,61 @@ namespace Foundation.Mathematics
 		[Browsable(false)]
 		public Vector2 BaseHalfDimensions
 		{
-			readonly get => halfDims_*(depthMax_/depthMin_);
-			set => halfDims_ = value*(depthMin_/depthMax_);
+			readonly get => halfDims_*(depthRange_.maximum_/depthRange_.minimum_);
+			set => halfDims_ = value*(depthRange_.minimum_/depthRange_.maximum_);
 		}
 
 		[Browsable(false)]
 		public Vector2 BaseDimensions
 		{
-			readonly get => halfDims_*(2f*depthMax_/depthMin_);
-			set => halfDims_ = value*(0.5f*depthMin_/depthMax_);
+			readonly get => halfDims_*(2f*depthRange_.maximum_/depthRange_.minimum_);
+			set => halfDims_ = value*(0.5f*depthRange_.minimum_/depthRange_.maximum_);
 		}
 
+		public Interval DepthRange
+		{
+			readonly get => depthRange_;
+			set => depthRange_ = value;
+		}
+
+		[Browsable(false)]
 		public float MinDepth
 		{
-			readonly get => depthMin_;
-			set => depthMin_ = value;
+			readonly get => depthRange_.minimum_;
+			set => depthRange_.minimum_ = value;
 		}
 
+		[Browsable(false)]
 		public float MaxDepth
 		{
-			readonly get => depthMax_;
-			set => depthMax_ = value;
+			readonly get => depthRange_.maximum_;
+			set => depthRange_.maximum_ = value;
 		}
+
+		[Browsable(false)]
+		public readonly float DepthRatio => depthRange_.maximum_/depthRange_.minimum_;
 
 		public readonly IEnumerable<Vector3> GetVertices()
 		{
 			AffineTransform m = new AffineTransform(basis_, origin_);
-			float depthRatio = depthMax_/depthMin_;
-			yield return Vector3.Transform(new Vector3(-halfDims_.x_, -halfDims_.y_, depthMin_), m);
-			yield return Vector3.Transform(new Vector3(halfDims_.x_, -halfDims_.y_, depthMin_), m);
-			yield return Vector3.Transform(new Vector3(-halfDims_.x_, halfDims_.y_, depthMin_), m);
-			yield return Vector3.Transform(new Vector3(halfDims_.x_, halfDims_.y_, depthMin_), m);
-			yield return Vector3.Transform(new Vector3(-halfDims_.x_*depthRatio, -halfDims_.y_*depthRatio, depthMax_), m);
-			yield return Vector3.Transform(new Vector3(halfDims_.x_*depthRatio, -halfDims_.y_*depthRatio, depthMax_), m);
-			yield return Vector3.Transform(new Vector3(-halfDims_.x_*depthRatio, halfDims_.y_*depthRatio, depthMax_), m);
-			yield return Vector3.Transform(new Vector3(halfDims_.x_*depthRatio, halfDims_.y_*depthRatio, depthMax_), m);
+			float depthRatio = depthRange_.maximum_/depthRange_.minimum_;
+			yield return Vector3.Transform(new Vector3(-halfDims_, depthRange_.minimum_), m);
+			yield return Vector3.Transform(new Vector3(halfDims_.x_, -halfDims_.y_, depthRange_.minimum_), m);
+			yield return Vector3.Transform(new Vector3(-halfDims_.x_, halfDims_.y_, depthRange_.minimum_), m);
+			yield return Vector3.Transform(new Vector3(halfDims_, depthRange_.minimum_), m);
+			yield return Vector3.Transform(new Vector3(-halfDims_*depthRatio, depthRange_.maximum_), m);
+			yield return Vector3.Transform(new Vector3(halfDims_.x_*depthRatio, -halfDims_.y_*depthRatio, depthRange_.maximum_), m);
+			yield return Vector3.Transform(new Vector3(-halfDims_.x_*depthRatio, halfDims_.y_*depthRatio, depthRange_.maximum_), m);
+			yield return Vector3.Transform(new Vector3(halfDims_*depthRatio, depthRange_.maximum_), m);
 		}
 
 		public readonly IEnumerable<HalfSpace> GetHalfSpaces()
 		{
 			AffineTransform m = new AffineTransform(basis_, origin_);
-			Vector3 bottomLeft = Vector3.Transform(new Vector3(-halfDims_.x_, -halfDims_.y_, depthMin_), m);
-			Vector3 bottomRight = Vector3.Transform(new Vector3(halfDims_.x_, -halfDims_.y_, depthMin_), m);
-			Vector3 topLeft = Vector3.Transform(new Vector3(-halfDims_.x_, halfDims_.y_, depthMin_), m);
-			Vector3 topRight = Vector3.Transform(new Vector3(halfDims_.x_, halfDims_.y_, depthMin_), m);
+			Vector3 bottomLeft = Vector3.Transform(new Vector3(-halfDims_, depthRange_.minimum_), m);
+			Vector3 bottomRight = Vector3.Transform(new Vector3(halfDims_.x_, -halfDims_.y_, depthRange_.minimum_), m);
+			Vector3 topLeft = Vector3.Transform(new Vector3(-halfDims_.x_, halfDims_.y_, depthRange_.minimum_), m);
+			Vector3 topRight = Vector3.Transform(new Vector3(halfDims_, depthRange_.minimum_), m);
 
 			bool flip = (basis_.Determinant < 0f);
 			yield return flip ? HalfSpace.FromTriangle(origin_, topLeft, bottomLeft) : HalfSpace.FromTriangle(origin_, bottomLeft, topLeft);
@@ -228,41 +242,39 @@ namespace Foundation.Mathematics
 			yield return flip ? HalfSpace.FromTriangle(origin_, bottomLeft, bottomRight) : HalfSpace.FromTriangle(origin_, bottomRight, bottomLeft);
 			yield return flip ? HalfSpace.FromTriangle(origin_, topRight, topLeft) : HalfSpace.FromTriangle(origin_, topLeft, topRight);
 
-			yield return new HalfSpace(-basis_[2], depthMin_*basis_[2] + origin_);
-			if (depthMax_ < Single.MaxValue)
-				yield return new HalfSpace(basis_[2], depthMax_*basis_[2] + origin_);
+			yield return new HalfSpace(-basis_[2], depthRange_.minimum_*basis_[2] + origin_);
+			if (depthRange_.maximum_ < Single.MaxValue)
+				yield return new HalfSpace(basis_[2], depthRange_.maximum_*basis_[2] + origin_);
 		}
 
 		public readonly OrientedBox GetCircumscribedBox()
 		{
-			Vector2 baseHalfDims = halfDims_*(depthMax_/depthMin_);
-			return new OrientedBox(origin_ + ((depthMin_ + depthMax_)*0.5f)*basis_[2], basis_, 
-				new Vector3(baseHalfDims.x_, baseHalfDims.y_, (depthMax_ - depthMin_)*0.5f));
+			Vector2 baseHalfDims = halfDims_*(depthRange_.maximum_/depthRange_.minimum_);
+			return new OrientedBox(origin_ + ((depthRange_.minimum_ + depthRange_.maximum_)*0.5f)*basis_[2], basis_, 
+				new Vector3(baseHalfDims.x_, baseHalfDims.y_, (depthRange_.maximum_ - depthRange_.minimum_)*0.5f));
 		}
 
 		public readonly Sphere GetCircumscribedSphere()
 		{
-			Vector2 baseHalfDims = halfDims_*(depthMax_/depthMin_);
+			Vector2 baseHalfDims = halfDims_*(depthRange_.maximum_/depthRange_.minimum_);
 			float coneRadiusSq = baseHalfDims.MagnitudeSquared;
-			float depthMaxSq = depthMax_*depthMax_;
+			float depthMaxSq = depthRange_.maximum_*depthRange_.maximum_;
 			if (depthMaxSq > coneRadiusSq)
 			{
 				float slantSquared = coneRadiusSq + depthMaxSq;
-				float sphereRadius = slantSquared/(2f*depthMax_);
+				float sphereRadius = slantSquared/(2f*depthRange_.maximum_);
 				return new Sphere(origin_ + sphereRadius*basis_[2], sphereRadius);
 			}
 			else
 			{
-				float coneRadius = MathF.Sqrt(coneRadiusSq);
-				return new Sphere(origin_ + depthMax_*basis_[2], coneRadius);
+				return new Sphere(origin_ + depthRange_.maximum_*basis_[2], MathF.Sqrt(coneRadiusSq));
 			}
 		}
 
 		public readonly Cone GetCircumscribedCone()
 		{
-			Vector2 baseHalfDims = halfDims_*(depthMax_/depthMin_);
-			float coneRadius = baseHalfDims.Magnitude;
-			return new Cone(origin_, basis_[2], depthMax_, coneRadius);
+			Vector2 baseHalfDims = halfDims_*(depthRange_.maximum_/depthRange_.minimum_);
+			return new Cone(origin_, basis_[2], depthRange_.maximum_, baseHalfDims.Magnitude);
 		}
 
         public void Orthonormalize()
@@ -274,8 +286,8 @@ namespace Foundation.Mathematics
 			halfDims_.Y *= basis_[1].Magnitude;
 #endif
 			float zLength = basis_[2].Magnitude;
-			depthMin_ *= zLength;
-			depthMax_ *= zLength;
+			depthRange_.minimum_ *= zLength;
+			depthRange_.maximum_ *= zLength;
 			basis_.Orthonormalize();
 		}
 
@@ -296,12 +308,22 @@ namespace Foundation.Mathematics
 			return frustum;
 		}
 
-		//public readonly Vector3 GetClosestPoint(Vector3 point) // #TODO
-		//{
-		//}
+		public readonly Vector3 GetClosestPoint(Vector3 point)
+		{
+			Vector3 closestPoint;
+			Distances.GetPointSymmetricFrustumSquared(point, origin_, basis_, halfDims_, depthRange_.minimum_, depthRange_.maximum_, 
+				out closestPoint);
+			return closestPoint;
+		}
 
-		//public readonly float GetDistanceTo(Vector3 point) // #TODO
+		public readonly float GetDistanceTo(Vector3 point)
+		{
+			return Distances.GetPointSymmetricFrustum(point, origin_, basis_, halfDims_, depthRange_.minimum_, depthRange_.maximum_);
+		}
+
+		//public readonly float GetDistanceSquaredTo(Vector3 point)
 		//{
+		//	return Distances.GetPointSymmetricFrustumSquared(point, origin_, basis_, halfDims_, depthRange_.minimum_, depthRange_.maximum_);
 		//}
 
 		public readonly bool Contains(Vector3 point)
@@ -339,19 +361,21 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Sphere sphere)
 		{
-			foreach (HalfSpace hs in GetHalfSpaces())
-			{
-				if (!sphere.Intersects(hs))
-					return false;
-			}
+			return (Distances.GetPointSymmetricFrustumSquared(sphere.center_, origin_, basis_, halfDims_,
+				depthRange_.minimum_, depthRange_.maximum_) <= sphere.radius_*sphere.radius_);
 
-			return true;
+			//foreach (HalfSpace hs in GetHalfSpaces())
+			//{
+			//	if (!sphere.Intersects(hs))
+			//		return false;
+			//}
+
+			//return true;
 		}
 
 		internal Vector3 origin_;
 		internal Matrix3 basis_;
 		internal Vector2 halfDims_;
-		internal float depthMin_;
-		internal float depthMax_;
+		internal Interval depthRange_;
 	}
 }
