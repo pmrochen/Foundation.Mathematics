@@ -289,8 +289,297 @@ namespace Foundation.Mathematics
 			//triangleBary[1] = s;
 			//triangleBary[2] = t;
 			//triangleBary[0] = 1.0f - s - t;
-    
+
 			return sqrDistance;
+		}
+
+		public static float GetPointSymmetricFrustum(Vector3 point, Vector3 origin, Matrix3 basis, Vector2 halfDims,
+			float depthMin, float depthMax)
+		{
+			Vector3 closestPoint;
+			return MathF.Sqrt(GetPointSymmetricFrustumSquared(point, origin, basis, halfDims, depthMin, depthMax, out closestPoint));
+		}
+
+		public static float GetPointSymmetricFrustumSquared(Vector3 point, Vector3 origin, Matrix3 basis, Vector2 halfDims,
+			float depthMin, float depthMax)
+		{
+			Vector3 closestPoint;
+			return GetPointSymmetricFrustumSquared(point, origin, basis, halfDims, depthMin, depthMax, out closestPoint);
+		}
+
+		public static float GetPointSymmetricFrustumSquared(Vector3 point, Vector3 origin, in Matrix3 basis, Vector2 halfDims,
+			float depthMin, float depthMax, out Vector3 closestPoint)
+		{
+			// http://www.geometrictools.com/
+
+			Vector3 diff = point - origin;
+			Vector3 test = basis*diff;
+			//Vector3 test = new Vector3(Vector3.Dot(diff, basis[0]), Vector3.Dot(diff, basis[1]), Vector3.Dot(diff, basis[2]));
+
+			bool rSignChange;
+			if (test.X < 0.0f)
+			{
+				rSignChange = true;
+				test.X = -test.X;
+			}
+			else
+			{
+				rSignChange = false;
+			}
+
+			bool uSignChange;
+			if (test.Y < 0.0f)
+			{
+				uSignChange = true;
+				test.Y = -test.Y;
+			}
+			else
+			{
+				uSignChange = false;
+			}
+
+			float dRatio = depthMax/depthMin;
+			float rMin = halfDims.x_;
+			float rMax = dRatio*rMin;
+			float uMin = halfDims.y_;
+			float uMax = dRatio*uMin;
+			float rMinSqr = rMin*rMin;
+			float uMinSqr = uMin*uMin;
+			float dminSqr = depthMin*depthMin;
+			float minRDDot = rMinSqr + dminSqr;
+			float minUDDot = uMinSqr + dminSqr;
+			float minRUDDot = rMinSqr + minUDDot;
+			float maxRDDot = dRatio*minRDDot;
+			float maxUDDot = dRatio*minUDDot;
+			float maxRUDDot = dRatio*minRUDDot;
+
+			Vector3 closest;
+			float rDot, uDot, rdDot, udDot, rudDot, rEdgeDot, uEdgeDot, t;
+			if (test.z_ >= depthMax)
+			{
+				if (test.x_ <= rMax)
+				{
+					if (test.y_ <= uMax)
+						closest = new Vector3(test.x_, test.y_, depthMax);
+					else
+						closest = new Vector3(test.x_, uMax, depthMax);
+				}
+				else
+				{
+					if (test.y_ <= uMax)
+						closest = new Vector3(rMax, test.y_, depthMax);
+					else
+						closest = new Vector3(rMax, uMax, depthMax);
+				}
+			}
+			else if (test.z_ <= depthMin)
+			{
+				if (test.x_ <= rMin)
+				{
+					if (test.y_ <= uMin)
+					{
+						closest = new Vector3(test.x_, test.y_, depthMin);
+					}
+					else
+					{
+						udDot = uMin*test.y_ + depthMin*test.z_;
+						if (udDot >= maxUDDot)
+						{
+							closest = new Vector3(test.x_, uMax, depthMax);
+						}
+						else if (udDot >= minUDDot)
+						{
+							uDot = depthMin*test.y_ - uMin*test.z_;
+							t = uDot/minUDDot;
+							closest = new Vector3(test.x_, test.y_ - t*depthMin, test.z_ + t*uMin);
+						}
+						else
+						{
+							closest = new Vector3(test.x_, uMin, depthMin);
+						}
+					}
+				}
+				else
+				{
+					if (test.y_ <= uMin)
+					{
+						rdDot = rMin*test.x_ + depthMin*test.z_;
+						if (rdDot >= maxRDDot)
+						{
+							closest = new Vector3(rMax, test.y_, depthMax);
+						}
+						else if (rdDot >= minRDDot)
+						{
+							rDot = depthMin*test.x_ - rMin*test.z_;
+							t = rDot/minRDDot;
+							closest = new Vector3(test.x_ - t*depthMin, test.y_, test.z_ + t*rMin);
+						}
+						else
+						{
+							closest = new Vector3(rMin, test.y_, depthMin);
+						}
+					}
+					else
+					{
+						rudDot = rMin*test.x_ + uMin*test.y_ + depthMin*test.z_;
+						rEdgeDot = uMin*rudDot - minRUDDot*test.y_;
+						if (rEdgeDot >= 0.0f)
+						{
+							rdDot = rMin*test.x_ + depthMin*test.z_;
+							if (rdDot >= maxRDDot)
+							{
+								closest = new Vector3(rMax, test.y_, depthMax);
+							}
+							else if (rdDot >= minRDDot)
+							{
+								rDot = depthMin*test.x_ - rMin*test.z_;
+								t = rDot/minRDDot;
+								closest = new Vector3(test.x_ - t*depthMin, test.y_, test.z_ + t*rMin);
+							}
+							else
+							{
+								closest = new Vector3(rMin, test.y_, depthMin);
+							}
+						}
+						else
+						{
+							uEdgeDot = rMin*rudDot - minRUDDot*test.x_;
+							if (uEdgeDot >= 0.0f)
+							{
+								udDot = uMin*test.y_ + depthMin*test.z_;
+								if (udDot >= maxUDDot)
+								{
+									closest = new Vector3(test.x_, uMax, depthMax);
+								}
+								else if (udDot >= minUDDot)
+								{
+									uDot = depthMin*test.y_ - uMin*test.z_;
+									t = uDot/minUDDot;
+									closest = new Vector3(test.x_, test.y_ - t*depthMin, test.z_ + t*uMin);
+								}
+								else
+								{
+									closest = new Vector3(test.x_, uMin, depthMin);
+								}
+							}
+							else
+							{
+								if (rudDot >= maxRUDDot)
+								{
+									closest = new Vector3(rMax, uMax, depthMax);
+								}
+								else if (rudDot >= minRUDDot)
+								{
+									t = rudDot/minRUDDot;
+									closest = new Vector3(t*rMin, t*uMin, t*depthMin);
+								}
+								else
+								{
+									closest = new Vector3(rMin, uMin, depthMin);
+								}
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				rDot = depthMin*test.x_ - rMin*test.z_;
+				uDot = depthMin*test.y_ - uMin*test.z_;
+				if (rDot <= 0.0f)
+				{
+					if (uDot <= 0.0f)
+					{
+						closest = test;
+					}
+					else
+					{
+						udDot = uMin*test.y_ + depthMin*test.z_;
+						if (udDot >= maxUDDot)
+						{
+							closest = new Vector3(test.x_, uMax, depthMax);
+						}
+						else
+						{
+							t = uDot/minUDDot;
+							closest = new Vector3(test.x_, test.y_ - t*depthMin, test.z_ + t*uMin);
+						}
+					}
+				}
+				else
+				{
+					if (uDot <= 0.0f)
+					{
+						rdDot = rMin*test.x_ + depthMin*test.z_;
+						if (rdDot >= maxRDDot)
+						{
+							closest = new Vector3(rMax, test.y_, depthMax);
+						}
+						else
+						{
+							t = rDot/minRDDot;
+							closest = new Vector3(test.x_ - t*depthMin, test.y_, test.z_ + t*rMin);
+						}
+					}
+					else
+					{
+						rudDot = rMin*test.x_ + uMin*test.y_ + depthMin*test.z_;
+						rEdgeDot = uMin*rudDot - minRUDDot*test.y_;
+						if (rEdgeDot >= 0.0f)
+						{
+							rdDot = rMin*test.x_ + depthMin*test.z_;
+							if (rdDot >= maxRDDot)
+							{
+								closest = new Vector3(rMax, test.y_, depthMax);
+							}
+							else
+							{
+								t = rDot/minRDDot;
+								closest = new Vector3(test.x_ - t*depthMin, test.y_, test.z_ + t*rMin);
+							}
+						}
+						else
+						{
+							uEdgeDot = rMin*rudDot - minRUDDot*test.x_;
+							if (uEdgeDot >= 0.0f)
+							{
+								udDot = uMin*test.y_ + depthMin*test.z_;
+								if (udDot >= maxUDDot)
+								{
+									closest = new Vector3(test.x_, uMax, depthMax);
+								}
+								else
+								{
+									t = uDot/minUDDot;
+									closest = new Vector3(test.x_, test.y_ - t*depthMin, test.z_ + t*uMin);
+								}
+							}
+							else
+							{
+								if (rudDot >= maxRUDDot)
+								{
+									closest = new Vector3(rMax, uMax, depthMax);
+								}
+								else
+								{
+									t = rudDot/minRUDDot;
+									closest = new Vector3(t*rMin, t*uMin, t*depthMin);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			diff = test - closest;
+
+			if (rSignChange)
+				closest.X = -closest.X;
+			if (uSignChange)
+				closest.Y = -closest.Y;
+
+			closestPoint = origin + closest*basis;
+			return diff.LengthSquared;
 		}
 	}
 }
