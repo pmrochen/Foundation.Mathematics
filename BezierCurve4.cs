@@ -176,6 +176,34 @@ namespace Foundation.Mathematics
 			return (lhs.p0_ != rhs.p0_) || (lhs.p1_ != rhs.p1_) || (lhs.p2_ != rhs.p2_) || (lhs.p3_ != rhs.p3_);
 		}
 
+		public void Translate(Vector4 offset)
+		{
+			p0_ += offset;
+			p1_ += offset;
+			p2_ += offset;
+			p3_ += offset;
+		}
+
+		public static BezierCurve4 Translate(BezierCurve4 curve, Vector4 offset)
+		{
+			curve.Translate(offset);
+			return curve;
+		}
+
+		public void Transform(in Matrix4 matrix)
+		{
+			p0_.Transform(matrix);
+			p1_.Transform(matrix);
+			p2_.Transform(matrix);
+			p3_.Transform(matrix);
+		}
+
+		public static BezierCurve4 Transform(BezierCurve4 curve, in Matrix4 matrix)
+		{
+			curve.Transform(matrix);
+			return curve;
+		}
+
 		public readonly Vector4 Evaluate(float t) // #TODO SIMD
 		{
 			Vector4 bt = BezierCurve.GetBasis(t);

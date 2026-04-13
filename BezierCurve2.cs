@@ -186,6 +186,34 @@ namespace Foundation.Mathematics
 			return new BezierCurve2(Vector2.Zero, curve.p1_, curve.p2_, new Vector2(1f, 1f));
 		}
 
+		public void Translate(Vector2 offset)
+		{
+			p0_ += offset;
+			p1_ += offset;
+			p2_ += offset;
+			p3_ += offset;
+		}
+
+		public static BezierCurve2 Translate(BezierCurve2 curve, Vector2 offset)
+		{
+			curve.Translate(offset);
+			return curve;
+		}
+
+		public void Transform(in Matrix2 matrix)
+		{
+			p0_.Transform(matrix);
+			p1_.Transform(matrix);
+			p2_.Transform(matrix);
+			p3_.Transform(matrix);
+		}
+
+		public static BezierCurve2 Transform(BezierCurve2 curve, in Matrix2 matrix)
+		{
+			curve.Transform(matrix);
+			return curve;
+		}
+
 		public readonly Vector2 Evaluate(float t) // #TODO SIMD
 		{
 			Vector4 bt = BezierCurve.GetBasis(t);

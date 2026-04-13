@@ -176,6 +176,48 @@ namespace Foundation.Mathematics
 			return (lhs.p0_ != rhs.p0_) || (lhs.p1_ != rhs.p1_) || (lhs.p2_ != rhs.p2_) || (lhs.p3_ != rhs.p3_);
 		}
 
+		public void Translate(Vector3 offset)
+		{
+			p0_ += offset;
+			p1_ += offset;
+			p2_ += offset;
+			p3_ += offset;
+		}
+
+		public static BezierCurve3 Translate(BezierCurve3 curve, Vector3 offset)
+		{
+			curve.Translate(offset);
+			return curve;
+		}
+
+		public void Transform(in Matrix3 matrix)
+		{
+			p0_.Transform(matrix);
+			p1_.Transform(matrix);
+			p2_.Transform(matrix);
+			p3_.Transform(matrix);
+		}
+
+		public void Transform(in AffineTransform at)
+		{
+			p0_.Transform(at);
+			p1_.Transform(at);
+			p2_.Transform(at);
+			p3_.Transform(at);
+		}
+
+		public static BezierCurve3 Transform(BezierCurve3 curve, in Matrix3 matrix)
+		{
+			curve.Transform(matrix);
+			return curve;
+		}
+
+		public static BezierCurve3 Transform(BezierCurve3 curve, in AffineTransform at)
+		{
+			curve.Transform(at);
+			return curve;
+		}
+
 		public readonly Vector3 Evaluate(float t) // #TODO SIMD
 		{
 			Vector4 bt = BezierCurve.GetBasis(t);

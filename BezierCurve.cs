@@ -170,6 +170,34 @@ namespace Foundation.Mathematics
 			return (lhs.p0_ != rhs.p0_) || (lhs.p1_ != rhs.p1_) || (lhs.p2_ != rhs.p2_) || (lhs.p3_ != rhs.p3_);
 		}
 
+		public void Translate(float offset)
+		{
+			p0_ += offset;
+			p1_ += offset;
+			p2_ += offset;
+			p3_ += offset;
+		}
+
+		public static BezierCurve Translate(BezierCurve curve, float offset)
+		{
+			curve.Translate(offset);
+			return curve;
+		}
+
+		public void Scale(float factor)
+		{
+			p0_ *= factor;
+			p1_ *= factor;
+			p2_ *= factor;
+			p3_ *= factor;
+		}
+
+		public static BezierCurve Scale(BezierCurve curve, float factor)
+		{
+			curve.Scale(factor);
+			return curve;
+		}
+
 		public readonly float Evaluate(float t) // #TODO SIMD
 		{
 			Vector4 bt = GetBasis(t);
