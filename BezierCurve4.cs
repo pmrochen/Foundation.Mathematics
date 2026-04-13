@@ -239,10 +239,10 @@ namespace Foundation.Mathematics
 				return 0f;
 
 			BezierCurve4 curve = this;
-			return Romberg.Estimate(0f, Math.Min(t, 1f), delegate(float x) { return curve.CalculateSpeed(x); }, 8);
+			return Romberg.Estimate(0f, Math.Min(t, 1f), curve.CalculateSpeed, 8);
 		}
 
-		public readonly float CalculateTime(float s, int nIterations)
+		public readonly float? CalculateTime(float s, int nIterations)
 		{
 			if (s <= 0f)
 				return 0f;
@@ -255,12 +255,12 @@ namespace Foundation.Mathematics
 			for (int i = 0; i < nIterations; i++)
 			{
 				float difference = CalculateLength(time) - s;
-				if (Math.Abs(difference) < 1e-6f)
+				if (Math.Abs(difference) < SingleConstants.Tolerance)
 					return time;
 				time -= difference/CalculateSpeed(time);
 			}
 
-			return Single.PositiveInfinity;
+			return null;
 		}
 
 		internal Vector4 p0_;
