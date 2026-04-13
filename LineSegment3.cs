@@ -1,5 +1,5 @@
 /*
- *  Name: Segment3
+ *  Name: LineSegment3
  *  Author: Pawel Mrochen
  */
 
@@ -11,38 +11,38 @@ namespace Foundation.Mathematics
 {
 	//[Serializable]
 	[TypeConverter(typeof(ValueTypeConverter))]
-	public struct Segment3 : IFormattable, IEquatable<Segment3>
+	public struct LineSegment3 : IFormattable, IEquatable<LineSegment3>
 	{
-		public Segment3(Vector3 start, Vector3 end)
+		public LineSegment3(Vector3 start, Vector3 end)
 		{
 			start_ = start;
 			end_ = end;
 		}
 
-		//public Segment3(Vector3[] endPoints) :
+		//public LineSegment3(Vector3[] endPoints) :
 		//	this(endPoints[0], endPoints[1])
 		//{
 		//}
 
-		public static bool operator ==(Segment3 lhs, Segment3 rhs)
+		public static bool operator ==(LineSegment3 lhs, LineSegment3 rhs)
 		{
 			return (lhs.start_ == rhs.start_) && (lhs.end_ == rhs.end_);
 		}
 
-		public static bool operator !=(Segment3 lhs, Segment3 rhs)
+		public static bool operator !=(LineSegment3 lhs, LineSegment3 rhs)
 		{
 			return (lhs.start_ != rhs.start_) || (lhs.end_ != rhs.end_);
 		}
 
 		public readonly override bool Equals(object other)
 		{
-			if (other is Segment3 rhs)
+			if (other is LineSegment3 rhs)
 				return (start_ == rhs.start_) && (end_ == rhs.end_);
 
 			return false;
 		}
 
-		public readonly bool Equals(Segment3 other)
+		public readonly bool Equals(LineSegment3 other)
 		{
 			return (start_ == other.start_) && (end_ == other.end_);
 		}
@@ -53,13 +53,13 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ end_.GetHashCode();
 		}
 
-		public readonly bool ApproxEquals(in Segment3 other, float tolerance)
+		public readonly bool ApproxEquals(in LineSegment3 other, float tolerance)
 		{
 			return start_.ApproxEquals(other.start_, tolerance) &&
 				end_.ApproxEquals(other.end_, tolerance);
 		}
 
-		public readonly bool ApproxEquals(in Segment3 other)
+		public readonly bool ApproxEquals(in LineSegment3 other)
 		{
 			return start_.ApproxEquals(other.start_) &&
 				end_.ApproxEquals(other.end_);
@@ -85,7 +85,7 @@ namespace Foundation.Mathematics
 			return String.Concat(start_.ToString(format, provider), " ", end_.ToString(format, provider));
 		}
 
-		public static Segment3 Parse(string str)
+		public static LineSegment3 Parse(string str)
 		{
 			if (str == null)
 				throw new ArgumentNullException("str");
@@ -94,11 +94,11 @@ namespace Foundation.Mathematics
 			if (m.Length != 6)
 				throw new FormatException();
 
-			return new Segment3(new Vector3(Single.Parse(m[0]), Single.Parse(m[1]), Single.Parse(m[2])),
+			return new LineSegment3(new Vector3(Single.Parse(m[0]), Single.Parse(m[1]), Single.Parse(m[2])),
 				new Vector3(Single.Parse(m[3]), Single.Parse(m[4]), Single.Parse(m[5])));
 		}
 
-		public static Segment3 Parse(string str, IFormatProvider provider)
+		public static LineSegment3 Parse(string str, IFormatProvider provider)
 		{
 			if (str == null)
 				throw new ArgumentNullException("str");
@@ -107,28 +107,28 @@ namespace Foundation.Mathematics
 			if (m.Length != 6)
 				throw new FormatException();
 
-			return new Segment3(new Vector3(Single.Parse(m[0], provider), Single.Parse(m[1], provider), Single.Parse(m[2], provider)),
+			return new LineSegment3(new Vector3(Single.Parse(m[0], provider), Single.Parse(m[1], provider), Single.Parse(m[2], provider)),
 				new Vector3(Single.Parse(m[3], provider), Single.Parse(m[4], provider), Single.Parse(m[5], provider)));
 		}
 
-		public static Segment3 FromLine(in Line3 l)
+		public static LineSegment3 FromLine(in Line3 l)
 		{
-			return new Segment3(l.origin_, l.origin_ + l.direction_);
+			return new LineSegment3(l.origin_, l.origin_ + l.direction_);
 		}
 
-		public static Segment3 FromLine(in Line3 l, Interval interval)
+		public static LineSegment3 FromLine(in Line3 l, Interval interval)
 		{
-			return new Segment3(l.Evaluate(interval.Minimum), l.Evaluate(interval.Maximum));
+			return new LineSegment3(l.Evaluate(interval.Minimum), l.Evaluate(interval.Maximum));
 		}
 
-		public static Segment3 FromRay(in Ray3 r)
+		public static LineSegment3 FromRay(in Ray3 r)
 		{
-			return new Segment3(r.origin_, r.origin_ + r.direction_);
+			return new LineSegment3(r.origin_, r.origin_ + r.direction_);
 		}
 
-		public static Segment3 FromRay(in Ray3 r, Interval interval)
+		public static LineSegment3 FromRay(in Ray3 r, Interval interval)
 		{
-			return new Segment3(r.Evaluate(interval.Minimum), r.Evaluate(interval.Maximum));
+			return new LineSegment3(r.Evaluate(interval.Minimum), r.Evaluate(interval.Maximum));
 		}
 
 		[Browsable(false)]
@@ -167,7 +167,7 @@ namespace Foundation.Mathematics
 			end_ += offset;
 		}
 
-		public static Segment3 Translate(Segment3 segment, Vector3 offset)
+		public static LineSegment3 Translate(LineSegment3 segment, Vector3 offset)
 		{
 			segment.Translate(offset);
 			return segment;
@@ -185,13 +185,13 @@ namespace Foundation.Mathematics
 			end_.Transform(at);
         }
 
-		public static Segment3 Transform(Segment3 segment, in Matrix3 matrix)
+		public static LineSegment3 Transform(LineSegment3 segment, in Matrix3 matrix)
 		{
 			segment.Transform(matrix);
 			return segment;
 		}
 
-		public static Segment3 Transform(Segment3 segment, in AffineTransform at)
+		public static LineSegment3 Transform(LineSegment3 segment, in AffineTransform at)
 		{
 			segment.Transform(at);
 			return segment;
@@ -245,7 +245,7 @@ namespace Foundation.Mathematics
 
 		public readonly bool Intersects(in Ellipsoid ellipsoid)
 		{
-			return Intersections.TestSegmentEllipsoid(start_, end_, ellipsoid.Center, ellipsoid.Matrix);
+			return Intersections.TestLineSegmentEllipsoid(start_, end_, ellipsoid.Center, ellipsoid.Matrix);
 		}
 
 		public readonly float? FindIntersection(in Plane plane)
@@ -256,7 +256,7 @@ namespace Foundation.Mathematics
 
 		public readonly float? FindIntersection(in Triangle3 triangle)
 		{
-			//return Intersections.FindSegmentTriangle(start_, end_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_);
+			//return Intersections.FindLineSegmentTriangle(start_, end_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_);
 			float? result = Intersections.FindLineTriangle(start_, end_ - start_, triangle.vertex0_, triangle.vertex1_, triangle.vertex2_);
 			return (result.HasValue && (result.Value >= 0f) && (result.Value <= 1f)) ? result : null;
 		}
@@ -326,7 +326,7 @@ namespace Foundation.Mathematics
 
 		public readonly Interval? FindIntersection(in Ellipsoid ellipsoid)
 		{
-			return Intersections.FindSegmentEllipsoid(start_, end_, ellipsoid.Center, ellipsoid.Matrix);
+			return Intersections.FindLineSegmentEllipsoid(start_, end_, ellipsoid.Center, ellipsoid.Matrix);
 		}
 
 		//public readonly Vector2? FindIntersectionPoint(in Plane plane)

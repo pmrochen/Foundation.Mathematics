@@ -110,7 +110,7 @@ namespace Foundation.Mathematics
 			return new Line3(r.origin_, r.direction_);
 		}
 
-		//public static Line3 FromSegment(in Segment3 s)
+		//public static Line3 FromSegment(in LineSegment3 s)
 		//{
 		//	return new Line3(s.Start, s.Direction);
 		//}

@@ -1,5 +1,5 @@
 /*
- *  Name: Segment2
+ *  Name: LineSegment2
  *  Author: Pawel Mrochen
  */
 
@@ -11,38 +11,38 @@ namespace Foundation.Mathematics
 {
 	//[Serializable]
 	[TypeConverter(typeof(ValueTypeConverter))]
-	public struct Segment2 : IFormattable, IEquatable<Segment2>
+	public struct LineSegment2 : IFormattable, IEquatable<LineSegment2>
 	{
-        public Segment2(Vector2 start, Vector2 end)
+        public LineSegment2(Vector2 start, Vector2 end)
         {
             start_ = start;
             end_ = end;
         }
 
-		public Segment2(Vector2[] endPoints) :
+		public LineSegment2(Vector2[] endPoints) :
 			this(endPoints[0], endPoints[1])
 		{
 		}
 
-		public static bool operator ==(Segment2 lhs, Segment2 rhs)
+		public static bool operator ==(LineSegment2 lhs, LineSegment2 rhs)
 		{
 			return (lhs.start_ == rhs.start_) && (lhs.end_ == rhs.end_);
 		}
 
-		public static bool operator !=(Segment2 lhs, Segment2 rhs)
+		public static bool operator !=(LineSegment2 lhs, LineSegment2 rhs)
 		{
 			return (lhs.start_ != rhs.start_) || (lhs.end_ != rhs.end_);
 		}
 
 		public readonly override bool Equals(object other)
 		{
-			if (other is Segment2 rhs)
+			if (other is LineSegment2 rhs)
 				return (start_ == rhs.start_) && (end_ == rhs.end_);
 
 			return false;
 		}
 
-		public readonly bool Equals(Segment2 other)
+		public readonly bool Equals(LineSegment2 other)
 		{
 			return (start_ == other.start_) && (end_ == other.end_);
 		}
@@ -53,13 +53,13 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ end_.GetHashCode();
 		}
 
-		public readonly bool ApproxEquals(in Segment2 other, float tolerance)
+		public readonly bool ApproxEquals(in LineSegment2 other, float tolerance)
 		{
 			return start_.ApproxEquals(other.start_, tolerance) &&
 				end_.ApproxEquals(other.end_, tolerance);
 		}
 
-		public readonly bool ApproxEquals(in Segment2 other)
+		public readonly bool ApproxEquals(in LineSegment2 other)
 		{
 			return start_.ApproxEquals(other.start_) &&
 				end_.ApproxEquals(other.end_);
@@ -85,7 +85,7 @@ namespace Foundation.Mathematics
 			return String.Concat(start_.ToString(format, provider), " ", end_.ToString(format, provider));
 		}
 
-		public static Segment2 Parse(string str)
+		public static LineSegment2 Parse(string str)
 		{
 			if (str == null)
 				throw new ArgumentNullException("str");
@@ -94,11 +94,11 @@ namespace Foundation.Mathematics
 			if (m.Length != 4)
 				throw new FormatException();
 
-			return new Segment2(new Vector2(Single.Parse(m[0]), Single.Parse(m[1])),
+			return new LineSegment2(new Vector2(Single.Parse(m[0]), Single.Parse(m[1])),
 				new Vector2(Single.Parse(m[2]), Single.Parse(m[3])));
 		}
 
-		public static Segment2 Parse(string str, IFormatProvider provider)
+		public static LineSegment2 Parse(string str, IFormatProvider provider)
 		{
 			if (str == null)
 				throw new ArgumentNullException("str");
@@ -107,28 +107,28 @@ namespace Foundation.Mathematics
 			if (m.Length != 4)
 				throw new FormatException();
 
-			return new Segment2(new Vector2(Single.Parse(m[0], provider), Single.Parse(m[1], provider)),
+			return new LineSegment2(new Vector2(Single.Parse(m[0], provider), Single.Parse(m[1], provider)),
 				new Vector2(Single.Parse(m[2], provider), Single.Parse(m[3], provider)));
 		}
 
-		public static Segment2 FromLine(in Line2 l)
+		public static LineSegment2 FromLine(in Line2 l)
 		{
-			return new Segment2(l.origin_, l.origin_ + l.direction_);
+			return new LineSegment2(l.origin_, l.origin_ + l.direction_);
 		}
 
-		public static Segment2 FromLine(in Line2 l, Interval interval)
+		public static LineSegment2 FromLine(in Line2 l, Interval interval)
 		{
-			return new Segment2(l.Evaluate(interval.Minimum), l.Evaluate(interval.Maximum));
+			return new LineSegment2(l.Evaluate(interval.Minimum), l.Evaluate(interval.Maximum));
 		}
 
-		public static Segment2 FromRay(in Ray2 r)
+		public static LineSegment2 FromRay(in Ray2 r)
 		{
-			return new Segment2(r.origin_, r.origin_ + r.direction_);
+			return new LineSegment2(r.origin_, r.origin_ + r.direction_);
 		}
 
-		public static Segment2 FromRay(in Ray2 r, Interval interval)
+		public static LineSegment2 FromRay(in Ray2 r, Interval interval)
 		{
-			return new Segment2(r.Evaluate(interval.Minimum), r.Evaluate(interval.Maximum));
+			return new LineSegment2(r.Evaluate(interval.Minimum), r.Evaluate(interval.Maximum));
 		}
 
 		[Browsable(false)]
@@ -173,7 +173,7 @@ namespace Foundation.Mathematics
 			end_ += offset;
 		}
 
-		public static Segment2 Translate(Segment2 segment, Vector2 offset)
+		public static LineSegment2 Translate(LineSegment2 segment, Vector2 offset)
 		{
 			segment.Translate(offset);
 			return segment;
@@ -200,7 +200,7 @@ namespace Foundation.Mathematics
 			return FindIntersection(line).HasValue;
 		}
 
-		public readonly bool Intersects(in Segment2 segment)
+		public readonly bool Intersects(in LineSegment2 segment)
 		{
 			return FindIntersection(segment).HasValue;
 		}
@@ -217,12 +217,12 @@ namespace Foundation.Mathematics
 
 		public readonly float? FindIntersection(in Line2 line)
 		{
-			return Intersections.FindLineSegment(line.origin_, line.direction_, start_, end_);
+			return Intersections.FindLineLineSegment(line.origin_, line.direction_, start_, end_);
 		}
 
-		public readonly float? FindIntersection(in Segment2 segment)
+		public readonly float? FindIntersection(in LineSegment2 segment)
 		{
-			return Intersections.FindSegmentSegment(start_, end_, segment.start_, segment.end_);
+			return Intersections.FindLineSegmentLineSegment(start_, end_, segment.start_, segment.end_);
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)
@@ -272,7 +272,7 @@ namespace Foundation.Mathematics
 		//{
 		//}
 
-		//public readonly Vector2? FindIntersectionPoint(in Segment2 segment)
+		//public readonly Vector2? FindIntersectionPoint(in LineSegment2 segment)
 		//{
 		//}
 

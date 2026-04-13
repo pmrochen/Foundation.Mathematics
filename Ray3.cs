@@ -110,7 +110,7 @@ namespace Foundation.Mathematics
 			return new Ray3(l.origin_, l.direction_);
 		}
 
-		//public static Ray3 FromSegment(in Segment3 s)
+		//public static Ray3 FromSegment(in LineSegment3 s)
 		//{
 		//	return new Ray3(s.Start, s.Direction);
 		//}

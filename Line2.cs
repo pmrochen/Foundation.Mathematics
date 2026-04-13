@@ -116,7 +116,7 @@ namespace Foundation.Mathematics
 			return new Line2(r.origin_, r.direction_);
 		}
 
-		//public static Line2 FromSegment(in Segment2 s)
+		//public static Line2 FromSegment(in LineSegment2 s)
 		//{
 		//	return new Line2(s.Start, s.Direction);
 		//}
@@ -241,7 +241,7 @@ namespace Foundation.Mathematics
 			return FindIntersection(ray).HasValue;
 		}
 
-		public readonly bool Intersects(in Segment2 segment) 
+		public readonly bool Intersects(in LineSegment2 segment) 
 		{
 			return FindIntersection(segment).HasValue;
 		}
@@ -266,9 +266,9 @@ namespace Foundation.Mathematics
 			return Intersections.FindLineRay(origin_, direction_, ray.origin_, ray.direction_);
 		}
 
-		public readonly float? FindIntersection(in Segment2 segment)
+		public readonly float? FindIntersection(in LineSegment2 segment)
 		{
-			return Intersections.FindLineSegment(origin_, direction_, segment.start_, segment.end_);
+			return Intersections.FindLineLineSegment(origin_, direction_, segment.start_, segment.end_);
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)
@@ -285,7 +285,7 @@ namespace Foundation.Mathematics
 		//{
 		//}
 
-		//public readonly Vector2? FindIntersectionPoint(in Segment2 segment)
+		//public readonly Vector2? FindIntersectionPoint(in LineSegment2 segment)
 		//{
 		//}
 

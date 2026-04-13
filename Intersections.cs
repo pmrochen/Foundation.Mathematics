@@ -50,7 +50,7 @@ namespace Foundation.Mathematics
 			return null;
 		}
 
-		public static float? FindLineSegment(Vector2 origin, Vector2 direction, Vector2 start, Vector2 end)
+		public static float? FindLineLineSegment(Vector2 origin, Vector2 direction, Vector2 start, Vector2 end)
 		{
 			// http://www.geometrictools.com/
 
@@ -70,7 +70,7 @@ namespace Foundation.Mathematics
 			return null;
 		}
 
-		public static float? FindSegmentSegment(Vector2 startA, Vector2 endA, Vector2 startB, Vector2 endB)
+		public static float? FindLineSegmentLineSegment(Vector2 startA, Vector2 endA, Vector2 startB, Vector2 endB)
 		{
 			// http://www.geometrictools.com/
 
@@ -174,7 +174,7 @@ namespace Foundation.Mathematics
 		//		return null;
 		//}
 
-		//public static float? FindSegmentTriangle(Vector3 start, Vector3 end, Vector3 vertex0, Vector3 vertex1, Vector3 vertex2)
+		//public static float? FindLineSegmentTriangle(Vector3 start, Vector3 end, Vector3 vertex0, Vector3 vertex1, Vector3 vertex2)
 		//{
 		//	// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
 
@@ -485,7 +485,7 @@ namespace Foundation.Mathematics
 			}
 		}
 
-		public static bool TestSegmentEllipsoid(Vector3 start, Vector3 end, Vector3 center, in Matrix3 matrix)
+		public static bool TestLineSegmentEllipsoid(Vector3 start, Vector3 end, Vector3 center, in Matrix3 matrix)
 		{
 			// http://www.geometrictools.com/
 
@@ -518,7 +518,7 @@ namespace Foundation.Mathematics
 			return false;
 		}
 
-		public static Interval? FindSegmentEllipsoid(Vector3 start, Vector3 end, Vector3 center, in Matrix3 matrix)
+		public static Interval? FindLineSegmentEllipsoid(Vector3 start, Vector3 end, Vector3 center, in Matrix3 matrix)
 		{
 			// http://www.geometrictools.com/
 
