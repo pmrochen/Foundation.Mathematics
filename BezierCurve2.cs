@@ -216,26 +216,26 @@ namespace Foundation.Mathematics
 
 		public readonly Vector2 Evaluate(float t) // #TODO SIMD
 		{
-			Vector4 bt = BezierCurve.GetBasis(t);
+			Vector4 bt = Bezier.GetBasis(t);
 			return new Vector2(p0_.x_*bt.x_ + p1_.x_*bt.y_ + p2_.x_*bt.z_ + p3_.x_*bt.w_,
 				p0_.y_*bt.x_ + p1_.y_*bt.y_ + p2_.y_*bt.z_ + p3_.y_*bt.w_);
 		}
 
 		public readonly float EvaluateX(float t) // #TODO SIMD
 		{
-			Vector4 bt = BezierCurve.GetBasis(t);
+			Vector4 bt = Bezier.GetBasis(t);
 			return p0_.x_*bt.x_ + p1_.x_*bt.y_ + p2_.x_*bt.z_ + p3_.x_*bt.w_;
 		}
 
 		public readonly float EvaluateY(float t) // #TODO SIMD
 		{
-			Vector4 bt = BezierCurve.GetBasis(t);
+			Vector4 bt = Bezier.GetBasis(t);
 			return p0_.y_*bt.x_ + p1_.y_*bt.y_ + p2_.y_*bt.z_ + p3_.y_*bt.w_;
 		}
 
 		public readonly Vector2 CalculateDerivative(float t) // #TODO SIMD
 		{
-			Vector4 dbt = BezierCurve.GetDerivativeBasis(t);
+			Vector4 dbt = Bezier.GetDerivativeBasis(t);
 			return new Vector2(p0_.x_*dbt.x_ + p1_.x_*dbt.y_ + p2_.x_*dbt.z_ + p3_.x_*dbt.w_,
 				p0_.y_*dbt.x_ + p1_.y_*dbt.y_ + p2_.y_*dbt.z_ + p3_.y_*dbt.w_);
 		}
