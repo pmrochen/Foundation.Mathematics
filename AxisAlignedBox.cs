@@ -265,6 +265,19 @@ namespace Foundation.Mathematics
 			return AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(box, at, orthogonal));
 		}
 
+		public void ScaleAroundCenter(float factor)
+		{
+			Vector3 center = (minimum_ + maximum_)*0.5f;
+			minimum_ = (minimum_ - center)*factor + center;
+			maximum_ = (maximum_ - center)*factor + center;
+		}
+
+		public static AxisAlignedBox ScaleAroundCenter(AxisAlignedBox box, float factor)
+		{
+			box.ScaleAroundCenter(factor);
+			return box;
+		}
+
 		public readonly Vector3 GetClosestPoint(Vector3 point)
 		{
 			return Vector3.Clamp(point, minimum_, maximum_);

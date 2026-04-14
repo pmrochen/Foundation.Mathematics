@@ -180,6 +180,43 @@ namespace Foundation.Mathematics
 			maximum_ = Math.Max(maximum_, interval.maximum_);
 		}
 
+		public void Translate(float offset)
+		{
+			minimum_ += offset;
+			maximum_ += offset;
+		}
+
+		public static Interval Translate(Interval interval, float offset)
+		{
+			interval.Translate(offset);
+			return interval;
+		}
+
+		public void Scale(float factor)
+		{
+			minimum_ *= factor;
+			maximum_ *= factor;
+		}
+
+		public static Interval Scale(Interval interval, float factor)
+		{
+			interval.Scale(factor);
+			return interval;
+		}
+
+		public void ScaleAroundCenter(float factor)
+		{
+			float center = (minimum_ + maximum_)*0.5f;
+			minimum_ = (minimum_ - center)*factor + center;
+			maximum_ = (maximum_ - center)*factor + center;
+		}
+
+		public static Interval ScaleAroundCenter(Interval interval, float factor)
+		{
+			interval.ScaleAroundCenter(factor);
+			return interval;
+		}
+
 		public readonly bool Contains(float value)
 		{
 			return (minimum_ <= value) && (maximum_ >= value);

@@ -155,6 +155,18 @@ namespace Foundation.Mathematics
 			return line;
 		}
 
+		public void Transform(in Matrix2 matrix)
+		{
+			origin_.Transform(matrix);
+			direction_.Transform(matrix);
+		}
+
+		public static Line2 Transform(Line2 line, in Matrix2 matrix)
+		{
+			line.Transform(matrix);
+			return line;
+		}
+
 		public void Normalize()
         {
             direction_.Normalize();

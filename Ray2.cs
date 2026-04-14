@@ -149,6 +149,18 @@ namespace Foundation.Mathematics
 			return ray;
 		}
 
+		public void Transform(in Matrix2 matrix)
+		{
+			origin_.Transform(matrix);
+			direction_.Transform(matrix);
+		}
+
+		public static Ray2 Transform(Ray2 ray, in Matrix2 matrix)
+		{
+			ray.Transform(matrix);
+			return ray;
+		}
+
 		public void Normalize()
         {
             direction_.Normalize();

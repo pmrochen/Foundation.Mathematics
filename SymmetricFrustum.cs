@@ -285,9 +285,7 @@ namespace Foundation.Mathematics
 			halfDims_.X *= basis_[0].Magnitude;
 			halfDims_.Y *= basis_[1].Magnitude;
 #endif
-			float zLength = basis_[2].Magnitude;
-			depthRange_.minimum_ *= zLength;
-			depthRange_.maximum_ *= zLength;
+			depthRange_.Scale(basis_[2].Magnitude);
 			basis_.Orthonormalize();
 		}
 

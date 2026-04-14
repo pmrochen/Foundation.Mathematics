@@ -179,6 +179,18 @@ namespace Foundation.Mathematics
 			return segment;
 		}
 
+		public void Transform(in Matrix2 matrix)
+		{
+			start_.Transform(matrix);
+			end_.Transform(matrix);
+		}
+
+		public static LineSegment2 Transform(LineSegment2 segment, in Matrix2 matrix)
+		{
+			segment.Transform(matrix);
+			return segment;
+		}
+
 		public readonly Vector2 Evaluate(float t)
 		{
 			return Vector2.Lerp(start_, end_, t);

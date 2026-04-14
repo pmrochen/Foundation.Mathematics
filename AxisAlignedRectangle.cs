@@ -224,6 +224,19 @@ namespace Foundation.Mathematics
 			return rectangle;
 		}
 
+		public void ScaleAroundCenter(float factor)
+		{
+			Vector2 center = (minimum_ + maximum_)*0.5f;
+			minimum_ = (minimum_ - center)*factor + center;
+			maximum_ = (maximum_ - center)*factor + center;
+		}
+
+		public static AxisAlignedRectangle ScaleAroundCenter(AxisAlignedRectangle rectangle, float factor)
+		{
+			rectangle.ScaleAroundCenter(factor);
+			return rectangle;
+		}
+
 		public readonly Vector2 GetClosestPoint(Vector2 point)
 		{
 			return Vector2.Clamp(point, minimum_, maximum_);
