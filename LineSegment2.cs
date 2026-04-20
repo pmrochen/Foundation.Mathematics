@@ -19,8 +19,8 @@ namespace Foundation.Mathematics
             end_ = end;
         }
 
-		public LineSegment2(Vector2[] endPoints) :
-			this(endPoints[0], endPoints[1])
+		public LineSegment2(Vector2[] endpoints) :
+			this(endpoints[0], endpoints[1])
 		{
 		}
 

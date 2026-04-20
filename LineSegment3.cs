@@ -19,10 +19,10 @@ namespace Foundation.Mathematics
 			end_ = end;
 		}
 
-		//public LineSegment3(Vector3[] endPoints) :
-		//	this(endPoints[0], endPoints[1])
-		//{
-		//}
+		public LineSegment3(Vector3[] endpoints) :
+			this(endpoints[0], endpoints[1])
+		{
+		}
 
 		public static bool operator ==(LineSegment3 lhs, LineSegment3 rhs)
 		{
