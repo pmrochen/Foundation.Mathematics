@@ -1,6 +1,5 @@
 /*
  *  Name: Mersenne Twister
- *  Description:
  *  Author: Pawel Mrochen
  */
 
