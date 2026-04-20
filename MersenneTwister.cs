@@ -11,7 +11,7 @@ namespace Foundation.Mathematics
 	/// <summary>
 	/// Mersenne Twister random number generator.
 	/// </summary>
-	public sealed class MersenneTwister
+	public sealed class MersenneTwister : IRandomNumberGenerator<uint>
 	{
 		public MersenneTwister()
 		{
@@ -25,72 +25,99 @@ namespace Foundation.Mathematics
 
 		public MersenneTwister(int[] key)
 		{
-			Init(key);
+			if (key != null)
+				Init(key);
 		}
 
-		public int GetNext(int min, int max)
+		uint IRandomNumberGenerator<uint>.MaxValue => ~0U;
+
+		uint IRandomNumberGenerator<uint>.GetNext()
 		{
-			//if (min >= max)
-			//	return min;
-
-			return Math.Clamp(Scalar.Round(min - 0.5 + (max - min + 1.0)*GetNextDouble01()), min, max);
+			return GetUInt32();
 		}
 
-		public float GetNext(float min, float max)
+		public int GetInt31()
 		{
-			//if (min >= max)
-			//	return min;
-			
-			return (float)(min + (max - min)*GetNextDouble01());
+			return (int)(GetUInt32() >> 1);
 		}
 
-		public double GetNext(double min, double max)
-		{
-			//if (min >= max)
-			//	return min;
-			
-			return (min + (max - min)*GetNextDouble01());
-		}
-
-		public float GetNextRightOpen(float min, float max)
-		{
-			//if (min >= max)
-			//	return min;
-
-			return (float)(min + (max - min)*GetNextDouble01RightOpen());
-		}
-
-		public double GetNextRightOpen(double min, double max)
-		{
-			//if (min >= max)
-			//	return min;
-
-			return (min + (max - min)*GetNextDouble01RightOpen());
-		}
-
-		public int GetNextInt32()
+		public int GetInt32()
 		{
 			return (int)GetUInt32();
 		}
 
-		public float GetNextSingle01()
+		public uint GetUInt32()
 		{
-			return (float)GetNextDouble01();
+			uint y = 0;
+
+			if (mti_ >= n_)
+			{
+				if (mti_ == n_ + 1)
+					Init(5489);
+
+				int kk = 0;
+
+				for (; kk < n_ - m_; kk++)
+				{
+					y = (mt_[kk] & upperMask_) | (mt_[kk + 1] & loweMask_);
+					mt_[kk] = mt_[kk + m_] ^ (y >> 1) ^ magm01_[y & 0x1u];
+				}
+
+				for (; kk < n_ - 1; kk++)
+				{
+					y = (mt_[kk] & upperMask_) | (mt_[kk + 1] & loweMask_);
+					mt_[kk] = mt_[kk + (m_ - n_)] ^ (y >> 1) ^ magm01_[y & 0x1u];
+				}
+
+				y = (mt_[n_ - 1] & upperMask_) | (mt_[0] & loweMask_);
+				mt_[n_ - 1] = mt_[m_ - 1] ^ (y >> 1) ^ magm01_[y & 0x1u];
+
+				mti_ = 0;
+			}
+
+			y = mt_[mti_++];
+			y ^= (y >> 11);
+			y ^= (y << 7) & 0x9d2c5680u;
+			y ^= (y << 15) & 0xefc60000u;
+			y ^= (y >> 18);
+			return y;
 		}
 
-		public float GetNextSingle01RightOpen()
+		public float GetSingle01()
 		{
-			return (float)GetNextDouble01RightOpen();
+			return (float)(GetUInt32()*(1.0/4294967295.0));
 		}
 
-		public double GetNextDouble01()
+		public float GetSingle01RightOpen()
+		{
+			return (float)(GetUInt32()*(1.0/4294967296.0));
+		}
+
+		public float GetSingle01Open()
+		{
+			return (float)((GetUInt32() + 0.5)*(1.0/4294967296.0));
+		}
+
+		public double GetDouble01()
 		{
 			return GetUInt32()*(1.0/4294967295.0);
 		}
 
-		public double GetNextDouble01RightOpen()
+		public double GetDouble01RightOpen()
 		{
 			return GetUInt32()*(1.0/4294967296.0);
+		}
+
+		public double GetDouble01Open()
+		{
+			return (GetUInt32() + 0.5)*(1.0/4294967296.0);
+		}
+
+		public double GetDouble01RightOpen53Bits()
+		{
+			uint a = GetUInt32() >> 5;
+			uint b = GetUInt32() >> 6;
+			return (a*67108864.0 + b)*(1.0/9007199254740992.0);
 		}
 
 		private void Init(int seed)
@@ -140,43 +167,6 @@ namespace Foundation.Mathematics
 			}
 
 			mt_[0] = 0x80000000u;
-		}
-
-		private uint GetUInt32()
-		{
-			uint y = 0;
-
-			if (mti_ >= n_)
-			{
-				if (mti_ == n_ + 1)
-					Init(5489);
-
-				int kk = 0;
-
-				for (; kk < n_ - m_; kk++)
-				{
-					y = (mt_[kk] & upperMask_) | (mt_[kk + 1] & loweMask_);
-					mt_[kk] = mt_[kk + m_] ^ (y >> 1) ^ magm01_[y & 0x1u];
-				}
-
-				for (; kk < n_ - 1; kk++)
-				{
-					y = (mt_[kk] & upperMask_) | (mt_[kk + 1] & loweMask_);
-					mt_[kk] = mt_[kk + (m_ - n_)] ^ (y >> 1) ^ magm01_[y & 0x1u];
-				}
-
-				y = (mt_[n_ - 1] & upperMask_) | (mt_[0] & loweMask_);
-				mt_[n_ - 1] = mt_[m_ - 1] ^ (y >> 1) ^ magm01_[y & 0x1u];
-
-				mti_ = 0;
-			}
-		  
-			y = mt_[mti_++];
-			y ^= (y >> 11);
-			y ^= (y << 7) & 0x9d2c5680u;
-			y ^= (y << 15) & 0xefc60000u;
-			y ^= (y >> 18);
-			return y;
 		}
 
 		private const int n_ = 624;
