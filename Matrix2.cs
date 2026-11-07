@@ -739,7 +739,7 @@ namespace Foundation.Mathematics
 
 		public static Matrix2 Adjoint(in Matrix2 m)
 		{
-			return new Matrix2(m.m11_, -m.m10_, -m.m01_, m.m00_);
+			return new Matrix2(m.m11_, -m.m01_, -m.m10_, m.m00_);
 		}
 
 		public static Matrix2 Inverse(in Matrix2 m)
