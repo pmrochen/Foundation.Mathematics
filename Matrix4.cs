@@ -1570,255 +1570,45 @@ namespace Foundation.Mathematics
 
 		public static Matrix4 Inverse(in Matrix4 m)
 		{
-			float di = m.m00_;
-			float d = 1f/di;
-			float m00 = d;
-			float m10 = m.m10_*(-d);
-			float m20 = m.m20_*(-d);
-			float m30 = m.m30_*(-d);
-			float m01 = m.m01_*d;
-			float m02 = m.m02_*d;
-			float m03 = m.m03_*d;
-			float m11 = m.m11_ + m10*m01*di;
-			float m12 = m.m12_ + m10*m02*di;
-			float m13 = m.m13_ + m10*m03*di;
-			float m21 = m.m21_ + m20*m01*di;
-			float m22 = m.m22_ + m20*m02*di;
-			float m23 = m.m23_ + m20*m03*di;
-			float m31 = m.m31_ + m30*m01*di;
-			float m32 = m.m32_ + m30*m02*di;
-			float m33 = m.m33_ + m30*m03*di;
-
-			di = m11;
-			d = 1f/di;
-			m11 = d;
-			m01 *= -d;
-			m21 *= -d;
-			m31 *= -d;
-			m10 *= d;
-			m12 *= d;
-			m13 *= d;
-			m00 += m01*m10*di;
-			m02 += m01*m12*di;
-			m03 += m01*m13*di;
-			m20 += m21*m10*di;
-			m22 += m21*m12*di;
-			m23 += m21*m13*di;
-			m30 += m31*m10*di;
-			m32 += m31*m12*di;
-			m33 += m31*m13*di;
-
-			di = m22;
-			d = 1f/di;
-			m22 = d;
-			m02 *= -d;
-			m12 *= -d;
-			m32 *= -d;
-			m20 *= d;
-			m21 *= d;
-			m23 *= d;
-			m00 += m02*m20*di;
-			m01 += m02*m21*di;
-			m03 += m02*m23*di;
-			m10 += m12*m20*di;
-			m11 += m12*m21*di;
-			m13 += m12*m23*di;
-			m30 += m32*m20*di;
-			m31 += m32*m21*di;
-			m33 += m32*m23*di;
-
-			di = m33;
-			d = 1f/di;
-			m33 = d;
-			m03 *= -d;
-			m13 *= -d;
-			m23 *= -d;
-			m30 *= d;
-			m31 *= d;
-			m32 *= d;
-			m00 += m03*m30*di;
-			m01 += m03*m31*di;
-			m02 += m03*m32*di;
-			m10 += m13*m30*di;
-			m11 += m13*m31*di;
-			m12 += m13*m32*di;
-			m20 += m23*m30*di;
-			m21 += m23*m31*di;
-			m22 += m23*m32*di;
-
-			return new Matrix4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
+			float a0 = m.m00_*m.m11_ - m.m01_*m.m10_;
+			float a1 = m.m00_*m.m12_ - m.m02_*m.m10_;
+			float a2 = m.m00_*m.m13_ - m.m03_*m.m10_;
+			float a3 = m.m01_*m.m12_ - m.m02_*m.m11_;
+			float a4 = m.m01_*m.m13_ - m.m03_*m.m11_;
+			float a5 = m.m02_*m.m13_ - m.m03_*m.m12_;
+			float b0 = m.m20_*m.m31_ - m.m21_*m.m30_;
+			float b1 = m.m20_*m.m32_ - m.m22_*m.m30_;
+			float b2 = m.m20_*m.m33_ - m.m23_*m.m30_;
+			float b3 = m.m21_*m.m32_ - m.m22_*m.m31_;
+			float b4 = m.m21_*m.m33_ - m.m23_*m.m31_;
+			float b5 = m.m22_*m.m33_ - m.m23_*m.m32_;
+			float n = 1f/(a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0);
+			return new Matrix4((m.m11_*b5 - m.m12_*b4 + m.m13_*b3)*n,
+				(-m.m01_*b5 + m.m02_*b4 - m.m03_*b3)*n,
+				(m.m31_*a5 - m.m32_*a4 + m.m33_*a3)*n,
+				(-m.m21_*a5 + m.m22_*a4 - m.m23_*a3)*n,
+				(-m.m10_*b5 + m.m12_*b2 - m.m13_*b1)*n,
+				(m.m00_*b5 - m.m02_*b2 + m.m03_*b1)*n,
+				(-m.m30_*a5 + m.m32_*a2 - m.m33_*a1)*n,
+				(m.m20_*a5 - m.m22_*a2 + m.m23_*a1)*n,
+				(m.m10_*b4 - m.m11_*b2 + m.m13_*b0)*n,
+				(-m.m00_*b4 + m.m01_*b2 - m.m03_*b0)*n,
+				(m.m30_*a4 - m.m31_*a2 + m.m33_*a0)*n,
+				(-m.m20_*a4 + m.m21_*a2 - m.m23_*a0)*n,
+				(-m.m10_*b3 + m.m11_*b1 - m.m12_*b0)*n,
+				(m.m00_*b3 - m.m01_*b1 + m.m02_*b0)*n,
+				(-m.m30_*a3 + m.m31_*a1 - m.m32_*a0)*n,
+				(m.m20_*a3 - m.m21_*a1 + m.m22_*a0)*n);
 		}
 
 		public static Matrix4 InverseTranspose(in Matrix4 m)
 		{
-			float di = m.m00_;
-			float d = 1f/di;
-			float m00 = d;
-			float m10 = m.m10_*(-d);
-			float m20 = m.m20_*(-d);
-			float m30 = m.m30_*(-d);
-			float m01 = m.m01_*d;
-			float m02 = m.m02_*d;
-			float m03 = m.m03_*d;
-			float m11 = m.m11_ + m10*m01*di;
-			float m12 = m.m12_ + m10*m02*di;
-			float m13 = m.m13_ + m10*m03*di;
-			float m21 = m.m21_ + m20*m01*di;
-			float m22 = m.m22_ + m20*m02*di;
-			float m23 = m.m23_ + m20*m03*di;
-			float m31 = m.m31_ + m30*m01*di;
-			float m32 = m.m32_ + m30*m02*di;
-			float m33 = m.m33_ + m30*m03*di;
-
-			di = m11;
-			d = 1f/di;
-			m11 = d;
-			m01 *= -d;
-			m21 *= -d;
-			m31 *= -d;
-			m10 *= d;
-			m12 *= d;
-			m13 *= d;
-			m00 += m01*m10*di;
-			m02 += m01*m12*di;
-			m03 += m01*m13*di;
-			m20 += m21*m10*di;
-			m22 += m21*m12*di;
-			m23 += m21*m13*di;
-			m30 += m31*m10*di;
-			m32 += m31*m12*di;
-			m33 += m31*m13*di;
-
-			di = m22;
-			d = 1f/di;
-			m22 = d;
-			m02 *= -d;
-			m12 *= -d;
-			m32 *= -d;
-			m20 *= d;
-			m21 *= d;
-			m23 *= d;
-			m00 += m02*m20*di;
-			m01 += m02*m21*di;
-			m03 += m02*m23*di;
-			m10 += m12*m20*di;
-			m11 += m12*m21*di;
-			m13 += m12*m23*di;
-			m30 += m32*m20*di;
-			m31 += m32*m21*di;
-			m33 += m32*m23*di;
-
-			di = m33;
-			d = 1f/di;
-			m33 = d;
-			m03 *= -d;
-			m13 *= -d;
-			m23 *= -d;
-			m30 *= d;
-			m31 *= d;
-			m32 *= d;
-			m00 += m03*m30*di;
-			m01 += m03*m31*di;
-			m02 += m03*m32*di;
-			m10 += m13*m30*di;
-			m11 += m13*m31*di;
-			m12 += m13*m32*di;
-			m20 += m23*m30*di;
-			m21 += m23*m31*di;
-			m22 += m23*m32*di;
-
-			return new Matrix4(m00, m10, m20, m30, m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33);
+			return Transpose(Inverse(m));
 		}
 
 		public void Invert()
 		{
-			float di = m00_;
-			float d = 1f/di;
-			float m00 = d;
-			float m10 = m10_*(-d);
-			float m20 = m20_*(-d);
-			float m30 = m30_*(-d);
-			float m01 = m01_*d;
-			float m02 = m02_*d;
-			float m03 = m03_*d;
-			float m11 = m11_ + m10*m01*di;
-			float m12 = m12_ + m10*m02*di;
-			float m13 = m13_ + m10*m03*di;
-			float m21 = m21_ + m20*m01*di;
-			float m22 = m22_ + m20*m02*di;
-			float m23 = m23_ + m20*m03*di;
-			float m31 = m31_ + m30*m01*di;
-			float m32 = m32_ + m30*m02*di;
-			float m33 = m33_ + m30*m03*di;
-
-			di = m11;
-			d = 1f/di;
-			m11 = d;
-			m01 *= -d;
-			m21 *= -d;
-			m31 *= -d;
-			m10 *= d;
-			m12 *= d;
-			m13 *= d;
-			m00 += m01*m10*di;
-			m02 += m01*m12*di;
-			m03 += m01*m13*di;
-			m20 += m21*m10*di;
-			m22 += m21*m12*di;
-			m23 += m21*m13*di;
-			m30 += m31*m10*di;
-			m32 += m31*m12*di;
-			m33 += m31*m13*di;
-
-			di = m22;
-			d = 1f/di;
-			m22 = d;
-			m02 *= -d;
-			m12 *= -d;
-			m32 *= -d;
-			m20 *= d;
-			m21 *= d;
-			m23 *= d;
-			m00 += m02*m20*di;
-			m01 += m02*m21*di;
-			m03 += m02*m23*di;
-			m10 += m12*m20*di;
-			m11 += m12*m21*di;
-			m13 += m12*m23*di;
-			m30 += m32*m20*di;
-			m31 += m32*m21*di;
-			m33 += m32*m23*di;
-
-			di = m33;
-			d = 1f/di;
-			m33 = d;
-			m03 *= -d;
-			m13 *= -d;
-			m23 *= -d;
-			m30 *= d;
-			m31 *= d;
-			m32 *= d;
-			m00 += m03*m30*di;
-			m01 += m03*m31*di;
-			m02 += m03*m32*di;
-			m10 += m13*m30*di;
-			m11 += m13*m31*di;
-			m12 += m13*m32*di;
-			m20 += m23*m30*di;
-			m21 += m23*m31*di;
-			m22 += m23*m32*di;
-
-#if SIMD
-			row0_ = new System.Numerics.Vector4(m00, m01, m02, m03);
-			row1_ = new System.Numerics.Vector4(m10, m11, m12, m13);
-			row2_ = new System.Numerics.Vector4(m20, m21, m22, m23);
-			row3_ = new System.Numerics.Vector4(m30, m31, m32, m33);
-#else
-			m00_ = m00; m01_ = m01; m02_ = m02; m03_ = m03;
-			m10_ = m10; m11_ = m11; m12_ = m12; m13_ = m13;
-			m20_ = m20; m21_ = m21; m22_ = m22; m23_ = m23;
-			m30_ = m30; m31_ = m31; m32_ = m32; m33_ = m33;
-#endif
+			this = Inverse(this);
 		}
 
 		[Browsable(false)]
