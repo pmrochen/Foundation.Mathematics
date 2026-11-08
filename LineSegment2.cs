@@ -229,7 +229,11 @@ namespace Foundation.Mathematics
 
 		public readonly float? FindIntersection(in Line2 line)
 		{
-			return Intersections.FindLineLineSegment(line.origin_, line.direction_, start_, end_);
+			var intersection = Intersections.FindLineLineSegment(line.origin_, line.direction_, start_, end_);
+			if (intersection.HasValue)
+				return intersection.Value.Item2;
+			else
+				return null;
 		}
 
 		public readonly float? FindIntersection(in LineSegment2 segment)

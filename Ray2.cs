@@ -216,7 +216,11 @@ namespace Foundation.Mathematics
 
 		public readonly float? FindIntersection(in Line2 line)
 		{
-			return Intersections.FindLineRay(line.origin_, line.direction_, origin_, direction_);
+			var intersection = Intersections.FindLineRay(line.origin_, line.direction_, origin_, direction_);
+			if (intersection.HasValue)
+				return intersection.Value.Item2;
+			else
+				return null;
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)

@@ -275,12 +275,20 @@ namespace Foundation.Mathematics
 
 		public readonly float? FindIntersection(in Ray2 ray)
 		{
-			return Intersections.FindLineRay(origin_, direction_, ray.origin_, ray.direction_);
+			var intersection = Intersections.FindLineRay(origin_, direction_, ray.origin_, ray.direction_);
+			if (intersection.HasValue)
+				return intersection.Value.Item1;
+			else
+				return null;
 		}
 
 		public readonly float? FindIntersection(in LineSegment2 segment)
 		{
-			return Intersections.FindLineLineSegment(origin_, direction_, segment.start_, segment.end_);
+			var intersection = Intersections.FindLineLineSegment(origin_, direction_, segment.start_, segment.end_);
+			if (intersection.HasValue)
+				return intersection.Value.Item1;
+			else
+				return null;
 		}
 
 		public readonly Interval? FindIntersection(in AxisAlignedRectangle rectangle)

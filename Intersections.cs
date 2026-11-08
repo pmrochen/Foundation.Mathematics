@@ -28,10 +28,12 @@ namespace Foundation.Mathematics
 				return 0f; // collinear
 			}
 
-			return Vector2.Cross(diff, directionB)/d1CrossD2;
+			float t = Vector2.Cross(diff, directionB)/d1CrossD2;
+			//float u = Vector2.Cross(diff, directionA)/d1CrossD2;
+			return t;
 		}
 
-		public static float? FindLineRay(Vector2 originA, Vector2 directionA, Vector2 originB, Vector2 directionB)
+		public static (float tA, float tB)? FindLineRay(Vector2 originA, Vector2 directionA, Vector2 originB, Vector2 directionB)
 		{
 			// http://www.geometrictools.com/
 
@@ -41,32 +43,35 @@ namespace Foundation.Mathematics
 			{
 				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(diff), directionB)) < SingleConstants.Tolerance))
 					return null;
-				return 0f; // collinear
+				return (0f, 0f); // collinear
 			}
 
-			float t = Vector2.Cross(diff, directionA)/d2CrossD1;
-			if (t >= 0f)
-				return t;
+			float t = Vector2.Cross(diff, directionB)/d2CrossD1;
+			float u = Vector2.Cross(diff, directionA)/d2CrossD1;
+			if (u >= 0f)
+				return (t, u);
 			return null;
 		}
 
-		public static float? FindLineLineSegment(Vector2 origin, Vector2 direction, Vector2 start, Vector2 end)
+		public static (float tA, float tB)? FindLineLineSegment(Vector2 origin, Vector2 direction, Vector2 start, Vector2 end)
 		{
 			// http://www.geometrictools.com/
 
+			Vector2 directionA = direction;
 			Vector2 directionB = end - start;
 			Vector2 diff = origin - start;
-			float d2CrossD1 = Vector2.Cross(directionB, direction);
+			float d2CrossD1 = Vector2.Cross(directionB, directionA);
 			if (Math.Abs(d2CrossD1) < SingleConstants.Tolerance)
 			{
 				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(diff), directionB)) < SingleConstants.Tolerance))
 					return null;
-				return 0f; // collinear
+				return (0f, 0f); // collinear
 			}
 
-			float t = Vector2.Cross(diff, direction)/d2CrossD1;
-			if ((t >= 0f) && (t <= 1f))
-				return t;
+			float t = Vector2.Cross(diff, directionB)/d2CrossD1;
+			float u = Vector2.Cross(diff, directionA)/d2CrossD1;
+			if ((u >= 0f) && (u <= 1f))
+				return (t, u);
 			return null;
 		}
 
