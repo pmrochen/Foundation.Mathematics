@@ -385,7 +385,7 @@ namespace Foundation.Mathematics
 						udDot = uMin*test.y_ + depthMin*test.z_;
 						if (udDot >= maxUDDot)
 						{
-							closest = new Vector3(test.x_, uMax, depthMax);
+							closest = new Vector3(Math.Min(test.x_, rMax), uMax, depthMax); // UF-edge (clamped to the RUF-vertex)
 						}
 						else if (udDot >= minUDDot)
 						{
@@ -406,7 +406,7 @@ namespace Foundation.Mathematics
 						rdDot = rMin*test.x_ + depthMin*test.z_;
 						if (rdDot >= maxRDDot)
 						{
-							closest = new Vector3(rMax, test.y_, depthMax);
+							closest = new Vector3(rMax, Math.Min(test.y_, uMax), depthMax); // RF-edge (clamped to the RUF-vertex)
 						}
 						else if (rdDot >= minRDDot)
 						{
@@ -428,7 +428,7 @@ namespace Foundation.Mathematics
 							rdDot = rMin*test.x_ + depthMin*test.z_;
 							if (rdDot >= maxRDDot)
 							{
-								closest = new Vector3(rMax, test.y_, depthMax);
+								closest = new Vector3(rMax, Math.Min(test.y_, uMax), depthMax); // RF-edge (clamped to the RUF-vertex)
 							}
 							else if (rdDot >= minRDDot)
 							{
@@ -449,7 +449,7 @@ namespace Foundation.Mathematics
 								udDot = uMin*test.y_ + depthMin*test.z_;
 								if (udDot >= maxUDDot)
 								{
-									closest = new Vector3(test.x_, uMax, depthMax);
+									closest = new Vector3(Math.Min(test.x_, rMax), uMax, depthMax); // UF-edge (clamped to the RUF-vertex)
 								}
 								else if (udDot >= minUDDot)
 								{
@@ -497,7 +497,7 @@ namespace Foundation.Mathematics
 						udDot = uMin*test.y_ + depthMin*test.z_;
 						if (udDot >= maxUDDot)
 						{
-							closest = new Vector3(test.x_, uMax, depthMax);
+							closest = new Vector3(Math.Min(test.x_, rMax), uMax, depthMax); // UF-edge (clamped to the RUF-vertex)
 						}
 						else
 						{
@@ -513,7 +513,7 @@ namespace Foundation.Mathematics
 						rdDot = rMin*test.x_ + depthMin*test.z_;
 						if (rdDot >= maxRDDot)
 						{
-							closest = new Vector3(rMax, test.y_, depthMax);
+							closest = new Vector3(rMax, Math.Min(test.y_, uMax), depthMax); // RF-edge (clamped to the RUF-vertex)
 						}
 						else
 						{
@@ -530,7 +530,7 @@ namespace Foundation.Mathematics
 							rdDot = rMin*test.x_ + depthMin*test.z_;
 							if (rdDot >= maxRDDot)
 							{
-								closest = new Vector3(rMax, test.y_, depthMax);
+								closest = new Vector3(rMax, Math.Min(test.y_, uMax), depthMax); // RF-edge (clamped to the RUF-vertex)
 							}
 							else
 							{
@@ -546,7 +546,7 @@ namespace Foundation.Mathematics
 								udDot = uMin*test.y_ + depthMin*test.z_;
 								if (udDot >= maxUDDot)
 								{
-									closest = new Vector3(test.x_, uMax, depthMax);
+									closest = new Vector3(Math.Min(test.x_, rMax), uMax, depthMax); // UF-edge (clamped to the RUF-vertex)
 								}
 								else
 								{
