@@ -476,7 +476,7 @@ namespace Foundation.Mathematics
 				if (t0 >= 0f)
 					return new Interval(t0, t1);
 				else if (t1 >= 0f)
-					return new Interval(t1);
+					return new Interval(0f, t1); // the origin is inside the ellipsoid
 				else
 					return null;
 			}
@@ -511,12 +511,12 @@ namespace Foundation.Mathematics
 			const float e = 0.5f;
 			if (a1 >= 0f)
 			{
-				if (((a0 + e*(-2f*a1 + a2*e)) <= 0f) || ((a1 - a2*e) < 0f))
+				if (((a0 + e*(-2f*a1 + a2*e)) <= 0f) || ((a1 - a2*e) < 0f)) // Q(-E) <= 0 or the minimum of Q lies within the segment
 					return true;
 			}
 			else
 			{
-				if (((a0 + e*(2f*a1 + a2*e)) <= 0f) || ((a1 + a2*e) < 0f))
+				if (((a0 + e*(2f*a1 + a2*e)) <= 0f) || ((a1 + a2*e) > 0f)) // Q(E) <= 0 or the minimum of Q lies within the segment
 					return true;
 			}
 
