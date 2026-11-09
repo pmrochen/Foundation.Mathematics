@@ -403,32 +403,20 @@ namespace Foundation.Mathematics
 
 		public void Transform(in Matrix3 matrix, bool orthogonal = false)
 		{
-			Vector3 n = Normal;
-			if (orthogonal)
-			{
-				this = new HalfSpace(n*matrix,
-					-Vector3.Dot(n, (n*(-Constant))*matrix));
-			}
-			else
-			{
-				this = new HalfSpace(Vector3.Normalize(n*Matrix3.InverseTranspose(matrix)),
-					-Vector3.Dot(n, (n*(-Constant))*matrix));
-			}
+			Vector3 point = (Normal*(-Constant))*matrix;
+			Vector3 normal = orthogonal ? 
+				Normal*matrix : 
+				Vector3.Normalize(Normal*Matrix3.InverseTranspose(matrix));
+			this = new Plane(normal, -Vector3.Dot(normal, point));
 		}
 
-		public void Transform(in AffineTransform at, bool orthogonal = false)
+		public void Transform(in AffineTransform transformation, bool orthogonal = false)
 		{
-			Vector3 n = Normal;
-			if (orthogonal)
-			{
-				this = new HalfSpace(n*at.r_,
-					-Vector3.Dot(n, Vector3.Transform(n*(-Constant), at)));
-			}
-			else
-			{
-				this = new HalfSpace(Vector3.Normalize(n*Matrix3.InverseTranspose(at.r_)),
-					-Vector3.Dot(n, Vector3.Transform(n*(-Constant), at)));
-			}
+			Vector3 point = Vector3.Transform(Normal*(-Constant), transformation);
+			Vector3 normal = orthogonal ? 
+				Normal*transformation.Basis :
+				Vector3.Normalize(Normal*Matrix3.InverseTranspose(transformation.Basis));
+			this = new Plane(normal, -Vector3.Dot(normal, point));
 		}
 
 		public static Plane Transform(Plane plane, in Matrix3 matrix, bool orthogonal = false)
@@ -437,9 +425,9 @@ namespace Foundation.Mathematics
 			return plane;
 		}
 
-		public static Plane Transform(Plane plane, in AffineTransform at, bool orthogonal = false)
+		public static Plane Transform(Plane plane, in AffineTransform transformation, bool orthogonal = false)
 		{
-			plane.Transform(at, orthogonal);
+			plane.Transform(transformation, orthogonal);
 			return plane;
 		}
 
