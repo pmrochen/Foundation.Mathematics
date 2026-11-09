@@ -156,32 +156,34 @@ namespace Foundation.Mathematics
 
 		public void Transform(in Matrix3 matrix, bool orthogonal = false)
 		{
-			if (!orthogonal)
+			if (orthogonal)
+				center_ *= matrix;
+			else
 				this = Sphere.FromEllipsoid(Ellipsoid.FromSphere(this, matrix, orthogonal));
 		}
 
-		public void Transform(in AffineTransform at, bool orthogonal = false)
+		public void Transform(in AffineTransform transformation, bool orthogonal = false)
 		{
 			if (orthogonal)
-				center_.Transform(at);
+				center_.Transform(transformation);
 			else
-				this = Sphere.FromEllipsoid(Ellipsoid.FromSphere(this, at, orthogonal));
+				this = Sphere.FromEllipsoid(Ellipsoid.FromSphere(this, transformation, orthogonal));
 		}
 
 		public static Sphere Transform(in Sphere sphere, in Matrix3 matrix, bool orthogonal = false)
 		{
 			if (orthogonal)
-				return sphere;
+				return new Sphere(sphere.center_*matrix, sphere.radius_);
 			else
 				return Sphere.FromEllipsoid(Ellipsoid.FromSphere(sphere, matrix, orthogonal));
 		}
 
-		public static Sphere Transform(in Sphere sphere, in AffineTransform at, bool orthogonal = false)
+		public static Sphere Transform(in Sphere sphere, in AffineTransform transformation, bool orthogonal = false)
 		{
 			if (orthogonal)
-				return new Sphere(Vector3.Transform(sphere.center_, at), sphere.radius_);
+				return new Sphere(Vector3.Transform(sphere.center_, transformation), sphere.radius_);
 			else
-				return Sphere.FromEllipsoid(Ellipsoid.FromSphere(sphere, at, orthogonal));
+				return Sphere.FromEllipsoid(Ellipsoid.FromSphere(sphere, transformation, orthogonal));
 		}
 
 		//public readonly Vector3 GetClosestPoint(Vector3 point) // #TODO
