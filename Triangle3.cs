@@ -323,9 +323,11 @@ namespace Foundation.Mathematics
 		{
 			Vector3 edge1 = vertex1_ - vertex0_;
 			Vector3 edge2 = vertex2_ - vertex0_;
-			float m = 1f/Vector3.Cross(edge1, edge2).MagnitudeSquared;
-			float v = MathF.Sqrt(Vector3.Cross(edge2, point - vertex2_).MagnitudeSquared*m);
-			float w = MathF.Sqrt(Vector3.Cross(edge1, point - vertex1_).MagnitudeSquared*m);
+			Vector3 normal = Vector3.Cross(edge1, edge2);
+			Vector3 diff = point - vertex0_;
+			float m = 1f/normal.MagnitudeSquared;
+			float v = Vector3.Dot(Vector3.Cross(diff, edge2), normal)*m;
+			float w = Vector3.Dot(Vector3.Cross(edge1, diff), normal)*m;
 			return new Vector3(1f - v - w, v, w);
 		}
 
@@ -351,13 +353,13 @@ namespace Foundation.Mathematics
 			return halfSpace.Contains(vertex0_) || halfSpace.Contains(vertex1_) || halfSpace.Contains(vertex2_);
 		}
 
-		//public readonly bool Intersects(in Plane plane) // #TODO Check if all vertices are on one side
-		//{
-		//	float d0 = plane.GetSignedDistanceTo(vertex0_);
-		//	float d1 = plane.GetSignedDistanceTo(vertex1_);
-		//	float d2 = plane.GetSignedDistanceTo(vertex2_);
-		//	return !(((d0 < 0f) && (d1 < 0f) && (d2 < 0f)) || ((d0 > 0f) && (d1 > 0f) && (d2 > 0f)));
-		//}
+		public readonly bool Intersects(in Plane plane)
+		{
+			float d0 = plane.GetSignedDistanceTo(vertex0_);
+			float d1 = plane.GetSignedDistanceTo(vertex1_);
+			float d2 = plane.GetSignedDistanceTo(vertex2_);
+			return !(((d0 < 0f) && (d1 < 0f) && (d2 < 0f)) || ((d0 > 0f) && (d1 > 0f) && (d2 > 0f)));
+		}
 
 		public readonly bool Intersects(in AxisAlignedBox box)
 		{
