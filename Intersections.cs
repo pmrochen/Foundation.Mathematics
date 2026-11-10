@@ -43,7 +43,7 @@ namespace Foundation.Mathematics
 			{
 				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(diff), directionB)) < SingleConstants.Tolerance))
 					return null;
-				return (0f, 0f); // collinear
+				return (-Vector2.Dot(diff, directionA)/Vector2.Dot(directionA, directionA), 0f); // collinear
 			}
 
 			float t = Vector2.Cross(diff, directionB)/d2CrossD1;
@@ -65,7 +65,7 @@ namespace Foundation.Mathematics
 			{
 				if (!(Math.Abs(Vector2.Cross(Vector2.Normalize(diff), directionB)) < SingleConstants.Tolerance))
 					return null;
-				return (0f, 0f); // collinear
+				return (-Vector2.Dot(diff, directionA)/Vector2.Dot(directionA, directionA), 0f); // collinear
 			}
 
 			float t = Vector2.Cross(diff, directionB)/d2CrossD1;
