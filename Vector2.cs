@@ -772,15 +772,9 @@ namespace Foundation.Mathematics
 
 		public static float Angle(Vector2 u, Vector2 v)
 		{
-			float q = u.Magnitude*v.Magnitude;
-			if (q > 0f)
-				return (float)Math.Acos(Math.Clamp(Vector2.Dot(u, v)/q, -1f, 1f));
-			else
-				return (Vector2.Dot(u, v) >= 0f) ? 0f : SingleConstants.Pi;
-			
-			//u.Normalize();
-			//v.Normalize();
-			//return (float)Math.Acos(Math.Clamp(Vector2.Dot(u, v), -1f, 1f));
+			float c = Math.Abs(Vector2.Cross(u, v));
+			float d = Vector2.Dot(u, v);
+			return ((c == 0f) && (d == 0f)) ? 0f : (float)Math.Atan2(c, d);
 		}
 
 		public static Vector2 Slerp(Vector2 u, Vector2 v, float t)

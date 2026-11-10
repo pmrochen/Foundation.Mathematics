@@ -979,19 +979,6 @@ namespace Foundation.Mathematics
 				-u.x_*d2 + u.y_*d4 - u.w_*d6, u.x_*d3 - u.y_*d5 + u.z_*d6);
 		}
 
-		public static float Angle(Vector4 u, Vector4 v)
-		{
-			float q = u.Magnitude*v.Magnitude;
-			if (q > 0f)
-				return (float)Math.Acos(Math.Clamp(Vector4.Dot(u, v)/q, -1f, 1f));
-			else
-				return (Vector4.Dot(u, v) >= 0f) ? 0f : SingleConstants.Pi;
-			
-			//u.Normalize();
-			//v.Normalize();
-			//return (float)Math.Acos(Math.Clamp(Vector4.Dot(u, v), -1f, 1f));
-		}
-
 		public static Vector4 Slerp(Vector4 u, Vector4 v, float t)
 		{
 			float dp = Vector4.Dot(u, v);
