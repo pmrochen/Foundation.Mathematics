@@ -570,49 +570,49 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AllLessThan(Vector2 v) 
 		{
-			return Vector2.LessThanAll(xy_, v.xy_);
+			return System.Numerics.Vector2.LessThanAll(xy_, v.xy_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AllLessThanEqual(Vector2 v) 
 		{ 
-			return Vector2.LessThanOrEqualAll(xy_, v.xy_);
+			return System.Numerics.Vector2.LessThanOrEqualAll(xy_, v.xy_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AllGreaterThan(Vector2 v) 
 		{ 
-			return Vector2.GreaterThanAll(xy_, v.xy_);
+			return System.Numerics.Vector2.GreaterThanAll(xy_, v.xy_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AllGreaterThanEqual(Vector2 v) 
 		{ 
-			return Vector2.GreaterThanOrEqualAll(xy_, v.xy_);
+			return System.Numerics.Vector2.GreaterThanOrEqualAll(xy_, v.xy_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AnyLessThan(Vector2 v) 
 		{ 
-			return Vector2.LessThanAny(xy_, v.xy_);
+			return System.Numerics.Vector2.LessThanAny(xy_, v.xy_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AnyLessThanEqual(Vector2 v) 
 		{ 
-			return Vector2.LessThanOrEqualAny(xy_, v.xy_);
+			return System.Numerics.Vector2.LessThanOrEqualAny(xy_, v.xy_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AnyGreaterThan(Vector2 v) 
 		{
-			return Vector2.GreaterThanAny(xy_, v.xy_);
+			return System.Numerics.Vector2.GreaterThanAny(xy_, v.xy_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AnyGreaterThanEqual(Vector2 v) 
 		{ 
-			return Vector2.GreaterThanOrEqualAny(xy_, v.xy_);
+			return System.Numerics.Vector2.GreaterThanOrEqualAny(xy_, v.xy_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -656,7 +656,7 @@ namespace Foundation.Mathematics
 			return (x_ > v.x_) || (y_ > v.y_);
 		}
 
-		public readonly bool AnyGreaterThanEqual(Vector4 v)
+		public readonly bool AnyGreaterThanEqual(Vector2 v)
 		{
 			return (x_ >= v.x_) || (y_ >= v.y_);
 		}

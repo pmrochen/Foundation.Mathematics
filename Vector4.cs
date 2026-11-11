@@ -766,49 +766,49 @@ namespace Foundation.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AllLessThan(Vector4 v) 
 		{
-			return Vector4.LessThanAll(xyzw_, v.xyzw_);
+			return System.Numerics.Vector4.LessThanAll(xyzw_, v.xyzw_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AllLessThanEqual(Vector4 v) 
 		{ 
-			return Vector4.LessThanOrEqualAll(xyzw_, v.xyzw_);
+			return System.Numerics.Vector4.LessThanOrEqualAll(xyzw_, v.xyzw_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AllGreaterThan(Vector4 v) 
 		{ 
-			return Vector4.GreaterThanAll(xyzw_, v.xyzw_);
+			return System.Numerics.Vector4.GreaterThanAll(xyzw_, v.xyzw_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AllGreaterThanEqual(Vector4 v) 
 		{ 
-			return Vector4.GreaterThanOrEqualAll(xyzw_, v.xyzw_);
+			return System.Numerics.Vector4.GreaterThanOrEqualAll(xyzw_, v.xyzw_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AnyLessThan(Vector4 v) 
 		{ 
-			return Vector4.LessThanAny(xyzw_, v.xyzw_);
+			return System.Numerics.Vector4.LessThanAny(xyzw_, v.xyzw_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AnyLessThanEqual(Vector4 v) 
 		{ 
-			return Vector4.LessThanOrEqualAny(xyzw_, v.xyzw_);
+			return System.Numerics.Vector4.LessThanOrEqualAny(xyzw_, v.xyzw_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AnyGreaterThan(Vector4 v) 
 		{
-			return Vector4.GreaterThanAny(xyzw_, v.xyzw_);
+			return System.Numerics.Vector4.GreaterThanAny(xyzw_, v.xyzw_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool AnyGreaterThanEqual(Vector4 v) 
 		{ 
-			return Vector4.GreaterThanOrEqualAny(xyzw_, v.xyzw_);
+			return System.Numerics.Vector4.GreaterThanOrEqualAny(xyzw_, v.xyzw_);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
