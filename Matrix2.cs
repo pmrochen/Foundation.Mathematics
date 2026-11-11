@@ -760,7 +760,7 @@ namespace Foundation.Mathematics
 			float c = m.m10_, d = m.m11_;
 			float n = 1f/(a*d - b*c);
 #if SIMD
-			return new Matrix2(new System.Numerics.Vector2(d, -b)*n, new System.Numerics.Vector2(-c, a)*n);
+			return new Matrix2(new System.Numerics.Vector2(d, -c)*n, new System.Numerics.Vector2(-b, a)*n);
 #else
 			return new Matrix2(d*n, -c*n, -b*n, a*n);
 #endif
