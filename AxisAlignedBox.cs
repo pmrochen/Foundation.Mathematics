@@ -56,13 +56,13 @@ namespace Foundation.Mathematics
 			return ((hash << 5) + hash) ^ maximum_.GetHashCode();
 		}
 
-		public readonly bool ApproxEquals(in AxisAlignedRectangle other, float tolerance)
+		public readonly bool ApproxEquals(in AxisAlignedBox other, float tolerance)
 		{
 			return minimum_.ApproxEquals(other.minimum_, tolerance) &&
 				maximum_.ApproxEquals(other.maximum_, tolerance);
 		}
 
-		public readonly bool ApproxEquals(in AxisAlignedRectangle other)
+		public readonly bool ApproxEquals(in AxisAlignedBox other)
 		{
 			return minimum_.ApproxEquals(other.minimum_) &&
 				maximum_.ApproxEquals(other.maximum_);
@@ -245,24 +245,26 @@ namespace Foundation.Mathematics
 			return box;
 		}
 
+		// The bounds are computed from the (non-orthonormalized) transformed basis, which is exact for any
+		// matrix, including shears. The orthogonal parameter is kept for API compatibility and has no effect.
 		public void Transform(in Matrix3 matrix, bool orthogonal = false)
 		{
-			this = AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(this, matrix, orthogonal));
+			this = AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(this, matrix, true));
 		}
 
-		public void Transform(in AffineTransform at, bool orthogonal = false)
+		public void Transform(in AffineTransform transformation, bool orthogonal = false)
 		{
-			this = AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(this, at, orthogonal));
+			this = AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(this, transformation, true));
 		}
 
 		public static AxisAlignedBox Transform(in AxisAlignedBox box, in Matrix3 matrix, bool orthogonal = false)
 		{
-			return AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(box, matrix, orthogonal));
+			return AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(box, matrix, true));
 		}
 
-		public static AxisAlignedBox Transform(in AxisAlignedBox box, in AffineTransform at, bool orthogonal = false)
+		public static AxisAlignedBox Transform(in AxisAlignedBox box, in AffineTransform transformation, bool orthogonal = false)
 		{
-			return AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(box, at, orthogonal));
+			return AxisAlignedBox.FromOrientedBox(OrientedBox.FromAxisAlignedBox(box, transformation, true));
 		}
 
 		public void ScaleAroundCenter(float factor)
