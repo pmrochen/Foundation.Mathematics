@@ -164,7 +164,7 @@ namespace Foundation.Mathematics
 
 		public static PackedBezierCurve2 FromBezierCurve(BezierCurve2 curve)
 		{
-			if ((curve.p0_ != Vector2.Zero) || (curve.p1_ != new Vector2(1f)))
+			if ((curve.p0_ != Vector2.Zero) || (curve.p3_ != new Vector2(1f)))
 				throw new ArgumentException();
 			
 			return new PackedBezierCurve2(curve.p1_, curve.p2_);
