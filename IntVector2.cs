@@ -117,7 +117,7 @@ namespace Foundation.Mathematics
 			return (x_ > v.x_) || (y_ > v.y_);
 		}
 
-		public readonly bool AnyGreaterThanEqual(IntVector4 v)
+		public readonly bool AnyGreaterThanEqual(IntVector2 v)
 		{
 			return (x_ >= v.x_) || (y_ >= v.y_);
 		}

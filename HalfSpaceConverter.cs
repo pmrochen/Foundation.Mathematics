@@ -29,7 +29,7 @@ namespace Foundation.Mathematics
 
 		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
 		{
-			return new StandardValuesCollection(new object[1] { Plane.Empty });
+			return new StandardValuesCollection(new object[1] { HalfSpace.Empty });
 		}
 
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type type)
