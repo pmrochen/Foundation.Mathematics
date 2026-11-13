@@ -28,37 +28,66 @@ namespace Foundation.Mathematics
 
 		public static float GetSingle(float min, float max, IRandomNumberGenerator<uint> generator)
 		{
-			return (float)(min + (max - min)*GetDouble01(generator));
+			return (float)(min + ((double)max - min)*GetDouble01(generator));
 		}
 
+		/// <summary>
+		/// Returns a random number in [min, max]. The range must be no wider than Double.MaxValue (max - min must not
+		/// overflow); it is not checked and the result is unspecified otherwise.
+		/// </summary>
 		public static double GetDouble(double min, double max)
 		{
 			return GetDouble(min, max, DefaultGenerator);
 		}
 
+		/// <summary>
+		/// Returns a random number in [min, max]. The range must be no wider than Double.MaxValue (max - min must not
+		/// overflow); it is not checked and the result is unspecified otherwise.
+		/// </summary>
 		public static double GetDouble(double min, double max, IRandomNumberGenerator<uint> generator)
 		{
-			return (min + (max - min)*GetDouble01(generator));
+			return min + (max - min)*GetDouble01(generator);
 		}
 
+		/// <summary>
+		/// Returns a random number in [min, max), rounded towards min. Requires min &lt; max; the range is not checked
+		/// and the result is unspecified otherwise.
+		/// </summary>
 		public static float GetSingleRightOpen(float min, float max)
 		{
 			return GetSingleRightOpen(min, max, DefaultGenerator);
 		}
 
+		/// <summary>
+		/// Returns a random number in [min, max), rounded towards min. Requires min &lt; max; the range is not checked
+		/// and the result is unspecified otherwise.
+		/// </summary>
 		public static float GetSingleRightOpen(float min, float max, IRandomNumberGenerator<uint> generator)
 		{
-			return (float)(min + (max - min)*GetDouble01RightOpen(generator));
+			// The closed [0, 1] variant is used on purpose, see GetDoubleRightOpen.
+			float result = FloorToSingle(min + ((double)max - min)*GetDouble01(generator));
+			return (result < max) ? result : MathF.BitDecrement(max);
 		}
 
+		/// <summary>
+		/// Returns a random number in [min, max). Requires min &lt; max and a range no wider than Double.MaxValue
+		/// (max - min must not overflow); the range is not checked and the result is unspecified otherwise.
+		/// </summary>
 		public static double GetDoubleRightOpen(double min, double max)
 		{
 			return GetDoubleRightOpen(min, max, DefaultGenerator);
 		}
 
+		/// <summary>
+		/// Returns a random number in [min, max). Requires min &lt; max and a range no wider than Double.MaxValue
+		/// (max - min must not overflow); the range is not checked and the result is unspecified otherwise.
+		/// </summary>
 		public static double GetDoubleRightOpen(double min, double max, IRandomNumberGenerator<uint> generator)
 		{
-			return (min + (max - min)*GetDouble01RightOpen(generator));
+			// The closed [0, 1] variant is used on purpose: only an exact 1 maps to max, which is then moved to the
+			// largest value below max, so the gap to max is a single bit regardless of the size of the range.
+			double result = min + (max - min)*GetDouble01(generator);
+			return (result < max) ? result : Math.BitDecrement(max);
 		}
 
 		public static float GetSingle01()
@@ -68,7 +97,7 @@ namespace Foundation.Mathematics
 
 		public static float GetSingle01(IRandomNumberGenerator<uint> generator)
 		{
-			return (float)(generator.GetNext()/(double)(generator.MaxValue - 1));
+			return (float)GetDouble01(generator);
 		}
 
 		public static double GetDouble01()
@@ -78,7 +107,7 @@ namespace Foundation.Mathematics
 
 		public static double GetDouble01(IRandomNumberGenerator<uint> generator)
 		{
-			return generator.GetNext()/(double)(generator.MaxValue - 1);
+			return generator.GetNext()/(double)generator.MaxValue;
 		}
 
 		public static float GetSingle01RightOpen()
@@ -88,7 +117,7 @@ namespace Foundation.Mathematics
 
 		public static float GetSingle01RightOpen(IRandomNumberGenerator<uint> generator)
 		{
-			return (float)(generator.GetNext()/(double)generator.MaxValue);
+			return FloorToSingle(GetDouble01RightOpen(generator));
 		}
 
 		public static double GetDouble01RightOpen()
@@ -98,7 +127,7 @@ namespace Foundation.Mathematics
 
 		public static double GetDouble01RightOpen(IRandomNumberGenerator<uint> generator)
 		{
-			return generator.GetNext()/(double)generator.MaxValue;
+			return generator.GetNext()/((double)generator.MaxValue + 1.0);
 		}
 
 		public static Vector2 GetVectorOnUnitCircle()
@@ -225,6 +254,25 @@ namespace Foundation.Mathematics
 			float s2 = (float)Math.Sin(t2);
 			float c2 = (float)Math.Cos(t2);
 			return new Quaternion(s1*r1, c1*r1, s2*r2, c2*r2);
+		}
+
+		/// <summary>
+		/// Converts to single precision rounding towards negative infinity. The default conversion rounds to the
+		/// nearest float, which can turn a value just below an exclusive upper bound into the bound itself.
+		/// </summary>
+		internal static float FloorToSingle(double x)
+		{
+			float f = (float)x;
+			return (f > x) ? MathF.BitDecrement(f) : f;
+		}
+
+		/// <summary>
+		/// Converts to single precision rounding towards positive infinity.
+		/// </summary>
+		internal static float CeilingToSingle(double x)
+		{
+			float f = (float)x;
+			return (f < x) ? MathF.BitIncrement(f) : f;
 		}
 	}
 }

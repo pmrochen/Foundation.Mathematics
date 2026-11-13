@@ -89,12 +89,12 @@ namespace Foundation.Mathematics
 
 		public float GetSingle01RightOpen()
 		{
-			return (float)(GetUInt32()*(1.0/4294967296.0));
+			return Random.FloorToSingle(GetUInt32()*(1.0/4294967296.0)); // rounding to nearest could reach 1
 		}
 
 		public float GetSingle01Open()
 		{
-			return (float)((GetUInt32() + 0.5)*(1.0/4294967296.0));
+			return Random.FloorToSingle((GetUInt32() + 0.5)*(1.0/4294967296.0)); // never 0: the smallest value is 2^-33
 		}
 
 		public double GetDouble01()
