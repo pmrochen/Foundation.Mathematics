@@ -39,4 +39,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591;1701;1702</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- Unit tests live in their own project (Tests/Foundation.Mathematics.Tests.csproj). -->
+    <Compile Remove="Tests\**" />
+    <EmbeddedResource Remove="Tests\**" />
+    <None Remove="Tests\**" />
+  </ItemGroup>
 </Project>

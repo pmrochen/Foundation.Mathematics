@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Platforms>AnyCPU;x64;ARM64</Platforms>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Foundation.Mathematics.Tests</RootNamespace>
+    <!-- MSTEST0032: ConstantsTests deliberately asserts on compile-time constants.
+         MSTEST0037: range checks are written as Assert.IsTrue(min <= x && x <= max) for readability. -->
+    <NoWarn>$(NoWarn);MSTEST0032;MSTEST0037</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Foundation.Mathematics.csproj" />
+  </ItemGroup>
+
+</Project>
