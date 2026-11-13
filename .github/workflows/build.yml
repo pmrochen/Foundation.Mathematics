@@ -1,0 +1,49 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The SIMD code paths are only compiled for the x64 and ARM64 platforms.
+          - name: x64
+            os: ubuntu-latest
+            platform: -p:Platform=x64
+          - name: ARM64
+            os: ubuntu-24.04-arm
+            platform: -p:Platform=ARM64
+          # Default platform: scalar code paths only.
+          - name: Scalar
+            os: ubuntu-latest
+            platform: ''
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build library
+        run: dotnet build Foundation.Mathematics.csproj -c Release ${{ matrix.platform }}
+
+      - name: Run unit tests
+        run: dotnet test Tests/Foundation.Mathematics.Tests.csproj -c Release ${{ matrix.platform }}
